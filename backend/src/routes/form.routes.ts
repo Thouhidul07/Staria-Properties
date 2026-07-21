@@ -1,8 +1,9 @@
 import { Router } from "express";
 import { FormController } from "../controllers/form.controller";
 import { authenticate, requirePermissions } from "../middleware/auth.middleware";
+import { cachePolicies } from "../middleware/cache.middleware";
 import { formLimiter } from "../middleware/rateLimiter.middleware";
-import { validate } from "../middleware/validate.middleware";
+import { mergeSchemas, validate } from "../middleware/validate.middleware";
 import { asyncHandler } from "../utils/asyncHandler";
 import {
   contactListSchema,
@@ -46,8 +47,7 @@ adminContactRouter.get(
 adminContactRouter.patch(
   "/:id",
   requirePermissions("contact:update"),
-  validate(idParamSchema),
-  validate(updateContactStatusSchema),
+  validate(mergeSchemas(idParamSchema, updateContactStatusSchema)),
   asyncHandler(controller.updateContact)
 );
 adminContactRouter.delete(
@@ -74,8 +74,7 @@ adminNewsletterRouter.get(
 adminNewsletterRouter.patch(
   "/:id",
   requirePermissions("newsletter:update"),
-  validate(idParamSchema),
-  validate(updateNewsletterStatusSchema),
+  validate(mergeSchemas(idParamSchema, updateNewsletterStatusSchema)),
   asyncHandler(controller.updateNewsletter)
 );
 adminNewsletterRouter.delete(

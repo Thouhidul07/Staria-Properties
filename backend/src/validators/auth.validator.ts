@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { emailSchema } from "./shared";
 
 export const passwordSchema = z
   .string()
@@ -8,8 +9,6 @@ export const passwordSchema = z
   .regex(/[a-z]/, "Password must contain a lowercase letter")
   .regex(/[0-9]/, "Password must contain a number")
   .regex(/[^A-Za-z0-9]/, "Password must contain a special character");
-
-const emailSchema = z.string().trim().email().max(160).transform((value) => value.toLowerCase());
 
 export const createAdminSchema = z.object({
   body: z.object({

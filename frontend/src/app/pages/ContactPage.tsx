@@ -1,23 +1,42 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { MapPin, Phone, Mail, Send, CheckCheck } from "lucide-react";
+import { MapPin, Phone, Mail, Send, CheckCheck, Loader2 } from "lucide-react";
+import { api } from "../services/api";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
   const [formSent, setFormSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormSent(true);
-    setTimeout(() => {
-      setFormSent(false);
-      setFormData({ name: "", phone: "", email: "", message: "" });
-    }, 4500);
+    setIsSubmitting(true);
+    setErrorMsg(null);
+
+    try {
+      await api.submitContact({
+        fullName: formData.name,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        message: formData.message,
+      });
+
+      setFormSent(true);
+      setTimeout(() => {
+        setFormSent(false);
+        setFormData({ name: "", phone: "", email: "", message: "" });
+      }, 5000);
+    } catch (err: any) {
+      setErrorMsg(err.message || "Failed to submit form. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const inputClass = "w-full bg-white/[0.06] border border-white/[0.12] rounded-2xl px-5 py-3.5 text-white text-[0.9rem] placeholder:text-white/25 focus:outline-none focus:border-[#D9A11A]/55 focus:bg-white/[0.09] transition-all duration-300";
@@ -97,29 +116,38 @@ export default function ContactPage() {
                 </motion.div>
               ) : (
                 <motion.form key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onSubmit={handleSubmit} className="space-y-5">
+                  {errorMsg && (
+                    <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[0.85rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {errorMsg}
+                    </div>
+                  )}
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label className={labelClass} style={{ fontFamily: "'DM Sans', sans-serif" }}>Full Name</label>
-                      <input required type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Your full name" className={inputClass} style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                      <label htmlFor="contact-fullName" className={labelClass} style={{ fontFamily: "'DM Sans', sans-serif" }}>Full Name</label>
+                      <input id="contact-fullName" required type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Your full name" className={inputClass} style={{ fontFamily: "'DM Sans', sans-serif" }} />
                     </div>
                     <div>
-                      <label className={labelClass} style={{ fontFamily: "'DM Sans', sans-serif" }}>Phone</label>
-                      <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+880 ..." className={inputClass} style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                      <label htmlFor="contact-phone" className={labelClass} style={{ fontFamily: "'DM Sans', sans-serif" }}>Phone</label>
+                      <input id="contact-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+880 ..." className={inputClass} style={{ fontFamily: "'DM Sans', sans-serif" }} />
                     </div>
                   </div>
                   <div>
-                    <label className={labelClass} style={{ fontFamily: "'DM Sans', sans-serif" }}>Email Address</label>
-                    <input required type="email" name="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" className={inputClass} style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                    <label htmlFor="contact-email" className={labelClass} style={{ fontFamily: "'DM Sans', sans-serif" }}>Email Address</label>
+                    <input id="contact-email" required type="email" name="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" className={inputClass} style={{ fontFamily: "'DM Sans', sans-serif" }} />
                   </div>
                   <div>
-                    <label className={labelClass} style={{ fontFamily: "'DM Sans', sans-serif" }}>Message</label>
-                    <textarea required name="message" value={formData.message} onChange={handleChange} placeholder="Tell us about your project or enquiry…" rows={5} className={`${inputClass} resize-none`} style={{ fontFamily: "'DM Sans', sans-serif" }} />
+                    <label htmlFor="contact-message" className={labelClass} style={{ fontFamily: "'DM Sans', sans-serif" }}>Message</label>
+                    <textarea id="contact-message" required name="message" value={formData.message} onChange={handleChange} placeholder="Tell us about your project or enquiry…" rows={5} className={`${inputClass} resize-none`} style={{ fontFamily: "'DM Sans', sans-serif" }} />
                   </div>
                   <div className="pt-1">
-                    <motion.button type="submit" whileHover={{ scale: 1.025 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 420, damping: 22 }}
-                      className="inline-flex items-center gap-3 px-10 py-4 rounded-full font-semibold transition-all duration-300"
+                    <motion.button type="submit" disabled={isSubmitting} whileHover={{ scale: isSubmitting ? 1 : 1.025 }} whileTap={{ scale: isSubmitting ? 1 : 0.97 }} transition={{ type: "spring", stiffness: 420, damping: 22 }}
+                      className="inline-flex items-center gap-3 px-10 py-4 rounded-full font-semibold transition-all duration-300 disabled:opacity-50"
                       style={{ background: "#D9A11A", color: "#1B1B1B", fontFamily: "'DM Sans', sans-serif", boxShadow: "0 8px 32px rgba(245,166,35,0.28)" }}>
-                      Send Message <Send size={16} />
+                      {isSubmitting ? (
+                        <>Sending... <Loader2 size={16} className="animate-spin" /></>
+                      ) : (
+                        <>Send Message <Send size={16} /></>
+                      )}
                     </motion.button>
                   </div>
                 </motion.form>

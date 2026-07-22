@@ -9,6 +9,7 @@ import {
 import { StariaLogo } from "./components/shared/StariaLogo";
 import { LoadingScreen } from "./components/shared/LoadingScreen";
 import { ScrollToTop } from "./components/shared/ScrollToTop";
+import { api } from "./services/api";
 
 const NAV_CONFIG = [
   { label: "Home",        path: "/"            },
@@ -39,6 +40,24 @@ export function createRipple(e: React.MouseEvent<HTMLButtonElement>) {
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 function Footer() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setStatus("loading");
+    try {
+      await api.subscribeNewsletter(email);
+      setStatus("success");
+      setEmail("");
+      setTimeout(() => setStatus("idle"), 4000);
+    } catch {
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 4000);
+    }
+  };
+
   const quickLinks = [
     { label: "Home",        path: "/"            },
     { label: "About",       path: "/about"       },
@@ -57,10 +76,10 @@ function Footer() {
     "Investment Consultancy",
   ];
   const socials = [
-    { Icon: Facebook, label: "Facebook" },
-    { Icon: Instagram, label: "Instagram" },
-    { Icon: Linkedin, label: "LinkedIn" },
-    { Icon: Twitter, label: "Twitter" },
+    { Icon: Facebook, label: "Facebook", href: "https://facebook.com" },
+    { Icon: Instagram, label: "Instagram", href: "https://instagram.com" },
+    { Icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com" },
+    { Icon: Twitter, label: "Twitter", href: "https://twitter.com" },
   ];
 
   return (
@@ -78,19 +97,23 @@ function Footer() {
               Monthly insights, project launches, and market reports — direct to your inbox.
             </p>
           </div>
-          <form className="flex gap-2.5 w-full md:w-auto shrink-0" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex gap-2.5 w-full md:w-auto shrink-0" onSubmit={handleNewsletterSubmit}>
             <input
               type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Your email address"
               className="flex-1 md:w-64 bg-white/[0.06] border border-white/[0.10] rounded-full px-5 py-2.5 text-white text-[0.85rem] placeholder:text-white/25 focus:outline-none focus:border-[#D9A11A]/50 transition-all duration-300"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             />
             <button
               type="submit"
-              className="px-6 py-2.5 bg-[#D9A11A] hover:bg-[#C08912] text-[#1B1B1B] text-[1rem] font-semibold rounded-full transition-colors duration-300 shrink-0"
+              disabled={status === "loading"}
+              className="px-6 py-2.5 bg-[#D9A11A] hover:bg-[#C08912] text-[#1B1B1B] text-[1rem] font-semibold rounded-full transition-colors duration-300 shrink-0 disabled:opacity-50"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Subscribe
+              {status === "loading" ? "Subscribing..." : status === "success" ? "Subscribed!" : status === "error" ? "Try Again" : "Subscribe"}
             </button>
           </form>
         </div>
@@ -106,8 +129,8 @@ function Footer() {
               Bangladesh's most trusted name in luxury real estate — developing landmarks that endure.
             </p>
             <div className="flex items-center gap-2.5 mt-7">
-              {socials.map(({ Icon, label }) => (
-                <a key={label} href="#" aria-label={label}
+              {socials.map(({ Icon, label, href }) => (
+                <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
                   className="w-9 h-9 rounded-full border border-white/[0.10] flex items-center justify-center text-white/35 hover:border-[#D9A11A]/55 hover:text-[#D9A11A] hover:bg-[#D9A11A]/[0.07] transition-all duration-300">
                   <Icon size={14} />
                 </a>

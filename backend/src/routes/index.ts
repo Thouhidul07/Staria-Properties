@@ -7,11 +7,14 @@ import {
   contactRouter,
   newsletterSubscriptionRouter
 } from "./form.routes";
+import publicRouter from "./public.routes";
 import { adminQuotationRouter, quotationRouter } from "./quotation.routes";
-import { siteRouter } from "./site.routes";
+import { healthRouter, siteRouter } from "./site.routes";
 
 const router = Router();
 
+router.use("/health", healthRouter);
+router.use("/content", publicRouter);
 router.use("/auth", authRouter);
 router.use("/site", siteRouter);
 router.use("/contact", contactRouter);

@@ -1,9 +1,6 @@
 import { InquiryStatus, NewsletterStatus } from "@prisma/client";
 import { z } from "zod";
-import { idParamSchema } from "./common.validator";
 import { emailSchema, uuidSchema } from "./shared";
-
-export { idParamSchema };
 
 export const contactSubmissionSchema = z.object({
   body: z.object({

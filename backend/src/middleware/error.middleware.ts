@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Prisma } from "@prisma/client";
 import { env } from "../config/env";
 import { logger } from "../config/logger";
-import { ErrorCodes } from "../core/errorCodes";
+import { ErrorCode, ErrorCodes } from "../core/errorCodes";
 import { AppError } from "../utils/AppError";
 import { sendError } from "../utils/apiResponse";
 import { getRequestId } from "../core/requestContext";
@@ -12,7 +12,7 @@ function getPrismaError(error: Prisma.PrismaClientKnownRequestError) {
     return {
       statusCode: 409,
       message: "A record with this value already exists",
-      code: ErrorCodes.CONFLICT as const
+      code: ErrorCodes.CONFLICT
     };
   }
 
@@ -20,14 +20,14 @@ function getPrismaError(error: Prisma.PrismaClientKnownRequestError) {
     return {
       statusCode: 404,
       message: "Requested record was not found",
-      code: ErrorCodes.NOT_FOUND as const
+      code: ErrorCodes.NOT_FOUND
     };
   }
 
   return {
     statusCode: 400,
     message: "Database request failed",
-    code: ErrorCodes.DATABASE_ERROR as const
+    code: ErrorCodes.DATABASE_ERROR
   };
 }
 
@@ -39,7 +39,7 @@ export function errorHandler(error: unknown, req: Request, res: Response, _next:
   const requestId = getRequestId(req);
   let statusCode = 500;
   let message = "Internal server error";
-  let code = ErrorCodes.INTERNAL_ERROR;
+  let code: ErrorCode = ErrorCodes.INTERNAL_ERROR;
   let errors: AppError["errors"];
 
   if (error instanceof AppError) {

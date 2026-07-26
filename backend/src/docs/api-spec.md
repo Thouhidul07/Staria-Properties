@@ -86,7 +86,9 @@ Supported resources:
 
 ```text
 hero-slides
-products
+properties
+projects
+amenities
 categories
 services
 gallery
@@ -147,6 +149,13 @@ jobPostingId
 group
 pageType
 isFeatured
+isDemo
+listingType
+availability
+developmentStatus
+bedrooms
+minPrice
+maxPrice
 createdFrom
 createdTo
 ```
@@ -168,11 +177,11 @@ Common mutation conventions:
 - `status` accepts native enum values plus dashboard-friendly aliases like `DRAFT` and `PUBLISHED`.
 - Content models use `DRAFT`, `PUBLISHED`, `ARCHIVED`.
 - Record-style models map `DRAFT` to `INACTIVE` and `PUBLISHED` to `ACTIVE`.
-- Product `PUBLISHED` maps to `ACTIVE`.
 - Career job `PUBLISHED` maps to `OPEN`.
 - Create/update payloads can include nested `seo`.
 - Media-enabled resources accept `media: [{ "mediaId": "...", "role": "COVER", "sortOrder": 0 }]`.
-- Products accept `categoryIds`, `primaryCategoryId`, `specifications`, `media`, and `seo`.
+- Properties accept real-estate details, `categoryIds`, `primaryCategoryId`, `amenityIds`, `address`, `media`, and `seo`.
+- Projects accept development details, `amenityIds`, `address`, `media`, and `seo`.
 - Blogs/news share the normalized `blog_posts` table; `/blogs` writes `postType=BLOG`, `/news` writes `postType=NEWS`.
 - Deletes are soft deletes through `deletedAt`.
 

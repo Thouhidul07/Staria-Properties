@@ -9,7 +9,7 @@ import {
 import { StariaLogo } from "./components/shared/StariaLogo";
 import { LoadingScreen } from "./components/shared/LoadingScreen";
 import { ScrollToTop } from "./components/shared/ScrollToTop";
-import { api } from "./services/api";
+import { api, type SiteInfo } from "./services/api";
 
 const NAV_CONFIG = [
   { label: "Home",        path: "/"            },
@@ -39,9 +39,12 @@ export function createRipple(e: React.MouseEvent<HTMLButtonElement>) {
 }
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
-function Footer() {
+function Footer({ siteInfo }: { siteInfo: SiteInfo | null }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const address = String(siteInfo?.["company.address"] ?? siteInfo?.contact?.address ?? "Gulshan Avenue, Dhaka, Bangladesh");
+  const phone = String(siteInfo?.["company.phone"] ?? siteInfo?.contact?.phone ?? "+880 1700 000 000");
+  const contactEmail = String(siteInfo?.["company.email"] ?? siteInfo?.contact?.email ?? "info@staria.com.bd");
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,20 +190,20 @@ function Footer() {
                   <MapPin size={12} className="text-[#D9A11A]" />
                 </div>
                 <p className="text-white/35 text-[0.875rem] leading-[1.7]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                  House 14, Road 11,<br />Gulshan-2, Dhaka 1212
+                  {address}
                 </p>
               </div>
               <div className="flex items-center gap-3.5">
                 <div className="w-7 h-7 rounded-lg bg-[#0B5E3C]/20 flex items-center justify-center shrink-0">
                   <Phone size={12} className="text-[#D9A11A]" />
                 </div>
-                <p className="text-white/35 text-[0.875rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>+880 1700 000 000</p>
+                <a href={`tel:${phone}`} className="text-white/35 text-[0.875rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>{phone}</a>
               </div>
               <div className="flex items-center gap-3.5">
                 <div className="w-7 h-7 rounded-lg bg-[#0B5E3C]/20 flex items-center justify-center shrink-0">
                   <Mail size={12} className="text-[#D9A11A]" />
                 </div>
-                <p className="text-white/35 text-[0.875rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>info@staria.com.bd</p>
+                <a href={`mailto:${contactEmail}`} className="text-white/35 text-[0.875rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>{contactEmail}</a>
               </div>
             </div>
           </div>
@@ -248,12 +251,17 @@ export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [siteInfo, setSiteInfo] = useState<SiteInfo | null>(null);
   const location = useLocation();
   const { scrollYProgress } = useScroll();
 
   useEffect(() => {
     const t = setTimeout(() => setLoaded(true), 2400);
     return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    api.getSiteInfo().then(setSiteInfo).catch(() => setSiteInfo(null));
   }, []);
 
   useEffect(() => {
@@ -388,7 +396,7 @@ export default function Layout() {
       {/* Page content */}
       <PageTransition />
 
-      <Footer />
+      <Footer siteInfo={siteInfo} />
       <ScrollToTop />
     </div>
   );

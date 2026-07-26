@@ -1,6 +1,6 @@
 # Staria Properties Enterprise Database Design
 
-This design is normalized to 3NF for an apparel sourcing and buying-house website with ERP-style admin management. Images, PDFs, and uploaded files are stored in Cloudinary; PostgreSQL stores only Cloudinary metadata and URLs through `media_assets`.
+This design is normalized to 3NF for a real-estate website with CMS and role-based administration. Images, PDFs, and uploaded files are stored in Cloudinary; PostgreSQL stores only Cloudinary metadata and URLs through `media_assets`.
 
 ## ER Diagram
 
@@ -18,7 +18,8 @@ erDiagram
   ADMIN_SESSIONS ||--o{ ADMIN_SESSIONS : rotates_to
 
   MEDIA_ASSETS ||--o{ CATEGORY_MEDIA : used_by
-  MEDIA_ASSETS ||--o{ PRODUCT_MEDIA : used_by
+  MEDIA_ASSETS ||--o{ PROPERTY_MEDIA : used_by
+  MEDIA_ASSETS ||--o{ PROJECT_MEDIA : used_by
   MEDIA_ASSETS ||--o{ SERVICE_MEDIA : used_by
   MEDIA_ASSETS ||--o{ GALLERY_ITEMS : renders
   MEDIA_ASSETS ||--o{ CERTIFICATE_MEDIA : attaches
@@ -35,11 +36,17 @@ erDiagram
   PAGES ||--o| SEO_METADATA : has
 
   CATEGORIES ||--o{ CATEGORIES : parent_child
-  CATEGORIES ||--o{ PRODUCT_CATEGORIES : groups
-  PRODUCTS ||--o{ PRODUCT_CATEGORIES : classified
-  PRODUCTS ||--o{ PRODUCT_MEDIA : has
-  PRODUCTS ||--o{ PRODUCT_SPECIFICATIONS : describes
-  PRODUCTS ||--o| SEO_METADATA : has
+  CATEGORIES ||--o{ PROPERTY_CATEGORIES : groups
+  PROPERTIES ||--o{ PROPERTY_CATEGORIES : classified
+  PROPERTIES ||--o{ PROPERTY_MEDIA : has
+  PROPERTIES ||--o| SEO_METADATA : has
+  PROJECTS ||--o{ PROPERTIES : contains
+  PROJECTS ||--o{ PROJECT_MEDIA : has
+  PROJECTS ||--o| SEO_METADATA : has
+  AMENITIES ||--o{ PROPERTY_AMENITIES : assigned
+  PROPERTIES ||--o{ PROPERTY_AMENITIES : has
+  AMENITIES ||--o{ PROJECT_AMENITIES : assigned
+  PROJECTS ||--o{ PROJECT_AMENITIES : has
 
   CATEGORIES ||--o{ SERVICES : groups
   SERVICES ||--o{ SERVICE_MEDIA : has
@@ -74,7 +81,7 @@ erDiagram
   ADMIN_USERS ||--o{ QUOTATION_CONVERSATIONS : authors
   QUOTATION_REQUESTS ||--o{ QUOTATION_REQUEST_ITEMS : contains
   QUOTATION_REQUESTS ||--o{ QUOTATION_CONVERSATIONS : records
-  PRODUCTS ||--o{ QUOTATION_REQUEST_ITEMS : requested
+  PROPERTIES ||--o{ QUOTATION_REQUEST_ITEMS : requested
   CATEGORIES ||--o{ QUOTATION_REQUEST_ITEMS : requested
   MEASUREMENT_UNITS ||--o{ QUOTATION_REQUEST_ITEMS : measures
 
@@ -89,12 +96,12 @@ The standalone Mermaid source is also available in `src/docs/er-diagram.mmd`.
 
 ## Normalization
 
-- `media_assets` centralizes Cloudinary URLs and upload metadata. Product, service, gallery, certificate, client, partner, factory, hero, SEO, download, and resume references use FKs or join tables.
+- `media_assets` centralizes Cloudinary URLs and upload metadata. Property, project, service, gallery, certificate, client, partner, factory, hero, SEO, download, and resume references use FKs or join tables.
 - `seo_metadata` is centralized with one optional one-to-one relation per SEO-enabled entity, avoiding duplicated `metaTitle`, `metaDescription`, and `ogImage` columns.
-- `categories` is shared across product, service, blog, gallery, and download contexts using `category_type`.
+- `categories` is shared across property, project, service, blog, gallery, and download contexts using `category_type`.
 - RBAC is 3NF: users, roles, permissions, and two pure join tables.
 - Admin authentication is normalized through `admin_sessions`, `admin_password_reset_tokens`, and `admin_email_verification_tokens`; token values are never stored raw.
-- Repeating product specs, factory capabilities, quotation line items, gallery images, and newsletter campaign recipients are child tables.
+- Repeating amenities, factory capabilities, quotation line items, gallery images, and newsletter campaign recipients are represented through child or join tables.
 - Soft deletes use `deleted_at` on user-facing/admin-managed master records. Transaction rows keep status fields and timestamps.
 
 ## Core Relationships
@@ -113,11 +120,14 @@ The standalone Mermaid source is also available in `src/docs/er-diagram.mmd`.
 | Pages | Hero slides | `hero_slides.page_id` | Cascade |
 | Pages | Hero image | `hero_slides.media_id` | Restrict |
 | Categories | Parent category | `categories.parent_id` | Set null |
-| Products | Product categories | `product_categories.product_id` | Cascade |
-| Products | Product category target | `product_categories.category_id` | Restrict |
-| Products | Product images | `product_media.product_id` | Cascade |
-| Products | Product image asset | `product_media.media_id` | Restrict |
-| Products | Specifications | `product_specifications.product_id` | Cascade |
+| Properties | Property categories | `property_categories.property_id` | Cascade |
+| Properties | Property category target | `property_categories.category_id` | Restrict |
+| Properties | Property images | `property_media.property_id` | Cascade |
+| Properties | Property image asset | `property_media.media_id` | Restrict |
+| Properties | Project/address refs | `project_id`, `address_id` | Set null |
+| Projects | Project images | `project_media.project_id` | Cascade |
+| Projects | Project image asset | `project_media.media_id` | Restrict |
+| Amenities | Property/project joins | `property_amenities`, `project_amenities` | Cascade joins |
 | Services | Service category | `services.category_id` | Set null |
 | Gallery | Album items | `gallery_items.album_id` | Cascade |
 | Gallery | Item image | `gallery_items.media_id` | Restrict |
@@ -133,7 +143,7 @@ The standalone Mermaid source is also available in `src/docs/er-diagram.mmd`.
 | Contact | Assigned admin | `contact_messages.assigned_to_id` | Set null |
 | Quote | Assigned admin | `quotation_requests.assigned_to_id` | Set null |
 | Quote | Line items | `quotation_request_items.quotation_request_id` | Cascade |
-| Quote | Product/category/unit refs | `product_id`, `category_id`, `unit_id` | Set null |
+| Quote | Property/category/unit refs | `property_id`, `category_id`, `unit_id` | Set null |
 | Quote | Conversation timeline | `quotation_conversations.quotation_request_id` | Cascade |
 | Quote | Conversation admin author | `quotation_conversations.admin_user_id` | Set null |
 | Newsletter | Campaign recipients | `newsletter_campaign_recipients.campaign_id`, `subscriber_id` | Cascade |
@@ -146,9 +156,9 @@ The standalone Mermaid source is also available in `src/docs/er-diagram.mmd`.
 Primary and unique indexes:
 
 - UUID primary keys on every table.
-- Unique slugs on public entities: categories scoped by type, pages, products, services, gallery albums, certificates, clients, partners, blog posts, tags, departments, job postings, factories, downloads.
-- Unique operational keys: `admin_users.email`, `permissions(resource, action)`, `products.sku`, `quotation_requests.request_no`, `newsletter_subscribers.email`, `media_assets.cloudinary_public_id`.
-- Composite primary keys on join tables: RBAC joins, media joins, product-category joins, blog tag joins, newsletter recipients.
+- Unique slugs on public entities: categories scoped by type, pages, properties, projects, amenities, services, gallery albums, certificates, clients, partners, blog posts, tags, departments, job postings, factories, downloads.
+- Unique operational keys: `admin_users.email`, `permissions(resource, action)`, `properties.reference_code`, `quotation_requests.request_no`, `newsletter_subscribers.email`, `media_assets.cloudinary_public_id`.
+- Composite primary keys on join tables: RBAC joins, media joins, property-category and amenity joins, blog tag joins, newsletter recipients.
 
 High-traffic query indexes:
 
@@ -164,15 +174,15 @@ High-traffic query indexes:
 
 Use `Cascade` only when child rows have no meaning without the parent:
 
-- Page sections/items, product specs, media join rows, gallery items, certificate media, factory capabilities, quote line items, campaign recipients, RBAC join rows.
+- Page sections/items, property/project media and amenity joins, gallery items, certificate media, factory capabilities, quote line items, campaign recipients, RBAC join rows.
 
 Use `SetNull` when history should survive:
 
-- Uploaded media owner, blog author, assigned admin, testimonial client/contact, job department, quotation item product/category/unit, SEO OG image.
+- Uploaded media owner, blog author, assigned admin, testimonial client/contact, job department, quotation item property/category/unit, SEO OG image.
 
 Use `Restrict` for Cloudinary media that is still referenced:
 
-- Product/service/gallery/client/partner/certificate/factory media, hero slide media, download file media.
+- Property/project/service/gallery/client/partner/certificate/factory media, hero slide media, download file media.
 
 ## Prisma Schema
 

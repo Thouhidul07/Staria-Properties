@@ -22,7 +22,7 @@ export const swaggerSpec = {
     title: "Staria Properties API",
     version: "1.0.0",
     description:
-      "Enterprise REST API for Staria Properties apparel sourcing operations. All versioned routes are served under /api/v1."
+      "Enterprise REST API for Staria Properties real-estate listings, developments, content, enquiries and administration. All versioned routes are served under /api/v1."
   },
   servers: [{ url: env.API_PREFIX, description: "Current API version" }],
   paths: {

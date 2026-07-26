@@ -15,7 +15,8 @@ const defaultSite = {
   navigation: [
     { label: "Home", path: "/" },
     { label: "About", path: "/about" },
-    { label: "Products", path: "/products" },
+    { label: "Properties", path: "/properties" },
+    { label: "Projects", path: "/projects" },
     { label: "Services", path: "/services" },
     { label: "Gallery", path: "/gallery" },
     { label: "Certificates", path: "/certificates" },

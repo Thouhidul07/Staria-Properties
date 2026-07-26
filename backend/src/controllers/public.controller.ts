@@ -6,12 +6,12 @@ export class PublicContentController {
   constructor(private readonly cmsService = new CmsService()) {}
 
   getProperties = async (req: Request, res: Response) => {
-    const data = await this.cmsService.list("products", { ...req.query, status: "PUBLISHED" });
+    const data = await this.cmsService.list("properties", { ...req.query, status: "PUBLISHED" });
     return sendSuccess(res, 200, "Published properties retrieved successfully", data);
   };
 
   getPropertyById = async (req: Request, res: Response) => {
-    const data = await this.cmsService.get("products", String(req.params.id));
+    const data = await this.cmsService.getPublished("properties", String(req.params.id));
     return sendSuccess(res, 200, "Property detail retrieved successfully", data);
   };
 
@@ -21,7 +21,7 @@ export class PublicContentController {
   };
 
   getProjectById = async (req: Request, res: Response) => {
-    const data = await this.cmsService.get("projects", String(req.params.id));
+    const data = await this.cmsService.getPublished("projects", String(req.params.id));
     return sendSuccess(res, 200, "Project detail retrieved successfully", data);
   };
 
@@ -31,13 +31,23 @@ export class PublicContentController {
   };
 
   getNewsById = async (req: Request, res: Response) => {
-    const data = await this.cmsService.get("news", String(req.params.id));
+    const data = await this.cmsService.getPublished("news", String(req.params.id));
     return sendSuccess(res, 200, "News article retrieved successfully", data);
   };
 
   getFaqs = async (req: Request, res: Response) => {
     const data = await this.cmsService.list("faqs", { ...req.query, status: "PUBLISHED" });
     return sendSuccess(res, 200, "FAQs retrieved successfully", data);
+  };
+
+  getServices = async (req: Request, res: Response) => {
+    const data = await this.cmsService.list("services", { ...req.query, status: "PUBLISHED" });
+    return sendSuccess(res, 200, "Services retrieved successfully", data);
+  };
+
+  getTestimonials = async (req: Request, res: Response) => {
+    const data = await this.cmsService.list("testimonials", { ...req.query, status: "PUBLISHED" });
+    return sendSuccess(res, 200, "Testimonials retrieved successfully", data);
   };
 
   getGallery = async (req: Request, res: Response) => {

@@ -2,6 +2,8 @@
 
 Production-ready, high-performance web application and REST API for Staria Properties. Built with Node.js, Express, PostgreSQL, Prisma ORM, TypeScript, and React.
 
+Project status and remaining phases: [`docs/project-roadmap.md`](docs/project-roadmap.md)
+
 ---
 
 ## Technical Stack
@@ -89,6 +91,7 @@ docker-compose up -d --build
 
 Access services:
 - **Frontend App**: `http://localhost`
+- **Admin Portal**: `http://localhost/admin/login`
 - **Backend API**: `http://localhost:5000/api/v1`
 - **Swagger Documentation**: `http://localhost:5000/api-docs`
 - **Health Endpoint**: `http://localhost:5000/health`
@@ -134,13 +137,14 @@ Run database migrations manually or in production:
 # Apply migrations to production database
 npm run db:migrate
 
-# Seed default administrator and initial content
+# Seed the demo administrator accounts and stakeholder-review content
 npm run db:seed
 ```
 
-Default Seed Credentials:
-- **Email**: `admin@staria.com.bd`
-- **Password**: `Admin12345` *(Must be updated immediately upon first login)*
+Before seeding, set unique passwords of at least 12 characters in `SEED_ADMIN_PASSWORD` and
+`SEED_REVIEWER_PASSWORD`. Demo email addresses can be configured with `SEED_ADMIN_EMAIL` and
+`SEED_REVIEWER_EMAIL`. No default passwords are stored in this repository. See
+`docs/phase-2-demo-data.md` for the full seed and cleanup workflow.
 
 ---
 

@@ -10,6 +10,8 @@ import {
   Plus, Minus,
   Phone, Mail,
 } from "lucide-react";
+import { api } from "../services/api";
+import { useApiList } from "../services/content";
 
 // ─── Shared typography helper ─────────────────────────────────────────────────
 const gilda = "'Gilda Display', Georgia, serif";
@@ -80,6 +82,17 @@ function StatCounter({ value, suffix, label, sub, prefix = "", decimals = 0 }: {
 }
 
 export function StatisticsSection() {
+  const { items } = useApiList(() => api.getCompanyStats(), []);
+  const databaseStats = items.map((stat) => ({
+    value: Number(stat.value),
+    suffix: stat.suffix ?? "",
+    label: stat.label,
+    sub: stat.note ?? "",
+    prefix: stat.prefix ?? "",
+    decimals: Number(stat.value) % 1 === 0 ? 0 : 1
+  }));
+  const displayedStats = databaseStats.length > 0 ? databaseStats : STATS;
+
   return (
     <section className="bg-[#082D1C] py-36 relative overflow-hidden">
       {/* Subtle grid texture */}
@@ -119,7 +132,7 @@ export function StatisticsSection() {
 
         {/* Counters */}
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-8 xl:gap-6 justify-items-center">
-          {STATS.map((s, i) => {
+          {displayedStats.map((s, i) => {
             const decimals = ("decimals" in s ? s.decimals : 0) as number;
             return (
               <motion.div
@@ -515,6 +528,20 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export function NewsInsightsSection() {
+  const { items, error } = useApiList(() => api.getNews({ limit: 6 }), []);
+  const databaseArticles = items.map((article, index) => ({
+    id: article.slug,
+    category: article.category?.name ?? "STARIA News",
+    date: article.publishedAt
+      ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" }).format(new Date(article.publishedAt))
+      : "Recently published",
+    readTime: `${Math.max(2, Math.ceil(article.body.split(/\s+/).length / 220))} min read`,
+    title: article.title,
+    excerpt: article.excerpt ?? article.body.slice(0, 180),
+    image: NEWS_ARTICLES[index % NEWS_ARTICLES.length].image
+  }));
+  const displayedArticles = databaseArticles.length > 0 ? databaseArticles : NEWS_ARTICLES;
+
   return (
     <section className="bg-white py-36">
       <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
@@ -536,7 +563,7 @@ export function NewsInsightsSection() {
               Ideas, Reports &amp;<br /><span className="italic">Market Intelligence</span>
             </h2>
           </motion.div>
-          <motion.button
+          <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -546,13 +573,14 @@ export function NewsInsightsSection() {
               hover:border-[#0B5E3C] hover:text-[#0B5E3C] transition-all duration-300 self-start shrink-0"
             style={{ fontFamily: dm }}
           >
-            View All Articles <ArrowRight size={14} />
-          </motion.button>
+            <Link to="/news" className="inline-flex items-center gap-2.5">View All Articles <ArrowRight size={14} /></Link>
+          </motion.div>
         </div>
 
         {/* Article cards */}
         <div className="grid md:grid-cols-3 gap-8">
-          {NEWS_ARTICLES.map((article, i) => (
+          {error && <div className="md:col-span-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm">Live news is temporarily unavailable; representative demo articles are shown.</div>}
+          {displayedArticles.map((article, i) => (
             <motion.article
               key={article.id}
               initial={{ opacity: 0, y: 36 }}
@@ -601,9 +629,9 @@ export function NewsInsightsSection() {
                   {article.excerpt}
                 </p>
 
-                <div className="flex items-center gap-2 text-[#0B5E3C] text-[0.8rem] font-semibold group-hover:gap-3 transition-all duration-300" style={{ fontFamily: dm }}>
+                <Link to={`/news/${article.id}`} className="flex items-center gap-2 text-[#0B5E3C] text-[0.8rem] font-semibold group-hover:gap-3 transition-all duration-300" style={{ fontFamily: dm }}>
                   Read Article <ArrowUpRight size={14} />
-                </div>
+                </Link>
               </div>
             </motion.article>
           ))}
@@ -693,6 +721,10 @@ function FaqItem({ q, a, index }: { q: string; a: string; index: number }) {
 }
 
 export function FaqSection() {
+  const { items, error } = useApiList(() => api.getFaqs(), []);
+  const databaseFaqs = items.map((faq) => ({ q: faq.question, a: faq.answer }));
+  const displayedFaqs = databaseFaqs.length > 0 ? databaseFaqs : FAQS;
+
   return (
     <section className="bg-[#F7F7F5] py-36">
       <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
@@ -746,7 +778,8 @@ export function FaqSection() {
             transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="bg-white rounded-3xl px-8 xl:px-10 py-2"
           >
-            {FAQS.map((faq, i) => (
+            {error && <p className="py-4 text-sm text-amber-700">Live FAQs are temporarily unavailable; representative answers are shown.</p>}
+            {displayedFaqs.map((faq, i) => (
               <FaqItem key={faq.q} q={faq.q} a={faq.a} index={i} />
             ))}
           </motion.div>

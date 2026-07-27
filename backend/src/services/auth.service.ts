@@ -35,6 +35,12 @@ type ResetPasswordInput = {
   password: string;
 };
 
+type ChangePasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
 type RequestEmailVerificationInput = {
   email?: string;
 };
@@ -293,6 +299,36 @@ export class AuthService {
       action: AdminAction.PASSWORD_RESET,
       entityType: "AdminUser",
       entityId: resetToken.adminUserId,
+      ...meta
+    });
+
+    return null;
+  }
+
+  async changePassword(adminId: string, input: ChangePasswordInput, meta: RequestMeta) {
+    const admin = await this.authRepository.findAdminById(adminId);
+    if (!admin) {
+      throw new AppError("Admin account was not found", 404);
+    }
+
+    const currentPasswordMatches = await verifyPassword(input.currentPassword, admin.passwordHash);
+    if (!currentPasswordMatches) {
+      throw new AppError("Current password is incorrect", 400);
+    }
+
+    const reusesCurrentPassword = await verifyPassword(input.newPassword, admin.passwordHash);
+    if (reusesCurrentPassword) {
+      throw new AppError("New password must be different from the current password", 400);
+    }
+
+    await this.authRepository.updatePassword(admin.id, await hashPassword(input.newPassword));
+    await this.authRepository.revokeUserSessions(admin.id);
+    await this.audit({
+      actorId: admin.id,
+      action: AdminAction.PASSWORD_RESET,
+      entityType: "AdminUser",
+      entityId: admin.id,
+      afterData: { reason: "authenticated_change" },
       ...meta
     });
 

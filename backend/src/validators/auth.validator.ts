@@ -48,6 +48,23 @@ export const resetPasswordSchema = z.object({
   })
 });
 
+export const changePasswordSchema = z.object({
+  body: z
+    .object({
+      currentPassword: z.string().min(1, "Current password is required"),
+      newPassword: passwordSchema,
+      confirmPassword: z.string().min(1, "Please confirm the new password")
+    })
+    .refine((input) => input.newPassword === input.confirmPassword, {
+      message: "New password and confirmation do not match",
+      path: ["confirmPassword"]
+    })
+    .refine((input) => input.currentPassword !== input.newPassword, {
+      message: "New password must be different from the current password",
+      path: ["newPassword"]
+    })
+});
+
 export const requestEmailVerificationSchema = z.object({
   body: z
     .object({

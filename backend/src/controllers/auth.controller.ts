@@ -60,6 +60,12 @@ export class AuthController {
     return sendSuccess(res, 200, "Password reset successfully");
   };
 
+  changePassword = async (req: Request, res: Response) => {
+    await this.authService.changePassword(req.user!.id, req.body, this.meta(req));
+    this.clearAuthCookies(res);
+    return sendSuccess(res, 200, "Password changed successfully. Please sign in again.");
+  };
+
   requestEmailVerification = async (req: Request, res: Response) => {
     await this.authService.requestEmailVerification(req.body, this.meta(req), req.user?.id);
     return sendSuccess(res, 200, "If verification is required, an email has been sent");

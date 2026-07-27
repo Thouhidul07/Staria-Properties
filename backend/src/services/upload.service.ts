@@ -2,6 +2,7 @@ import { MediaResourceType } from "@prisma/client";
 import { uploadFileBuffer, uploadImageBuffer } from "../config/cloudinary";
 import { MediaRepository } from "../repositories/media.repository";
 import { AppError } from "../utils/AppError";
+import { buildPaginationMeta } from "../utils/pagination";
 
 export class UploadService {
   constructor(private readonly mediaRepository = new MediaRepository()) {}
@@ -46,6 +47,19 @@ export class UploadService {
       altText,
       uploadedBy: userId ? { connect: { id: userId } } : undefined
     });
+  }
+
+  async list(query: { page: number; limit: number; search?: string; resourceType?: string }) {
+    const [items, total] = await this.mediaRepository.list({
+      skip: (query.page - 1) * query.limit,
+      take: query.limit,
+      search: query.search,
+      resourceType: query.resourceType
+    });
+    return {
+      items,
+      meta: buildPaginationMeta(total, query.page, query.limit)
+    };
   }
 
   private mapResourceType(resourceType: string) {

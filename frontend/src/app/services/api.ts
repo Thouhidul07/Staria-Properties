@@ -95,12 +95,12 @@ export const api = {
   getCompanyStats: () => request<ApiList<StatisticRecord>>("/content/stats?limit=100"),
   getSiteInfo: () => request<SiteInfo>("/site"),
 
-  submitContact: (data: { fullName: string; email: string; phone?: string; subject?: string; message: string }) =>
-    request("/contact", { method: "POST", body: JSON.stringify({ ...data, consentAccepted: true, source: "website" }) }),
-  subscribeNewsletter: (email: string) =>
+  submitContact: (data: { fullName: string; email: string; phone?: string; subject?: string; message: string; consentAccepted: true }) =>
+    request("/contact", { method: "POST", body: JSON.stringify({ ...data, source: "website" }) }),
+  subscribeNewsletter: (email: string, consentAccepted: true) =>
     request("/newsletter/subscribe", {
       method: "POST",
-      body: JSON.stringify({ email, consentAccepted: true, source: "website" })
+      body: JSON.stringify({ email, consentAccepted, source: "website" })
     }),
   submitQuotation: (data: Record<string, unknown>) =>
     request("/quotations", { method: "POST", body: JSON.stringify(data) }),
@@ -109,7 +109,29 @@ export const api = {
     request<AuthResult>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }, false),
   me: () => request<AdminUser>("/auth/me"),
   logout: () => request<void>("/auth/logout", { method: "POST" }, false),
+  forgotPassword: (email: string) =>
+    request<void>("/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) }, false),
+  resetPassword: (token: string, password: string) =>
+    request<void>("/auth/reset-password", { method: "POST", body: JSON.stringify({ token, password }) }, false),
+  changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) =>
+    request<void>("/auth/change-password", {
+      method: "POST",
+      body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+    }),
   listSessions: () => request<AdminSession[]>("/auth/sessions"),
+  revokeSession: (id: string) =>
+    request<void>(`/auth/sessions/${encodeURIComponent(id)}`, { method: "DELETE" }),
+  listMedia: (query: Record<string, string | number | boolean | undefined> = {}) =>
+    request<ApiList<MediaAsset>>(`/admin/cms/media${queryString(query)}`),
+  uploadMedia: (file: File, altText: string, kind: "image" | "file" = "image") => {
+    const body = new FormData();
+    body.append(kind === "image" ? "image" : "file", file);
+    if (altText) body.append("altText", altText);
+    return request<MediaAsset>(`/admin/cms/media/${kind === "image" ? "images" : "files"}`, {
+      method: "POST",
+      body
+    });
+  },
   listCms: <T = CmsRecord>(resource: string, query: Record<string, string | number | boolean | undefined> = {}) =>
     request<ApiList<T>>(`/admin/cms/${encodeURIComponent(resource)}${queryString(query)}`),
   getCms: <T = CmsRecord>(resource: string, id: string) =>
@@ -131,7 +153,18 @@ export const api = {
     request<ApiList<NewsletterSubscriber>>(`/admin/newsletter-subscribers${queryString(query)}`)
 };
 
-export type MediaAsset = { id: string; secureUrl: string; altText?: string | null };
+export type MediaAsset = {
+  id: string;
+  secureUrl: string;
+  altText?: string | null;
+  caption?: string | null;
+  resourceType?: "IMAGE" | "VIDEO" | "PDF" | "RAW";
+  format?: string | null;
+  bytes?: number | null;
+  width?: number | null;
+  height?: number | null;
+  createdAt?: string;
+};
 export type MediaLink = { role: string; sortOrder: number; media: MediaAsset };
 export type AddressRecord = { line1: string; line2?: string | null; city: string; state?: string | null; country: string };
 export type CategoryLink = { isPrimary: boolean; category: { id: string; name: string; slug: string } };

@@ -103,6 +103,19 @@ export const swaggerSpec = {
           }
         }
       },
+      "/auth/change-password": {
+        post: {
+          tags: ["Auth"],
+          security: [{ bearerAuth: [] }, { accessCookie: [] }],
+          summary: "Change the authenticated admin password and revoke all sessions",
+          requestBody: { $ref: "#/components/requestBodies/ChangePassword" },
+          responses: {
+            "200": { description: "Password changed; sign in again", content: apiResponse },
+            "400": { description: "Current password or new password is invalid", content: errorResponse },
+            "401": { description: "Authentication required", content: errorResponse }
+          }
+        }
+      },
       "/auth/email-verification/request": {
         post: {
           tags: ["Auth"],
@@ -211,6 +224,23 @@ export const swaggerSpec = {
           responses: {
             "201": { description: "Image uploaded", content: apiResponse },
             "403": { description: "Requires media:upload permission", content: errorResponse }
+          }
+        }
+      },
+      "/admin/cms/media": {
+        get: {
+          tags: ["CMS Media"],
+          security: [{ bearerAuth: [] }, { accessCookie: [] }],
+          summary: "Browse and search the media library",
+          parameters: [
+            { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+            { name: "limit", in: "query", schema: { type: "integer", default: 24, maximum: 100 } },
+            { name: "search", in: "query", schema: { type: "string" } },
+            { name: "resourceType", in: "query", schema: { type: "string", enum: ["IMAGE", "VIDEO", "PDF", "RAW"] } }
+          ],
+          responses: {
+            "200": { description: "Media assets retrieved", content: apiResponse },
+            "403": { description: "Requires media:read permission", content: errorResponse }
           }
         }
       },
@@ -653,6 +683,14 @@ export const swaggerSpec = {
           content: {
             "application/json": {
               schema: { $ref: "#/components/schemas/ResetPasswordRequest" }
+            }
+          }
+        },
+        ChangePassword: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ChangePasswordRequest" }
             }
           }
         },

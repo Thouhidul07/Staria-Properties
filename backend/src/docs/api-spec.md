@@ -33,6 +33,7 @@ Authentication supports both `Authorization: Bearer <accessToken>` and HTTP-only
 | `POST` | `/auth/refresh` | Refresh token cookie or body | Refresh token rotation |
 | `POST` | `/auth/forgot-password` | Public, rate limited | Send password reset email if account exists |
 | `POST` | `/auth/reset-password` | Reset token | Reset password and revoke sessions |
+| `POST` | `/auth/change-password` | Authenticated admin | Verify current password, change it, and revoke all sessions |
 | `POST` | `/auth/email-verification/request` | Public, rate limited | Request verification email by address |
 | `POST` | `/auth/email-verification/verify` | Verification token | Verify email |
 | `GET` | `/auth/me` | Authenticated admin | Current admin profile, roles and permissions |
@@ -163,6 +164,9 @@ createdTo
 Media upload:
 
 ```text
+GET /admin/cms/media
+query: page, limit, search, resourceType
+
 POST /admin/cms/media/images
 field: image
 

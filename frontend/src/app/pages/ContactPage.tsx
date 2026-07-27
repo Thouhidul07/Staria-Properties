@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MapPin, Phone, Mail, Send, CheckCheck, Loader2 } from "lucide-react";
 import { api } from "../services/api";
+import { Link } from "react-router";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
   const [formSent, setFormSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -25,12 +27,14 @@ export default function ContactPage() {
         email: formData.email,
         phone: formData.phone || undefined,
         message: formData.message,
+        consentAccepted: true,
       });
 
       setFormSent(true);
       setTimeout(() => {
         setFormSent(false);
         setFormData({ name: "", phone: "", email: "", message: "" });
+        setConsentAccepted(false);
       }, 5000);
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to submit form. Please try again.");
@@ -139,8 +143,21 @@ export default function ContactPage() {
                     <label htmlFor="contact-message" className={labelClass} style={{ fontFamily: "'DM Sans', sans-serif" }}>Message</label>
                     <textarea id="contact-message" required name="message" value={formData.message} onChange={handleChange} placeholder="Tell us about your project or enquiry…" rows={5} className={`${inputClass} resize-none`} style={{ fontFamily: "'DM Sans', sans-serif" }} />
                   </div>
+                  <label className="flex items-start gap-3 text-white/55 text-sm leading-6">
+                    <input
+                      type="checkbox"
+                      required
+                      checked={consentAccepted}
+                      onChange={(event) => setConsentAccepted(event.target.checked)}
+                      className="mt-1 w-4 h-4 accent-[#D9A11A]"
+                    />
+                    <span>
+                      I agree that Staria may use my details to respond to this enquiry, as explained in the{" "}
+                      <Link to="/privacy" className="text-[#D9A11A] underline underline-offset-2">privacy notice</Link>.
+                    </span>
+                  </label>
                   <div className="pt-1">
-                    <motion.button type="submit" disabled={isSubmitting} whileHover={{ scale: isSubmitting ? 1 : 1.025 }} whileTap={{ scale: isSubmitting ? 1 : 0.97 }} transition={{ type: "spring", stiffness: 420, damping: 22 }}
+                    <motion.button type="submit" disabled={isSubmitting || !consentAccepted} whileHover={{ scale: isSubmitting ? 1 : 1.025 }} whileTap={{ scale: isSubmitting ? 1 : 0.97 }} transition={{ type: "spring", stiffness: 420, damping: 22 }}
                       className="inline-flex items-center gap-3 px-10 py-4 rounded-full font-semibold transition-all duration-300 disabled:opacity-50"
                       style={{ background: "#D9A11A", color: "#1B1B1B", fontFamily: "'DM Sans', sans-serif", boxShadow: "0 8px 32px rgba(245,166,35,0.28)" }}>
                       {isSubmitting ? (

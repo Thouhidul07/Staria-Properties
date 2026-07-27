@@ -9,6 +9,7 @@ import {
 import { StariaLogo } from "./components/shared/StariaLogo";
 import { LoadingScreen } from "./components/shared/LoadingScreen";
 import { ScrollToTop } from "./components/shared/ScrollToTop";
+import { RouteMetadata } from "./components/shared/RouteMetadata";
 import { api, type SiteInfo } from "./services/api";
 
 const NAV_CONFIG = [
@@ -42,18 +43,20 @@ export function createRipple(e: React.MouseEvent<HTMLButtonElement>) {
 function Footer({ siteInfo }: { siteInfo: SiteInfo | null }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const address = String(siteInfo?.["company.address"] ?? siteInfo?.contact?.address ?? "Gulshan Avenue, Dhaka, Bangladesh");
   const phone = String(siteInfo?.["company.phone"] ?? siteInfo?.contact?.phone ?? "+880 1700 000 000");
   const contactEmail = String(siteInfo?.["company.email"] ?? siteInfo?.contact?.email ?? "info@staria.com.bd");
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !consentAccepted) return;
     setStatus("loading");
     try {
-      await api.subscribeNewsletter(email);
+      await api.subscribeNewsletter(email, true);
       setStatus("success");
       setEmail("");
+      setConsentAccepted(false);
       setTimeout(() => setStatus("idle"), 4000);
     } catch {
       setStatus("error");
@@ -100,24 +103,32 @@ function Footer({ siteInfo }: { siteInfo: SiteInfo | null }) {
               Monthly insights, project launches, and market reports — direct to your inbox.
             </p>
           </div>
-          <form className="flex gap-2.5 w-full md:w-auto shrink-0" onSubmit={handleNewsletterSubmit}>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Your email address"
-              className="flex-1 md:w-64 bg-white/[0.06] border border-white/[0.10] rounded-full px-5 py-2.5 text-white text-[0.85rem] placeholder:text-white/25 focus:outline-none focus:border-[#D9A11A]/50 transition-all duration-300"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            />
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="px-6 py-2.5 bg-[#D9A11A] hover:bg-[#C08912] text-[#1B1B1B] text-[1rem] font-semibold rounded-full transition-colors duration-300 shrink-0 disabled:opacity-50"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {status === "loading" ? "Subscribing..." : status === "success" ? "Subscribed!" : status === "error" ? "Try Again" : "Subscribe"}
-            </button>
+          <form className="w-full md:w-auto shrink-0" onSubmit={handleNewsletterSubmit}>
+            <div className="flex gap-2.5">
+              <label className="sr-only" htmlFor="footer-newsletter-email">Your email address</label>
+              <input
+                id="footer-newsletter-email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Your email address"
+                className="flex-1 md:w-64 bg-white/[0.06] border border-white/[0.10] rounded-full px-5 py-2.5 text-white text-[0.85rem] placeholder:text-white/25 focus:outline-none focus:border-[#D9A11A]/50 transition-all duration-300"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              />
+              <button
+                type="submit"
+                disabled={status === "loading" || !consentAccepted}
+                className="px-6 py-2.5 bg-[#D9A11A] hover:bg-[#C08912] text-[#1B1B1B] text-[1rem] font-semibold rounded-full transition-colors duration-300 shrink-0 disabled:opacity-50"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {status === "loading" ? "Subscribing..." : status === "success" ? "Subscribed!" : status === "error" ? "Try Again" : "Subscribe"}
+              </button>
+            </div>
+            <label className="mt-2.5 flex items-start gap-2 text-white/40 text-xs max-w-md">
+              <input type="checkbox" required checked={consentAccepted} onChange={(event) => setConsentAccepted(event.target.checked)} className="mt-0.5 accent-[#D9A11A]" />
+              <span>I agree to receive Staria updates and understand I can unsubscribe. See the <Link to="/privacy" className="text-[#D9A11A] underline">privacy notice</Link>.</span>
+            </label>
           </form>
         </div>
       </div>
@@ -216,10 +227,10 @@ function Footer({ siteInfo }: { siteInfo: SiteInfo | null }) {
             © 2026 STARIA Real Estate Ltd. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((item) => (
-              <a key={item} href="#" className="text-white/22 text-[0.77rem] hover:text-white/50 transition-colors duration-300" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            {[["Privacy Policy", "/privacy"], ["Terms of Service", "/terms"], ["Cookie Policy", "/cookies"]].map(([item, path]) => (
+              <Link key={item} to={path} className="text-white/22 text-[0.77rem] hover:text-white/50 transition-colors duration-300" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 {item}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -279,6 +290,10 @@ export default function Layout() {
 
   return (
     <div className="bg-black overflow-x-hidden">
+      <RouteMetadata />
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[300] focus:bg-white focus:text-[#082D1C] focus:px-4 focus:py-3 focus:rounded-lg focus:font-semibold">
+        Skip to main content
+      </a>
       {/* Loading overlay */}
       <AnimatePresence>
         {!loaded && <LoadingScreen />}
@@ -343,7 +358,13 @@ export default function Layout() {
               Get Consultation
               <ArrowRight size={13} />
             </Link>
-            <button className="xl:hidden text-white p-1" onClick={() => setMenuOpen(!menuOpen)}>
+            <button
+              className="xl:hidden text-white p-1"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-navigation"
+            >
               {menuOpen ? <X size={23} /> : <Menu size={23} />}
             </button>
           </div>
@@ -351,6 +372,7 @@ export default function Layout() {
 
         {/* Mobile drawer */}
         <motion.div
+          id="mobile-navigation"
           initial={false}
           animate={menuOpen ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
           transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
@@ -394,7 +416,7 @@ export default function Layout() {
       </header>
 
       {/* Page content */}
-      <PageTransition />
+      <div id="main-content" tabIndex={-1}><PageTransition /></div>
 
       <Footer siteInfo={siteInfo} />
       <ScrollToTop />

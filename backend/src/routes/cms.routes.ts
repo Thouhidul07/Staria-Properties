@@ -26,8 +26,23 @@ const uploadBodySchema = z.object({
   })
 });
 
+const mediaListSchema = z.object({
+  query: z.object({
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(100).default(24),
+    search: z.string().trim().optional(),
+    resourceType: z.enum(["IMAGE", "VIDEO", "PDF", "RAW"]).optional()
+  })
+});
+
 router.use(authenticate);
 
+router.get(
+  "/media",
+  requirePermissions("media:read"),
+  validate(mediaListSchema),
+  asyncHandler(controller.listMedia)
+);
 router.post(
   "/media/images",
   requirePermissions("media:upload"),

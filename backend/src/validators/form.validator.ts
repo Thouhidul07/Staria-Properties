@@ -10,7 +10,9 @@ export const contactSubmissionSchema = z.object({
     subject: z.string().trim().max(180).optional().nullable(),
     message: z.string().trim().min(5).max(5000),
     source: z.string().trim().max(120).default("website").optional(),
-    consentAccepted: z.boolean().default(false),
+    consentAccepted: z.literal(true, {
+      errorMap: () => ({ message: "You must accept the privacy notice before submitting" })
+    }),
     recaptchaToken: z.string().trim().optional().nullable(),
     honeypot: z.string().trim().optional().nullable()
   })
@@ -21,7 +23,9 @@ export const newsletterSubscriptionSchema = z.object({
     email: emailSchema,
     fullName: z.string().trim().max(140).optional().nullable(),
     source: z.string().trim().max(120).default("website").optional(),
-    consentAccepted: z.boolean().default(false),
+    consentAccepted: z.literal(true, {
+      errorMap: () => ({ message: "You must accept the privacy notice before subscribing" })
+    }),
     recaptchaToken: z.string().trim().optional().nullable(),
     honeypot: z.string().trim().optional().nullable()
   })

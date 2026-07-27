@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Eye, EyeOff, Loader2, LockKeyhole, ShieldCheck } from "lucide-react";
-import { Link, Navigate, useLocation, useNavigate } from "react-router";
+import { Link, Navigate, useLocation, useNavigate, useSearchParams } from "react-router";
 import { api } from "../services/api";
 import { StariaLogo } from "../components/shared/StariaLogo";
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -61,6 +62,11 @@ export default function AdminLoginPage() {
           <p className="text-[#666] mb-9">Sign in with the owner or reviewer credentials created during database seeding.</p>
 
           <form onSubmit={submit} className="space-y-5">
+            {(searchParams.get("reset") === "1" || searchParams.get("passwordChanged") === "1") && (
+              <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                Password updated successfully. Sign in with your new password.
+              </div>
+            )}
             {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
             <label className="block">
               <span className="block text-sm font-semibold text-[#333] mb-2">Email address</span>
@@ -77,6 +83,9 @@ export default function AdminLoginPage() {
             <button disabled={submitting || checking} className="w-full rounded-xl bg-[#0B5E3C] text-white py-3.5 font-semibold hover:bg-[#094d32] disabled:opacity-60 flex items-center justify-center gap-2">
               {submitting && <Loader2 size={17} className="animate-spin" />} Sign in securely
             </button>
+            <div className="text-center">
+              <Link to="/admin/forgot-password" className="text-sm font-semibold text-[#0B5E3C] hover:underline">Forgot your password?</Link>
+            </div>
           </form>
         </div>
       </section>

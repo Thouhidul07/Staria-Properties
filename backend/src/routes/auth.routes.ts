@@ -5,6 +5,7 @@ import { authLimiter, loginLimiter, passwordRecoveryLimiter } from "../middlewar
 import { validate } from "../middleware/validate.middleware";
 import { asyncHandler } from "../utils/asyncHandler";
 import {
+  changePasswordSchema,
   createAdminSchema,
   forgotPasswordSchema,
   loginSchema,
@@ -48,6 +49,13 @@ router.post(
 
 router.get("/me", authenticate, asyncHandler(controller.me));
 router.post("/logout", authenticate, asyncHandler(controller.logout));
+router.post(
+  "/change-password",
+  authenticate,
+  passwordRecoveryLimiter,
+  validate(changePasswordSchema),
+  asyncHandler(controller.changePassword)
+);
 router.post(
   "/email-verification/resend",
   authenticate,

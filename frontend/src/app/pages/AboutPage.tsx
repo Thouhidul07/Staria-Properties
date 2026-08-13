@@ -5,6 +5,7 @@ import {
   VisionMissionSection,
   CoreValuesSection,
   SustainabilitySection,
+  LeadershipSection,
   PartnersSection,
   StatisticsSection,
 } from "../components/corporate-sections";
@@ -126,6 +127,7 @@ export default function AboutPage() {
       <CoreValuesSection />
       <SustainabilitySection />
       <WhyChooseUsSection />
+      <LeadershipSection />
       <PartnersSection />
     </>
   );

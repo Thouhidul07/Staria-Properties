@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { MapPin, Phone, Mail, Send, CheckCheck, Loader2 } from "lucide-react";
+import { ExternalLink, MapPin, Phone, Mail, Send, CheckCheck, Loader2 } from "lucide-react";
 import { api } from "../services/api";
 import { Link } from "react-router";
 import { GoogleMapEmbed } from "../components/shared/GoogleMapEmbed";
@@ -47,6 +47,10 @@ export default function ContactPage() {
 
   const inputClass = "w-full bg-white/[0.06] border border-white/[0.12] rounded-2xl px-5 py-3.5 text-white text-[0.9rem] placeholder:text-white/25 focus:outline-none focus:border-[#D9A11A]/55 focus:bg-white/[0.09] transition-all duration-300";
   const labelClass = "block text-white/45 text-[0.65rem] tracking-[0.45em] uppercase font-medium mb-2.5";
+  const officeContacts = [
+    { label: "BD Office", address: BD_ADDRESS, phone: BD_PHONE, tel: BD_PHONE_TEL },
+    { label: "US Office", address: US_ADDRESS, phone: US_PHONE, tel: US_PHONE_TEL },
+  ];
 
   return (
     <section className="bg-[#082D1C] pt-36 pb-28">
@@ -72,51 +76,45 @@ export default function ContactPage() {
 
           {/* Map / contact info */}
           <motion.div initial={{ opacity: 0, x: -44 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-3xl overflow-hidden" style={{ background: "#082D1C", minHeight: "540px" }}>
+            className="relative overflow-hidden rounded-[28px] border border-white/[0.08]" style={{ background: "#082D1C", minHeight: "540px" }}>
             <GoogleMapEmbed title="STARIA Bangladesh location map" query={MAP_COORDINATES} />
-            <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(8,45,28,0.08), rgba(8,45,28,0.16) 58%, rgba(8,45,28,0.92))" }} />
+            <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(8,45,28,0.02), rgba(8,45,28,0.05) 45%, rgba(8,45,28,0.72) 100%)" }} />
 
-            <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 flex justify-center pointer-events-none">
-              <div className="w-full max-w-[430px] bg-[#082D1C]/88 border border-white/[0.12] rounded-2xl px-7 py-5 backdrop-blur-sm shadow-2xl shadow-black/30 pointer-events-auto">
-                <p className="text-white text-[0.92rem] font-semibold mb-4 text-center" style={{ fontFamily: "'DM Sans', sans-serif" }}>STARIA Locations</p>
-                <div className="space-y-4 text-white/55 text-[0.8rem] leading-[1.65]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                  <div>
-                    <p className="text-[#D9A11A] text-[0.65rem] uppercase tracking-[0.28em] mb-1">BD Address</p>
-                    <p>{BD_ADDRESS}</p>
-                    <a href={`tel:${BD_PHONE_TEL}`} className="mt-1 inline-flex text-white/70 hover:text-[#D9A11A]">Cell: {BD_PHONE}</a>
-                  </div>
-                  <div className="h-px bg-white/[0.08]" />
-                  <div>
-                    <p className="text-[#D9A11A] text-[0.65rem] uppercase tracking-[0.28em] mb-1">US Address</p>
-                    <p>{US_ADDRESS}</p>
-                    <a href={`tel:${US_PHONE_TEL}`} className="mt-1 inline-flex text-white/70 hover:text-[#D9A11A]">Cell: {US_PHONE}</a>
-                  </div>
-                </div>
-                <a href={MAP_SHARE_URL} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#D9A11A]/35 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#D9A11A] transition-colors hover:bg-[#D9A11A] hover:text-[#1B1B1B]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                  <MapPin size={12} />
-                  Open exact location
-                </a>
-              </div>
-            </div>
-
-            <div className="absolute top-6 right-6 flex items-center gap-2">
+            <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/[0.1] bg-[#082D1C]/82 px-4 py-2 shadow-lg shadow-black/15 backdrop-blur-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-[#D9A11A] animate-pulse" />
-              <span className="text-[#D9A11A]/55 text-[0.66rem] tracking-[0.38em] uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>Our Location</span>
+              <span className="text-[#D9A11A] text-[0.66rem] tracking-[0.24em] uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>BD Office Map</span>
             </div>
 
-            <div className="absolute bottom-0 left-0 right-0 px-8 pb-8 pt-16" style={{ background: "linear-gradient(to top, #082D1C 60%, transparent)" }}>
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3">
-                  <Phone size={13} className="text-[#D9A11A] shrink-0" />
-                  <a href={`tel:${BD_PHONE_TEL}`} className="text-white/45 hover:text-[#D9A11A] text-[0.8rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>BD: {BD_PHONE}</a>
+            <div className="absolute inset-x-4 bottom-4 sm:inset-x-6 sm:bottom-6">
+              <div className="w-full max-w-[560px] rounded-2xl border border-white/[0.12] bg-[#082D1C]/92 p-5 shadow-2xl shadow-black/25 backdrop-blur-md">
+                <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="text-white text-[0.95rem] font-semibold" style={{ fontFamily: "'DM Sans', sans-serif" }}>STARIA Locations</p>
+                    <p className="mt-1 text-white/45 text-[0.76rem] leading-relaxed" style={{ fontFamily: "'DM Sans', sans-serif" }}>Primary map pin points to the Dhaka office.</p>
+                  </div>
+                  <a href={MAP_SHARE_URL} target="_blank" rel="noopener noreferrer" className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-[#D9A11A]/35 px-4 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-[#D9A11A] transition-colors hover:bg-[#D9A11A] hover:text-[#1B1B1B]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    <MapPin size={13} />
+                    Open Map
+                    <ExternalLink size={12} />
+                  </a>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Phone size={13} className="text-[#D9A11A] shrink-0" />
-                  <a href={`tel:${US_PHONE_TEL}`} className="text-white/45 hover:text-[#D9A11A] text-[0.8rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>US: {US_PHONE}</a>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {officeContacts.map((office) => (
+                    <div key={office.label} className="rounded-xl border border-white/[0.08] bg-white/[0.045] p-4">
+                      <p className="mb-2 text-[#D9A11A] text-[0.63rem] font-semibold uppercase tracking-[0.24em]" style={{ fontFamily: "'DM Sans', sans-serif" }}>{office.label}</p>
+                      <p className="min-h-[3.15rem] text-white/62 text-[0.78rem] leading-[1.55]" style={{ fontFamily: "'DM Sans', sans-serif" }}>{office.address}</p>
+                      <a href={`tel:${office.tel}`} className="mt-3 inline-flex items-center gap-2 text-white/72 hover:text-[#D9A11A] text-[0.78rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        <Phone size={13} className="text-[#D9A11A] shrink-0" />
+                        {office.phone}
+                      </a>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center gap-3">
+
+                <div className="mt-4 flex items-center gap-2 border-t border-white/[0.08] pt-4">
                   <Mail size={13} className="text-[#D9A11A] shrink-0" />
-                  <span className="text-white/45 text-[0.8rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>info@staria.com.bd</span>
+                  <span className="text-white/50 text-[0.78rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>info@staria.com.bd</span>
                 </div>
               </div>
             </div>

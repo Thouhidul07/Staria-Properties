@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: staria-properties-backend
+    env: node
+    region: singapore
+    plan: starter
+    rootDir: backend
+    buildCommand: npm install && npm run db:generate && npm run build
+    startCommand: npx prisma migrate deploy && node dist/server.js
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: API_PREFIX
+        value: /api/v1
+      - key: DATABASE_URL
+        fromDatabase:
+          name: staria-db
+          property: connectionString
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: LOG_LEVEL
+        value: info
+
+databases:
+  - name: staria-db
+    region: singapore
+    plan: starter
+    databaseName: staria_properties
+    user: postgres

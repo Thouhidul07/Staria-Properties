@@ -1,8 +1,6 @@
 import { InquiryStatus, NewsletterStatus } from "@prisma/client";
 import { z } from "zod";
-
-const uuidSchema = z.string().uuid();
-const emailSchema = z.string().trim().email().max(160).transform((value) => value.toLowerCase());
+import { emailSchema, uuidSchema } from "./shared";
 
 export const contactSubmissionSchema = z.object({
   body: z.object({

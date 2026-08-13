@@ -274,7 +274,7 @@ export type HeroSlideRecord = {
 
 export type SiteInfo = Record<string, unknown> & {
   company?: { name?: string; tagline?: string };
-  contact?: { address?: string; phone?: string; email?: string };
+  contact?: { address?: string; phone?: string; email?: string; bdAddress?: string; bdPhone?: string; usAddress?: string; usPhone?: string };
 };
 
 export type AdminUser = {

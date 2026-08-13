@@ -8,8 +8,12 @@ const defaultSite = {
     established: 2010
   },
   contact: {
-    address: "Dhaka, Bangladesh",
-    phone: "+880 1700 000 000",
+    address: "House#425 (First Floor), Road#30, Mohakhali DOHS, Dhaka-1206.",
+    phone: "+8801709993666",
+    bdAddress: "House#425 (First Floor), Road#30, Mohakhali DOHS, Dhaka-1206.",
+    bdPhone: "+8801709993666",
+    usAddress: "1 Great Neck Road, Ste#4, Great Neck, NY 11021.",
+    usPhone: "+1(888)6139218",
     email: "info@staria.com.bd"
   },
   navigation: [

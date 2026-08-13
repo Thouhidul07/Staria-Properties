@@ -4,6 +4,7 @@ import { MapPin, Phone, Mail, Send, CheckCheck, Loader2 } from "lucide-react";
 import { api } from "../services/api";
 import { Link } from "react-router";
 import { GoogleMapEmbed } from "../components/shared/GoogleMapEmbed";
+import { BD_ADDRESS, BD_PHONE, BD_PHONE_TEL, MAP_COORDINATES, MAP_SHARE_URL, US_ADDRESS, US_PHONE, US_PHONE_TEL } from "../services/contactDetails";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
@@ -46,8 +47,6 @@ export default function ContactPage() {
 
   const inputClass = "w-full bg-white/[0.06] border border-white/[0.12] rounded-2xl px-5 py-3.5 text-white text-[0.9rem] placeholder:text-white/25 focus:outline-none focus:border-[#D9A11A]/55 focus:bg-white/[0.09] transition-all duration-300";
   const labelClass = "block text-white/45 text-[0.65rem] tracking-[0.45em] uppercase font-medium mb-2.5";
-  const mapCoordinates = "23.7792279,90.3932277";
-  const mapShareUrl = "https://maps.app.goo.gl/qmvGMLxUJoXDC1i79";
 
   return (
     <section className="bg-[#082D1C] pt-36 pb-28">
@@ -74,14 +73,26 @@ export default function ContactPage() {
           {/* Map / contact info */}
           <motion.div initial={{ opacity: 0, x: -44 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
             className="relative rounded-3xl overflow-hidden" style={{ background: "#082D1C", minHeight: "540px" }}>
-            <GoogleMapEmbed title="STARIA shared location map" query={mapCoordinates} />
+            <GoogleMapEmbed title="STARIA Bangladesh location map" query={MAP_COORDINATES} />
             <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(8,45,28,0.08), rgba(8,45,28,0.16) 58%, rgba(8,45,28,0.92))" }} />
 
             <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 flex justify-center pointer-events-none">
-              <div className="bg-[#082D1C]/85 border border-white/[0.12] rounded-2xl px-8 py-5 text-center backdrop-blur-sm shadow-2xl shadow-black/30 pointer-events-auto">
-                <p className="text-white text-[0.92rem] font-semibold mb-1.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>STARIA Location</p>
-                <p className="text-white/55 text-[0.8rem] leading-[1.65]" style={{ fontFamily: "'DM Sans', sans-serif" }}>Pinned from the shared Google Maps point<br />23.779228, 90.393228</p>
-                <a href={mapShareUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#D9A11A]/35 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#D9A11A] transition-colors hover:bg-[#D9A11A] hover:text-[#1B1B1B]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              <div className="w-full max-w-[430px] bg-[#082D1C]/88 border border-white/[0.12] rounded-2xl px-7 py-5 backdrop-blur-sm shadow-2xl shadow-black/30 pointer-events-auto">
+                <p className="text-white text-[0.92rem] font-semibold mb-4 text-center" style={{ fontFamily: "'DM Sans', sans-serif" }}>STARIA Locations</p>
+                <div className="space-y-4 text-white/55 text-[0.8rem] leading-[1.65]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <div>
+                    <p className="text-[#D9A11A] text-[0.65rem] uppercase tracking-[0.28em] mb-1">BD Address</p>
+                    <p>{BD_ADDRESS}</p>
+                    <a href={`tel:${BD_PHONE_TEL}`} className="mt-1 inline-flex text-white/70 hover:text-[#D9A11A]">Cell: {BD_PHONE}</a>
+                  </div>
+                  <div className="h-px bg-white/[0.08]" />
+                  <div>
+                    <p className="text-[#D9A11A] text-[0.65rem] uppercase tracking-[0.28em] mb-1">US Address</p>
+                    <p>{US_ADDRESS}</p>
+                    <a href={`tel:${US_PHONE_TEL}`} className="mt-1 inline-flex text-white/70 hover:text-[#D9A11A]">Cell: {US_PHONE}</a>
+                  </div>
+                </div>
+                <a href={MAP_SHARE_URL} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#D9A11A]/35 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#D9A11A] transition-colors hover:bg-[#D9A11A] hover:text-[#1B1B1B]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                   <MapPin size={12} />
                   Open exact location
                 </a>
@@ -97,7 +108,11 @@ export default function ContactPage() {
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
                   <Phone size={13} className="text-[#D9A11A] shrink-0" />
-                  <span className="text-white/45 text-[0.8rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>+880 1700 000 000</span>
+                  <a href={`tel:${BD_PHONE_TEL}`} className="text-white/45 hover:text-[#D9A11A] text-[0.8rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>BD: {BD_PHONE}</a>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Phone size={13} className="text-[#D9A11A] shrink-0" />
+                  <a href={`tel:${US_PHONE_TEL}`} className="text-white/45 hover:text-[#D9A11A] text-[0.8rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>US: {US_PHONE}</a>
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail size={13} className="text-[#D9A11A] shrink-0" />

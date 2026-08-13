@@ -49,7 +49,18 @@ async function assertDemoSeedSafety(adminEmail: string, reviewerEmail: string) {
     "designing-better-shared-spaces"
   ];
   const clientSlugs = ["apex-holdings", "northstar-ventures", "rahman-family"];
-  const settingKeys = ["company.name", "company.phone", "company.email", "company.address", "social.facebook", "demo.notice"];
+  const settingKeys = [
+    "company.name",
+    "company.phone",
+    "company.phone.bd",
+    "company.phone.us",
+    "company.email",
+    "company.address",
+    "company.address.bd",
+    "company.address.us",
+    "social.facebook",
+    "demo.notice"
+  ];
   const categorySlugs = [
     "apartments",
     "villas",
@@ -848,9 +859,13 @@ async function main() {
 
   const settingInputs = [
     ["company", "company.name", "Staria Properties"],
-    ["company", "company.phone", "+880 1700-000000"],
+    ["company", "company.phone", "+8801709993666"],
+    ["company", "company.phone.bd", "+8801709993666"],
+    ["company", "company.phone.us", "+1(888)6139218"],
     ["company", "company.email", "hello@staria.demo"],
-    ["company", "company.address", "Gulshan Avenue, Dhaka, Bangladesh"],
+    ["company", "company.address", "House#425 (First Floor), Road#30, Mohakhali DOHS, Dhaka-1206."],
+    ["company", "company.address.bd", "House#425 (First Floor), Road#30, Mohakhali DOHS, Dhaka-1206."],
+    ["company", "company.address.us", "1 Great Neck Road, Ste#4, Great Neck, NY 11021."],
     ["social", "social.facebook", "https://www.facebook.com/stariaproperties"],
     ["demo", "demo.notice", "This website currently contains representative demo data for stakeholder review."]
   ] as const;

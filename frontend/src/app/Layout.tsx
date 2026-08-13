@@ -11,6 +11,7 @@ import { LoadingScreen } from "./components/shared/LoadingScreen";
 import { ScrollToTop } from "./components/shared/ScrollToTop";
 import { RouteMetadata } from "./components/shared/RouteMetadata";
 import { api, type SiteInfo } from "./services/api";
+import { BD_ADDRESS, BD_PHONE, BD_PHONE_TEL, US_ADDRESS, US_PHONE, US_PHONE_TEL } from "./services/contactDetails";
 
 const NAV_CONFIG = [
   { label: "Home",        path: "/"            },
@@ -44,8 +45,10 @@ function Footer({ siteInfo }: { siteInfo: SiteInfo | null }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [consentAccepted, setConsentAccepted] = useState(false);
-  const address = String(siteInfo?.["company.address"] ?? siteInfo?.contact?.address ?? "Gulshan Avenue, Dhaka, Bangladesh");
-  const phone = String(siteInfo?.["company.phone"] ?? siteInfo?.contact?.phone ?? "+880 1700 000 000");
+  const bdAddress = String(siteInfo?.["company.address.bd"] ?? siteInfo?.contact?.bdAddress ?? siteInfo?.["company.address"] ?? siteInfo?.contact?.address ?? BD_ADDRESS);
+  const bdPhone = String(siteInfo?.["company.phone.bd"] ?? siteInfo?.contact?.bdPhone ?? siteInfo?.["company.phone"] ?? siteInfo?.contact?.phone ?? BD_PHONE);
+  const usAddress = String(siteInfo?.["company.address.us"] ?? siteInfo?.contact?.usAddress ?? US_ADDRESS);
+  const usPhone = String(siteInfo?.["company.phone.us"] ?? siteInfo?.contact?.usPhone ?? US_PHONE);
   const contactEmail = String(siteInfo?.["company.email"] ?? siteInfo?.contact?.email ?? "info@staria.com.bd");
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
@@ -201,14 +204,30 @@ function Footer({ siteInfo }: { siteInfo: SiteInfo | null }) {
                   <MapPin size={12} className="text-[#D9A11A]" />
                 </div>
                 <p className="text-white/35 text-[0.875rem] leading-[1.7]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                  {address}
+                  <span className="block text-white/55">BD Address</span>
+                  {bdAddress}
+                </p>
+              </div>
+              <div className="flex items-start gap-3.5">
+                <div className="w-7 h-7 rounded-lg bg-[#0B5E3C]/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <MapPin size={12} className="text-[#D9A11A]" />
+                </div>
+                <p className="text-white/35 text-[0.875rem] leading-[1.7]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <span className="block text-white/55">US Address</span>
+                  {usAddress}
                 </p>
               </div>
               <div className="flex items-center gap-3.5">
                 <div className="w-7 h-7 rounded-lg bg-[#0B5E3C]/20 flex items-center justify-center shrink-0">
                   <Phone size={12} className="text-[#D9A11A]" />
                 </div>
-                <a href={`tel:${phone}`} className="text-white/35 text-[0.875rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>{phone}</a>
+                <a href={`tel:${BD_PHONE_TEL}`} className="text-white/35 hover:text-[#D9A11A] text-[0.875rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>BD: {bdPhone}</a>
+              </div>
+              <div className="flex items-center gap-3.5">
+                <div className="w-7 h-7 rounded-lg bg-[#0B5E3C]/20 flex items-center justify-center shrink-0">
+                  <Phone size={12} className="text-[#D9A11A]" />
+                </div>
+                <a href={`tel:${US_PHONE_TEL}`} className="text-white/35 hover:text-[#D9A11A] text-[0.875rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>US: {usPhone}</a>
               </div>
               <div className="flex items-center gap-3.5">
                 <div className="w-7 h-7 rounded-lg bg-[#0B5E3C]/20 flex items-center justify-center shrink-0">

@@ -8,8 +8,13 @@ import {
   ChevronDown, ArrowRight, ArrowUpRight,
   Newspaper, Clock, Tag,
   Plus, Minus,
-  Phone, Mail,
+  Phone, Mail, Linkedin,
 } from "lucide-react";
+import { api } from "../services/api";
+import { useApiList } from "../services/content";
+import riadPortrait from "../../assets/team/sm-riad-hossain-sumon.jpg";
+import shatadruPortrait from "../../assets/team/ahmed-robaiat-rezwan-shatadru.jpg";
+import mujahidPortrait from "../../assets/team/maj-s-m-muzahid-monir.jpg";
 
 // ─── Shared typography helper ─────────────────────────────────────────────────
 const gilda = "'Gilda Display', Georgia, serif";
@@ -80,6 +85,17 @@ function StatCounter({ value, suffix, label, sub, prefix = "", decimals = 0 }: {
 }
 
 export function StatisticsSection() {
+  const { items } = useApiList(() => api.getCompanyStats(), []);
+  const databaseStats = items.map((stat) => ({
+    value: Number(stat.value),
+    suffix: stat.suffix ?? "",
+    label: stat.label,
+    sub: stat.note ?? "",
+    prefix: stat.prefix ?? "",
+    decimals: Number(stat.value) % 1 === 0 ? 0 : 1
+  }));
+  const displayedStats = databaseStats.length > 0 ? databaseStats : STATS;
+
   return (
     <section className="bg-[#082D1C] py-36 relative overflow-hidden">
       {/* Subtle grid texture */}
@@ -119,7 +135,7 @@ export function StatisticsSection() {
 
         {/* Counters */}
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-8 xl:gap-6 justify-items-center">
-          {STATS.map((s, i) => {
+          {displayedStats.map((s, i) => {
             const decimals = ("decimals" in s ? s.decimals : 0) as number;
             return (
               <motion.div
@@ -414,6 +430,246 @@ export function SustainabilitySection() {
 }
 
 // ─── 5. Trusted Partners ─────────────────────────────────────────────────────
+type TeamMember = {
+  id: number;
+  name: string;
+  role: string;
+  company: string;
+  image?: string;
+  phones: string[];
+  email?: string;
+  linkedin?: string;
+  website?: string;
+  sourceUrl: string;
+};
+
+const TEAM_MEMBERS: TeamMember[] = [
+  {
+    id: 1,
+    name: "Tanjim Ahmed",
+    role: "Director",
+    company: "Staria Development Solutions Ltd. & Staria Properties",
+    phones: ["+1 (347) 632-7151", "+1 (888) 6139218"],
+    email: "tanjim.ahmed@stariaventures.com",
+    website: "www.stariadevelopment.com",
+    sourceUrl: "https://scan.page/p/5vNEhU",
+  },
+  {
+    id: 2,
+    name: "Samsunnahar Begum",
+    role: "Chairperson",
+    company: "Staria Development Solutions Ltd. & Staria Properties",
+    phones: ["+1 (631) 640-9277", "+1 (888) 6139218"],
+    email: "samsunnahar.begum@stariaventures.com",
+    website: "www.stariadevelopment.com",
+    sourceUrl: "https://scan.page/p/6N8vdG",
+  },
+  {
+    id: 3,
+    name: "S M Riad Hossain Sumon",
+    role: "Managing Director",
+    company: "Staria Development Solutions Ltd. & Staria Properties",
+    image: riadPortrait,
+    phones: ["01709993661", "01709993666", "+1 (888) 6139218"],
+    email: "riyad.hossain@stariaventures.com",
+    linkedin: "https://www.linkedin.com/in/riyad-hossain-sumon-64435018/",
+    website: "stariadevelopment.com",
+    sourceUrl: "https://scan.page/p/nNUwZ1",
+  },
+  {
+    id: 4,
+    name: "Ahmed Robaiat Rezwan Shatadru",
+    role: "Director",
+    company: "Staria Development Solutions Ltd. & Staria Properties",
+    image: shatadruPortrait,
+    phones: ["01709993663", "01709993666", "+1 (888) 6139218"],
+    email: "shatadru.ahmed@stariaventures.com",
+    linkedin: "https://www.linkedin.com/in/shatadru-ahmed-002b2521?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
+    website: "stariadevelopment.com",
+    sourceUrl: "https://scan.page/p/RW6m4l",
+  },
+  {
+    id: 5,
+    name: "Maj S M Muzahid Monir, SUP, psc, PEng, Phd (Retd)",
+    role: "Executive Director",
+    company: "Staria Development Solutions Ltd. & Staria Properties",
+    image: mujahidPortrait,
+    phones: ["01709993662", "01709993666", "+1 (888) 6139218"],
+    email: "muzahidmonir@stariadevelopment.com",
+    linkedin: "https://www.linkedin.com/in/s-m-muzahid-monir-bb045229/",
+    website: "stariadevelopment.com",
+    sourceUrl: "https://scan.page/p/VK66tx",
+  },
+];
+
+function initialsFromName(name: string) {
+  return name
+    .replace(/\([^)]*\)/g, "")
+    .split(/[\s,]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
+function normalizeExternalUrl(url: string) {
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+}
+
+function phoneHref(phone: string) {
+  return `tel:${phone.replace(/[^\d+]/g, "")}`;
+}
+
+function ContactIconLink({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
+  const isExternal = href.startsWith("http");
+
+  return (
+    <a
+      href={href}
+      aria-label={label}
+      title={label}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
+      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#0B5E3C]/15 text-[#0B5E3C] transition-all duration-300 hover:border-[#D9A11A]/70 hover:bg-[#0B5E3C] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D9A11A] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+    >
+      {children}
+    </a>
+  );
+}
+
+function TeamMemberCard({ member, index }: { member: TeamMember; index: number }) {
+  const primaryPhone = member.phones[0];
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 34 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.68, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+      className={index === 4 ? "md:col-span-2 md:max-w-[420px] md:mx-auto xl:col-span-1 xl:max-w-none xl:mx-0" : ""}
+    >
+      <div className="group flex h-full flex-col overflow-hidden rounded-xl border border-black/[0.07] bg-white shadow-[0_10px_34px_rgba(11,94,60,0.04)] transition-all duration-500 hover:-translate-y-1 hover:border-[#0B5E3C]/20 hover:shadow-[0_16px_52px_rgba(11,94,60,0.10)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+        <div className="relative aspect-[6/5] overflow-hidden bg-[#F7F7F5]">
+          {member.image ? (
+            <img
+              src={member.image}
+              alt={`${member.name}, ${member.role} at STARIA Properties`}
+              loading="lazy"
+              className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            />
+          ) : (
+            <div
+              role="img"
+              aria-label={`${member.name}, ${member.role} at STARIA Properties`}
+              className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#F7F7F5]"
+            >
+              <div className="relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full border border-[#D9A11A]/45 bg-white text-[#0B5E3C] shadow-[0_12px_34px_rgba(11,94,60,0.06)]">
+                <span className="absolute -top-2 left-1/2 h-4 w-px -translate-x-1/2 bg-[#D9A11A]" />
+                <span className="text-[1.45rem] sm:text-[1.75rem] leading-none" style={{ fontFamily: gilda }}>
+                  {initialsFromName(member.name)}
+                </span>
+              </div>
+              <span className="text-[#0B5E3C] text-[0.7rem] tracking-[0.28em] uppercase font-semibold" style={{ fontFamily: dm }}>
+                STARIA
+              </span>
+            </div>
+          )}
+          <span className="absolute inset-x-0 bottom-0 h-px bg-[#D9A11A]/60" />
+        </div>
+
+        <div className="flex flex-1 flex-col p-5 xl:p-6">
+          <h3 className="text-[#1B1B1B] leading-[1.22] mb-2 transition-colors duration-300 group-hover:text-[#0B5E3C]" style={{ fontFamily: gilda, fontSize: "clamp(1.16rem, 1.25vw, 1.35rem)", fontWeight: 400 }}>
+            {member.name}
+          </h3>
+          <p className="text-[#0B5E3C] text-[0.82rem] font-semibold leading-snug mb-4" style={{ fontFamily: dm }}>
+            {member.role}
+          </p>
+          <p className="text-[#555555] text-[0.8rem] leading-[1.75] mb-7" style={{ fontFamily: dm }}>
+            {member.company}
+          </p>
+
+          <div className="mt-auto flex flex-wrap items-center gap-2.5">
+            {member.linkedin && (
+              <ContactIconLink href={member.linkedin} label={`View ${member.name} on LinkedIn`}>
+                <Linkedin size={16} strokeWidth={1.8} />
+              </ContactIconLink>
+            )}
+            {member.email && (
+              <ContactIconLink href={`mailto:${member.email}`} label={`Email ${member.name}`}>
+                <Mail size={16} strokeWidth={1.8} />
+              </ContactIconLink>
+            )}
+            {primaryPhone && (
+              <ContactIconLink href={phoneHref(primaryPhone)} label={`Call ${member.name}`}>
+                <Phone size={16} strokeWidth={1.8} />
+              </ContactIconLink>
+            )}
+            {member.website && (
+              <ContactIconLink href={normalizeExternalUrl(member.website)} label={`Visit ${member.name}'s website`}>
+                <Globe size={16} strokeWidth={1.8} />
+              </ContactIconLink>
+            )}
+            <ContactIconLink href={member.sourceUrl} label={`View ${member.name}'s Scan.Page profile`}>
+              <ArrowUpRight size={16} strokeWidth={1.8} />
+            </ContactIconLink>
+          </div>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
+export function LeadershipSection() {
+  return (
+    <section id="leadership" className="bg-white py-36">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-12 xl:px-20">
+        <div className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center justify-center gap-3 mb-5"
+          >
+            <span className="block w-7 h-px bg-[#D9A11A]" />
+            <span className="text-[#0B5E3C] text-[0.8125rem] tracking-[0.3em] uppercase font-semibold" style={{ fontFamily: dm }}>
+              Our Leadership
+            </span>
+            <span className="block w-7 h-px bg-[#D9A11A]" />
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="font-normal leading-[1.1] text-[#1B1B1B] mb-6"
+            style={{ fontFamily: gilda, fontSize: "clamp(34px, 3.3vw, 46px)" }}
+          >
+            The People Behind <span className="text-[#0B5E3C]">STARIA</span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            className="text-[#555555] text-[0.95rem] leading-[1.8] max-w-[660px] mx-auto"
+            style={{ fontFamily: dm }}
+          >
+            Meet the people whose experience, leadership and vision continue to shape <span className="text-[#0B5E3C]">STARIA</span> and the spaces we create.
+          </motion.p>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {TEAM_MEMBERS.map((member, index) => (
+            <TeamMemberCard key={member.sourceUrl} member={member} index={index} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const PARTNERS = [
   "BRAC", "Siemens", "Lafarge Holcim", "Bangladesh Bank", "Dutch-Bangla", "RAK Ceramics",
   "Berger Paints", "Schneider Electric", "Mitsubishi Electric", "Kone Elevators", "City Bank", "Standard Chartered",
@@ -515,6 +771,20 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export function NewsInsightsSection() {
+  const { items, error } = useApiList(() => api.getNews({ limit: 6 }), []);
+  const databaseArticles = items.map((article, index) => ({
+    id: article.slug,
+    category: article.category?.name ?? "STARIA News",
+    date: article.publishedAt
+      ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" }).format(new Date(article.publishedAt))
+      : "Recently published",
+    readTime: `${Math.max(2, Math.ceil(article.body.split(/\s+/).length / 220))} min read`,
+    title: article.title,
+    excerpt: article.excerpt ?? article.body.slice(0, 180),
+    image: NEWS_ARTICLES[index % NEWS_ARTICLES.length].image
+  }));
+  const displayedArticles = databaseArticles.length > 0 ? databaseArticles : NEWS_ARTICLES;
+
   return (
     <section className="bg-white py-36">
       <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
@@ -536,7 +806,7 @@ export function NewsInsightsSection() {
               Ideas, Reports &amp;<br /><span className="italic">Market Intelligence</span>
             </h2>
           </motion.div>
-          <motion.button
+          <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -546,13 +816,14 @@ export function NewsInsightsSection() {
               hover:border-[#0B5E3C] hover:text-[#0B5E3C] transition-all duration-300 self-start shrink-0"
             style={{ fontFamily: dm }}
           >
-            View All Articles <ArrowRight size={14} />
-          </motion.button>
+            <Link to="/news" className="inline-flex items-center gap-2.5">View All Articles <ArrowRight size={14} /></Link>
+          </motion.div>
         </div>
 
         {/* Article cards */}
         <div className="grid md:grid-cols-3 gap-8">
-          {NEWS_ARTICLES.map((article, i) => (
+          {error && <div className="md:col-span-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm">Live news is temporarily unavailable; representative demo articles are shown.</div>}
+          {displayedArticles.map((article, i) => (
             <motion.article
               key={article.id}
               initial={{ opacity: 0, y: 36 }}
@@ -601,9 +872,9 @@ export function NewsInsightsSection() {
                   {article.excerpt}
                 </p>
 
-                <div className="flex items-center gap-2 text-[#0B5E3C] text-[0.8rem] font-semibold group-hover:gap-3 transition-all duration-300" style={{ fontFamily: dm }}>
+                <Link to={`/news/${article.id}`} className="flex items-center gap-2 text-[#0B5E3C] text-[0.8rem] font-semibold group-hover:gap-3 transition-all duration-300" style={{ fontFamily: dm }}>
                   Read Article <ArrowUpRight size={14} />
-                </div>
+                </Link>
               </div>
             </motion.article>
           ))}
@@ -693,6 +964,10 @@ function FaqItem({ q, a, index }: { q: string; a: string; index: number }) {
 }
 
 export function FaqSection() {
+  const { items, error } = useApiList(() => api.getFaqs(), []);
+  const databaseFaqs = items.map((faq) => ({ q: faq.question, a: faq.answer }));
+  const displayedFaqs = databaseFaqs.length > 0 ? databaseFaqs : FAQS;
+
   return (
     <section className="bg-[#F7F7F5] py-36">
       <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
@@ -746,7 +1021,8 @@ export function FaqSection() {
             transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="bg-white rounded-3xl px-8 xl:px-10 py-2"
           >
-            {FAQS.map((faq, i) => (
+            {error && <p className="py-4 text-sm text-amber-700">Live FAQs are temporarily unavailable; representative answers are shown.</p>}
+            {displayedFaqs.map((faq, i) => (
               <FaqItem key={faq.q} q={faq.q} a={faq.a} index={i} />
             ))}
           </motion.div>

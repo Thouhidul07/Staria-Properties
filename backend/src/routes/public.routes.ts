@@ -19,6 +19,8 @@ router.get("/news", asyncHandler(controller.getNews));
 router.get("/news/:id", asyncHandler(controller.getNewsById));
 
 router.get("/faqs", asyncHandler(controller.getFaqs));
+router.get("/services", asyncHandler(controller.getServices));
+router.get("/testimonials", asyncHandler(controller.getTestimonials));
 router.get("/gallery", asyncHandler(controller.getGallery));
 router.get("/hero-slides", asyncHandler(controller.getHeroSlides));
 router.get("/stats", asyncHandler(controller.getCompanyStats));

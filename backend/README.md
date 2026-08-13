@@ -124,8 +124,8 @@ Cloudinary and SMTP are optional for local boot, but uploads and emails require 
 The seed creates an email-verified Owner admin plus system roles and permissions:
 
 ```text
-email: admin@staria.com.bd
-password: Admin12345
+email: configured with SEED_ADMIN_EMAIL
+password: configured with SEED_ADMIN_PASSWORD
 ```
 
 Override with:
@@ -133,6 +133,8 @@ Override with:
 ```text
 SEED_ADMIN_EMAIL
 SEED_ADMIN_PASSWORD
+SEED_REVIEWER_EMAIL
+SEED_REVIEWER_PASSWORD
 ```
 
 Change the seeded password immediately in production.
@@ -179,7 +181,7 @@ POST   /api/v1/admin/cms/media/images
 POST   /api/v1/admin/cms/media/files
 ```
 
-CMS resources include hero slides, products, categories, services, gallery, blogs, news, certificates, clients, testimonials, partners, career jobs, applications, company/factory/contact information, SEO, social media, footer, menus, website settings, downloads, and company statistics.
+CMS resources include hero slides, properties, projects, amenities, categories, services, gallery, blogs, news, certificates, clients, testimonials, partners, career jobs, applications, company/factory/contact information, SEO, social media, footer, menus, website settings, downloads, and company statistics.
 
 RFQ:
 
@@ -219,7 +221,7 @@ DELETE /api/v1/admin/newsletter-subscribers/:id
 
 Contact and newsletter forms store submissions in PostgreSQL, send confirmation/admin notification emails, support Google reCAPTCHA, rate limiting, spam scoring, filtering, pagination, soft delete, and admin status management.
 
-Legacy real-estate modules generated earlier are excluded from the TypeScript build because the active schema is now the apparel sourcing ERP schema.
+The active schema is designed for a real-estate website and CMS, with dedicated property, project, address, amenity, media, publishing, enquiry, quotation, and administrative domains.
 
 All responses follow:
 

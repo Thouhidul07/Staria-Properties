@@ -2,6 +2,7 @@ import { extendZodWithOpenApi, OpenAPIRegistry, OpenApiGeneratorV3 } from "@aste
 import { z } from "zod";
 import { apiErrorSchema, apiSuccessSchema, fieldErrorSchema, responseMetaSchema } from "../../core/apiSchemas";
 import {
+  changePasswordSchema,
   createAdminSchema,
   forgotPasswordSchema,
   loginSchema,
@@ -37,6 +38,7 @@ registry.register("CreateAdminRequest", createAdminSchema.shape.body);
 registry.register("RefreshTokenRequest", refreshTokenSchema.shape.body);
 registry.register("ForgotPasswordRequest", forgotPasswordSchema.shape.body);
 registry.register("ResetPasswordRequest", resetPasswordSchema.shape.body);
+registry.register("ChangePasswordRequest", changePasswordSchema.shape.body);
 registry.register("EmailVerificationRequest", requestEmailVerificationSchema.shape.body);
 registry.register("VerifyEmailRequest", verifyEmailSchema.shape.body);
 registry.register("ContactSubmissionRequest", contactSubmissionSchema.shape.body);

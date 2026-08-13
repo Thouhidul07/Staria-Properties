@@ -38,7 +38,13 @@ services:
       FRONTEND_URL: http://localhost:80
       ADMIN_APP_URL: http://localhost:80
       LOG_LEVEL: info
-      RUN_SEED: "true"
+      RUN_SEED: "${RUN_SEED:-false}"
+      SEED_ADMIN_NAME: "${SEED_ADMIN_NAME:-Staria Demo Owner}"
+      SEED_ADMIN_EMAIL: "${SEED_ADMIN_EMAIL:-owner@staria.demo}"
+      SEED_ADMIN_PASSWORD: "${SEED_ADMIN_PASSWORD:-}"
+      SEED_REVIEWER_NAME: "${SEED_REVIEWER_NAME:-Shareholder Reviewer}"
+      SEED_REVIEWER_EMAIL: "${SEED_REVIEWER_EMAIL:-reviewer@staria.demo}"
+      SEED_REVIEWER_PASSWORD: "${SEED_REVIEWER_PASSWORD:-}"
     depends_on:
       postgres:
         condition: service_healthy

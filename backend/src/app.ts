@@ -1,7 +1,9 @@
 import compression from "compression";
 import cors from "cors";
 import express from "express";
+import { existsSync } from "fs";
 import morgan from "morgan";
+import path from "path";
 import swaggerUi from "swagger-ui-express";
 import { corsOptions } from "./config/cors";
 import { env } from "./config/env";
@@ -39,7 +41,7 @@ app.get("/api-docs.json", cachePolicies.noStore, (_req, res) => {
 });
 app.use("/api-docs", cachePolicies.noStore, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.get("/", cachePolicies.publicShort, (_req, res) => {
+const apiIndex = (_req: express.Request, res: express.Response) => {
   res.json({
     success: true,
     message: "Staria Properties API is running",
@@ -55,9 +57,47 @@ app.get("/", cachePolicies.publicShort, (_req, res) => {
       version: env.API_PREFIX.replace(/^\//, "")
     }
   });
-});
+};
+
+app.get("/api-status", cachePolicies.publicShort, apiIndex);
+if (env.NODE_ENV !== "production") {
+  app.get("/", cachePolicies.publicShort, apiIndex);
+}
 
 app.use(env.API_PREFIX, routes);
+
+if (env.NODE_ENV === "production") {
+  const frontendDist = path.resolve(__dirname, "../../frontend/dist");
+  const frontendIndex = path.join(frontendDist, "index.html");
+
+  if (!existsSync(frontendIndex)) {
+    throw new Error(`Production frontend was not found at ${frontendIndex}`);
+  }
+
+  app.use(
+    express.static(frontendDist, {
+      index: false,
+      maxAge: "1h",
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith("index.html")) {
+          res.setHeader("Cache-Control", "no-cache");
+        } else if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+        }
+      }
+    })
+  );
+
+  app.get("*", (req, res, next) => {
+    const serverPathPrefixes = [env.API_PREFIX, "/api-docs", "/health"];
+    if (serverPathPrefixes.some((prefix) => req.path.startsWith(prefix))) {
+      next();
+      return;
+    }
+    res.setHeader("Cache-Control", "no-cache");
+    res.sendFile(frontendIndex);
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);

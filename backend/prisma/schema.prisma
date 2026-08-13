@@ -26,7 +26,8 @@ enum RecordStatus {
 }
 
 enum CategoryType {
-  PRODUCT
+  PROPERTY
+  PROJECT
   SERVICE
   BLOG
   DOWNLOAD
@@ -54,7 +55,8 @@ enum MediaUsageRole {
 enum PageType {
   HOME
   ABOUT
-  PRODUCTS
+  PROPERTIES
+  PROJECTS
   CATEGORIES
   SERVICES
   GALLERY
@@ -68,11 +70,31 @@ enum PageType {
   CUSTOM
 }
 
-enum ProductStatus {
-  DRAFT
-  ACTIVE
-  INACTIVE
-  ARCHIVED
+enum PropertyListingType {
+  SALE
+  RENT
+  LEASE
+}
+
+enum PropertyAvailability {
+  AVAILABLE
+  RESERVED
+  SOLD
+  RENTED
+  UPCOMING
+}
+
+enum FurnishingStatus {
+  UNFURNISHED
+  SEMI_FURNISHED
+  FURNISHED
+}
+
+enum ProjectDevelopmentStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  ON_HOLD
 }
 
 enum InquiryStatus {
@@ -171,32 +193,33 @@ enum AdminAction {
 }
 
 model AdminUser {
-  id                  String           @id @default(uuid()) @db.Uuid
-  name                String           @db.VarChar(120)
-  email               String           @unique @db.VarChar(160)
-  passwordHash        String           @map("password_hash") @db.VarChar(255)
-  status              AdminUserStatus  @default(ACTIVE)
-  emailVerifiedAt     DateTime?        @map("email_verified_at")
-  passwordChangedAt   DateTime?        @map("password_changed_at")
-  failedLoginAttempts Int              @default(0) @map("failed_login_attempts")
-  lockedUntil         DateTime?        @map("locked_until")
-  lastLoginAt         DateTime?        @map("last_login_at")
-  createdAt           DateTime         @default(now()) @map("created_at")
-  updatedAt           DateTime         @updatedAt @map("updated_at")
-  deletedAt           DateTime?        @map("deleted_at")
+  id                  String          @id @default(uuid()) @db.Uuid
+  name                String          @db.VarChar(120)
+  email               String          @unique @db.VarChar(160)
+  passwordHash        String          @map("password_hash") @db.VarChar(255)
+  status              AdminUserStatus @default(ACTIVE)
+  emailVerifiedAt     DateTime?       @map("email_verified_at")
+  passwordChangedAt   DateTime?       @map("password_changed_at")
+  failedLoginAttempts Int             @default(0) @map("failed_login_attempts")
+  lockedUntil         DateTime?       @map("locked_until")
+  lastLoginAt         DateTime?       @map("last_login_at")
+  isDemo              Boolean         @default(false) @map("is_demo")
+  createdAt           DateTime        @default(now()) @map("created_at")
+  updatedAt           DateTime        @updatedAt @map("updated_at")
+  deletedAt           DateTime?       @map("deleted_at")
 
   roles               AdminUserRole[]
   sessions            AdminSession[]
   passwordResetTokens AdminPasswordResetToken[]
   emailVerifyTokens   AdminEmailVerificationToken[]
-  uploadedMedia       MediaAsset[]         @relation("MediaUploadedBy")
-  authoredPosts       BlogPost[]           @relation("BlogAuthor")
-  assignedMessages    ContactMessage[]     @relation("ContactAssignedTo")
-  assignedQuotes      QuotationRequest[]   @relation("QuoteAssignedTo")
-  quoteConversations  QuotationConversation[] @relation("QuoteConversationAuthor")
-  updatedSettings     WebsiteSetting[]     @relation("SettingUpdatedBy")
-  auditLogs           AuditLog[]           @relation("AuditActor")
-  newsletterCampaigns NewsletterCampaign[] @relation("CampaignCreatedBy")
+  uploadedMedia       MediaAsset[]                  @relation("MediaUploadedBy")
+  authoredPosts       BlogPost[]                    @relation("BlogAuthor")
+  assignedMessages    ContactMessage[]              @relation("ContactAssignedTo")
+  assignedQuotes      QuotationRequest[]            @relation("QuoteAssignedTo")
+  quoteConversations  QuotationConversation[]       @relation("QuoteConversationAuthor")
+  updatedSettings     WebsiteSetting[]              @relation("SettingUpdatedBy")
+  auditLogs           AuditLog[]                    @relation("AuditActor")
+  newsletterCampaigns NewsletterCampaign[]          @relation("CampaignCreatedBy")
 
   @@index([status, deletedAt])
   @@index([lockedUntil])
@@ -274,9 +297,9 @@ model AdminSession {
   createdAt           DateTime  @default(now()) @map("created_at")
   updatedAt           DateTime  @updatedAt @map("updated_at")
 
-  adminUser     AdminUser       @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
-  replacedBy    AdminSession?   @relation("AdminSessionRotation", fields: [replacedBySessionId], references: [id], onDelete: SetNull)
-  replacementOf AdminSession[]  @relation("AdminSessionRotation")
+  adminUser     AdminUser      @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  replacedBy    AdminSession?  @relation("AdminSessionRotation", fields: [replacedBySessionId], references: [id], onDelete: SetNull)
+  replacementOf AdminSession[] @relation("AdminSessionRotation")
 
   @@index([adminUserId, revokedAt, expiresAt])
   @@index([tokenFamily])
@@ -329,6 +352,7 @@ model MediaAsset {
   altText            String?           @map("alt_text") @db.VarChar(255)
   caption            String?           @db.Text
   uploadedById       String?           @map("uploaded_by_id") @db.Uuid
+  isDemo             Boolean           @default(false) @map("is_demo")
   createdAt          DateTime          @default(now()) @map("created_at")
   updatedAt          DateTime          @updatedAt @map("updated_at")
   deletedAt          DateTime?         @map("deleted_at")
@@ -338,7 +362,8 @@ model MediaAsset {
   heroSlides       HeroSlide[]        @relation("HeroSlideMedia")
   websiteSettings  WebsiteSetting[]   @relation("SettingMedia")
   categoryMedia    CategoryMedia[]
-  productMedia     ProductMedia[]
+  propertyMedia    PropertyMedia[]
+  projectMedia     ProjectMedia[]
   serviceMedia     ServiceMedia[]
   galleryItems     GalleryItem[]
   certificateMedia CertificateMedia[]
@@ -355,24 +380,25 @@ model MediaAsset {
 }
 
 model SeoMetadata {
-  id             String   @id @default(uuid()) @db.Uuid
-  title          String   @db.VarChar(180)
-  description    String?  @db.VarChar(320)
-  keywords       String?  @db.Text
-  canonicalUrl   String?  @map("canonical_url") @db.Text
-  robots         String?  @db.VarChar(80)
-  ogTitle        String?  @map("og_title") @db.VarChar(180)
-  ogDescription  String?  @map("og_description") @db.VarChar(320)
-  ogImageId      String?  @map("og_image_id") @db.Uuid
-  structuredData Json?    @map("structured_data")
+  id             String        @id @default(uuid()) @db.Uuid
+  title          String        @db.VarChar(180)
+  description    String?       @db.VarChar(320)
+  keywords       String?       @db.Text
+  canonicalUrl   String?       @map("canonical_url") @db.Text
+  robots         String?       @db.VarChar(80)
+  ogTitle        String?       @map("og_title") @db.VarChar(180)
+  ogDescription  String?       @map("og_description") @db.VarChar(320)
+  ogImageId      String?       @map("og_image_id") @db.Uuid
+  structuredData Json?         @map("structured_data")
   status         ContentStatus @default(PUBLISHED)
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-  deletedAt      DateTime? @map("deleted_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  deletedAt      DateTime?     @map("deleted_at")
 
   pageId         String? @unique @map("page_id") @db.Uuid
   categoryId     String? @unique @map("category_id") @db.Uuid
-  productId      String? @unique @map("product_id") @db.Uuid
+  propertyId     String? @unique @map("property_id") @db.Uuid
+  projectId      String? @unique @map("project_id") @db.Uuid
   serviceId      String? @unique @map("service_id") @db.Uuid
   galleryAlbumId String? @unique @map("gallery_album_id") @db.Uuid
   certificateId  String? @unique @map("certificate_id") @db.Uuid
@@ -385,7 +411,8 @@ model SeoMetadata {
   ogImage      MediaAsset?   @relation("SeoOgImage", fields: [ogImageId], references: [id], onDelete: SetNull)
   page         Page?         @relation(fields: [pageId], references: [id], onDelete: Cascade)
   category     Category?     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  product      Product?      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  property     Property?     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  project      Project?      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   service      Service?      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   galleryAlbum GalleryAlbum? @relation(fields: [galleryAlbumId], references: [id], onDelete: Cascade)
   certificate  Certificate?  @relation(fields: [certificateId], references: [id], onDelete: Cascade)
@@ -406,6 +433,7 @@ model Page {
   title       String        @db.VarChar(180)
   slug        String        @unique @db.VarChar(180)
   status      ContentStatus @default(DRAFT)
+  isDemo      Boolean       @default(false) @map("is_demo")
   publishedAt DateTime?     @map("published_at")
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
@@ -471,6 +499,7 @@ model HeroSlide {
   ctaLabel    String?       @map("cta_label") @db.VarChar(80)
   ctaUrl      String?       @map("cta_url") @db.Text
   status      ContentStatus @default(DRAFT)
+  isDemo      Boolean       @default(false) @map("is_demo")
   sortOrder   Int           @default(0) @map("sort_order")
   publishedAt DateTime?     @map("published_at")
   createdAt   DateTime      @default(now()) @map("created_at")
@@ -486,16 +515,17 @@ model HeroSlide {
 }
 
 model WebsiteSetting {
-  id          String   @id @default(uuid()) @db.Uuid
-  group       String   @db.VarChar(80)
-  key         String   @unique @db.VarChar(120)
+  id          String        @id @default(uuid()) @db.Uuid
+  group       String        @db.VarChar(80)
+  key         String        @unique @db.VarChar(120)
   value       Json?
-  mediaId     String?  @map("media_id") @db.Uuid
-  updatedById String?  @map("updated_by_id") @db.Uuid
+  mediaId     String?       @map("media_id") @db.Uuid
+  updatedById String?       @map("updated_by_id") @db.Uuid
   status      ContentStatus @default(PUBLISHED)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  isDemo      Boolean       @default(false) @map("is_demo")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  deletedAt   DateTime?     @map("deleted_at")
 
   media     MediaAsset? @relation("SettingMedia", fields: [mediaId], references: [id], onDelete: SetNull)
   updatedBy AdminUser?  @relation("SettingUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
@@ -514,6 +544,7 @@ model CompanyStatistic {
   suffix    String?      @db.VarChar(20)
   note      String?      @db.VarChar(180)
   status    RecordStatus @default(ACTIVE)
+  isDemo    Boolean      @default(false) @map("is_demo")
   sortOrder Int          @default(0) @map("sort_order")
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")
@@ -532,6 +563,7 @@ model Category {
   slug         String       @db.VarChar(160)
   description  String?      @db.Text
   status       RecordStatus @default(ACTIVE)
+  isDemo       Boolean      @default(false) @map("is_demo")
   sortOrder    Int          @default(0) @map("sort_order")
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
@@ -540,7 +572,8 @@ model Category {
   parent         Category?              @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
   children       Category[]             @relation("CategoryTree")
   media          CategoryMedia[]
-  products       ProductCategory[]
+  properties     PropertyCategory[]
+  projects       Project[]
   services       Service[]
   blogPosts      BlogPost[]
   downloads      Download[]
@@ -569,76 +602,176 @@ model CategoryMedia {
   @@map("category_media")
 }
 
-model Product {
-  id               String        @id @default(uuid()) @db.Uuid
-  sku              String        @unique @db.VarChar(80)
-  name             String        @db.VarChar(180)
-  slug             String        @unique @db.VarChar(200)
-  shortDescription String?       @map("short_description") @db.VarChar(500)
-  description      String?       @db.Text
-  minimumOrderQty  Int?          @map("minimum_order_qty")
-  status           ProductStatus @default(DRAFT)
-  isFeatured       Boolean       @default(false) @map("is_featured")
-  sortOrder        Int           @default(0) @map("sort_order")
-  publishedAt      DateTime?     @map("published_at")
-  createdAt        DateTime      @default(now()) @map("created_at")
-  updatedAt        DateTime      @updatedAt @map("updated_at")
-  deletedAt        DateTime?     @map("deleted_at")
+model Property {
+  id               String               @id @default(uuid()) @db.Uuid
+  projectId        String?              @map("project_id") @db.Uuid
+  addressId        String?              @unique @map("address_id") @db.Uuid
+  referenceCode    String               @unique @map("reference_code") @db.VarChar(80)
+  title            String               @db.VarChar(180)
+  slug             String               @unique @db.VarChar(200)
+  shortDescription String?              @map("short_description") @db.VarChar(500)
+  description      String?              @db.Text
+  listingType      PropertyListingType  @map("listing_type")
+  availability     PropertyAvailability @default(AVAILABLE)
+  price            Decimal?             @db.Decimal(16, 2)
+  currency         String               @default("BDT") @db.VarChar(10)
+  priceLabel       String?              @map("price_label") @db.VarChar(80)
+  bedrooms         Int?
+  bathrooms        Decimal?             @db.Decimal(4, 1)
+  balconies        Int?
+  parkingSpaces    Int?                 @map("parking_spaces")
+  floorNumber      Int?                 @map("floor_number")
+  totalFloors      Int?                 @map("total_floors")
+  areaSqft         Decimal?             @map("area_sqft") @db.Decimal(12, 2)
+  landAreaSqft     Decimal?             @map("land_area_sqft") @db.Decimal(12, 2)
+  furnishing       FurnishingStatus?
+  yearBuilt        Int?                 @map("year_built")
+  availableFrom    DateTime?            @map("available_from")
+  status           ContentStatus        @default(DRAFT)
+  isFeatured       Boolean              @default(false) @map("is_featured")
+  isDemo           Boolean              @default(false) @map("is_demo")
+  sortOrder        Int                  @default(0) @map("sort_order")
+  publishedAt      DateTime?            @map("published_at")
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @updatedAt @map("updated_at")
+  deletedAt        DateTime?            @map("deleted_at")
 
-  categories     ProductCategory[]
-  media          ProductMedia[]
-  specifications ProductSpecification[]
-  quoteItems     QuotationRequestItem[]
-  seo            SeoMetadata?
+  project    Project?               @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  address    Address?               @relation(fields: [addressId], references: [id], onDelete: SetNull)
+  categories PropertyCategory[]
+  media      PropertyMedia[]
+  amenities  PropertyAmenity[]
+  quoteItems QuotationRequestItem[]
+  seo        SeoMetadata?
 
-  @@index([status, isFeatured, sortOrder])
+  @@index([projectId])
+  @@index([status, availability, isFeatured, sortOrder])
+  @@index([listingType, price])
+  @@index([bedrooms, bathrooms])
+  @@index([isDemo])
   @@index([publishedAt])
   @@index([deletedAt])
-  @@map("products")
+  @@map("properties")
 }
 
-model ProductCategory {
-  productId  String  @map("product_id") @db.Uuid
+model PropertyCategory {
+  propertyId String  @map("property_id") @db.Uuid
   categoryId String  @map("category_id") @db.Uuid
   isPrimary  Boolean @default(false) @map("is_primary")
 
-  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
-  @@id([productId, categoryId])
+  @@id([propertyId, categoryId])
   @@index([categoryId, isPrimary])
-  @@map("product_categories")
+  @@map("property_categories")
 }
 
-model ProductMedia {
-  productId String         @map("product_id") @db.Uuid
+model PropertyMedia {
+  propertyId String         @map("property_id") @db.Uuid
+  mediaId    String         @map("media_id") @db.Uuid
+  role       MediaUsageRole @default(GALLERY)
+  sortOrder  Int            @default(0) @map("sort_order")
+
+  property Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  media    MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@id([propertyId, mediaId, role])
+  @@index([mediaId])
+  @@map("property_media")
+}
+
+model Project {
+  id                 String                   @id @default(uuid()) @db.Uuid
+  categoryId         String?                  @map("category_id") @db.Uuid
+  addressId          String?                  @unique @map("address_id") @db.Uuid
+  title              String                   @db.VarChar(180)
+  slug               String                   @unique @db.VarChar(200)
+  summary            String?                  @db.VarChar(600)
+  description        String?                  @db.Text
+  developmentStatus  ProjectDevelopmentStatus @default(UPCOMING) @map("development_status")
+  completionPercent  Decimal?                 @map("completion_percent") @db.Decimal(5, 2)
+  startDate          DateTime?                @map("start_date")
+  expectedCompletion DateTime?                @map("expected_completion")
+  completedAt        DateTime?                @map("completed_at")
+  status             ContentStatus            @default(DRAFT)
+  isFeatured         Boolean                  @default(false) @map("is_featured")
+  isDemo             Boolean                  @default(false) @map("is_demo")
+  sortOrder          Int                      @default(0) @map("sort_order")
+  publishedAt        DateTime?                @map("published_at")
+  createdAt          DateTime                 @default(now()) @map("created_at")
+  updatedAt          DateTime                 @updatedAt @map("updated_at")
+  deletedAt          DateTime?                @map("deleted_at")
+
+  category   Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  address    Address?         @relation(fields: [addressId], references: [id], onDelete: SetNull)
+  properties Property[]
+  media      ProjectMedia[]
+  amenities  ProjectAmenity[]
+  seo        SeoMetadata?
+
+  @@index([categoryId])
+  @@index([status, developmentStatus, isFeatured, sortOrder])
+  @@index([isDemo])
+  @@index([publishedAt])
+  @@index([deletedAt])
+  @@map("projects")
+}
+
+model ProjectMedia {
+  projectId String         @map("project_id") @db.Uuid
   mediaId   String         @map("media_id") @db.Uuid
   role      MediaUsageRole @default(GALLERY)
   sortOrder Int            @default(0) @map("sort_order")
 
-  product Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  project Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
   media   MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Restrict)
 
-  @@id([productId, mediaId, role])
+  @@id([projectId, mediaId, role])
   @@index([mediaId])
-  @@map("product_media")
+  @@map("project_media")
 }
 
-model ProductSpecification {
-  id        String   @id @default(uuid()) @db.Uuid
-  productId String   @map("product_id") @db.Uuid
-  name      String   @db.VarChar(120)
-  value     String   @db.VarChar(255)
-  unit      String?  @db.VarChar(40)
-  sortOrder Int      @default(0) @map("sort_order")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+model Amenity {
+  id        String       @id @default(uuid()) @db.Uuid
+  name      String       @unique @db.VarChar(120)
+  slug      String       @unique @db.VarChar(140)
+  icon      String?      @db.VarChar(80)
+  status    RecordStatus @default(ACTIVE)
+  isDemo    Boolean      @default(false) @map("is_demo")
+  sortOrder Int          @default(0) @map("sort_order")
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
 
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  properties PropertyAmenity[]
+  projects   ProjectAmenity[]
 
-  @@unique([productId, name])
-  @@index([productId, sortOrder])
-  @@map("product_specifications")
+  @@index([status, sortOrder])
+  @@map("amenities")
+}
+
+model PropertyAmenity {
+  propertyId String @map("property_id") @db.Uuid
+  amenityId  String @map("amenity_id") @db.Uuid
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  amenity  Amenity  @relation(fields: [amenityId], references: [id], onDelete: Restrict)
+
+  @@id([propertyId, amenityId])
+  @@index([amenityId])
+  @@map("property_amenities")
+}
+
+model ProjectAmenity {
+  projectId String @map("project_id") @db.Uuid
+  amenityId String @map("amenity_id") @db.Uuid
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  amenity Amenity @relation(fields: [amenityId], references: [id], onDelete: Restrict)
+
+  @@id([projectId, amenityId])
+  @@index([amenityId])
+  @@map("project_amenities")
 }
 
 model Service {
@@ -651,6 +784,7 @@ model Service {
   icon        String?       @db.VarChar(80)
   status      ContentStatus @default(DRAFT)
   isFeatured  Boolean       @default(false) @map("is_featured")
+  isDemo      Boolean       @default(false) @map("is_demo")
   sortOrder   Int           @default(0) @map("sort_order")
   publishedAt DateTime?     @map("published_at")
   createdAt   DateTime      @default(now()) @map("created_at")
@@ -769,6 +903,7 @@ model Client {
   website     String?      @db.Text
   description String?      @db.Text
   status      RecordStatus @default(ACTIVE)
+  isDemo      Boolean      @default(false) @map("is_demo")
   sortOrder   Int          @default(0) @map("sort_order")
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
@@ -791,6 +926,7 @@ model ClientContact {
   designation String?   @db.VarChar(140)
   email       String?   @db.VarChar(160)
   phone       String?   @db.VarChar(40)
+  isDemo      Boolean   @default(false) @map("is_demo")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
@@ -825,6 +961,7 @@ model Testimonial {
   rating          Int?
   status          ContentStatus @default(DRAFT)
   isFeatured      Boolean       @default(false) @map("is_featured")
+  isDemo          Boolean       @default(false) @map("is_demo")
   sortOrder       Int           @default(0) @map("sort_order")
   publishedAt     DateTime?     @map("published_at")
   createdAt       DateTime      @default(now()) @map("created_at")
@@ -839,6 +976,26 @@ model Testimonial {
   @@index([status, isFeatured, sortOrder])
   @@index([deletedAt])
   @@map("testimonials")
+}
+
+model Faq {
+  id          String        @id @default(uuid()) @db.Uuid
+  question    String        @db.VarChar(255)
+  answer      String        @db.Text
+  group       String?       @db.VarChar(100)
+  status      ContentStatus @default(DRAFT)
+  isFeatured  Boolean       @default(false) @map("is_featured")
+  isDemo      Boolean       @default(false) @map("is_demo")
+  sortOrder   Int           @default(0) @map("sort_order")
+  publishedAt DateTime?     @map("published_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  deletedAt   DateTime?     @map("deleted_at")
+
+  @@index([status, group, sortOrder])
+  @@index([isDemo])
+  @@index([deletedAt])
+  @@map("faqs")
 }
 
 model Partner {
@@ -885,6 +1042,7 @@ model BlogPost {
   body        String        @db.Text
   status      ContentStatus @default(DRAFT)
   isFeatured  Boolean       @default(false) @map("is_featured")
+  isDemo      Boolean       @default(false) @map("is_demo")
   publishedAt DateTime?     @map("published_at")
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
@@ -1001,11 +1159,14 @@ model Address {
   country    String   @db.VarChar(100)
   latitude   Decimal? @db.Decimal(10, 7)
   longitude  Decimal? @db.Decimal(10, 7)
+  isDemo     Boolean  @default(false) @map("is_demo")
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
   factory         Factory?
   contactLocation ContactLocation?
+  property        Property?
+  project         Project?
 
   @@index([city, country])
   @@map("addresses")
@@ -1103,6 +1264,7 @@ model ContactMessage {
   recaptchaAction String?       @map("recaptcha_action") @db.VarChar(80)
   spamScore       Int           @default(0) @map("spam_score")
   spamReason      String?       @map("spam_reason") @db.Text
+  isDemo          Boolean       @default(false) @map("is_demo")
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
   deletedAt       DateTime?     @map("deleted_at")
@@ -1156,7 +1318,7 @@ model QuotationRequest {
   updatedAt            DateTime    @updatedAt @map("updated_at")
   deletedAt            DateTime?   @map("deleted_at")
 
-  assignedTo    AdminUser?                 @relation("QuoteAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedTo    AdminUser?              @relation("QuoteAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
   items         QuotationRequestItem[]
   conversations QuotationConversation[]
 
@@ -1172,7 +1334,7 @@ model QuotationRequest {
 model QuotationRequestItem {
   id                 String  @id @default(uuid()) @db.Uuid
   quotationRequestId String  @map("quotation_request_id") @db.Uuid
-  productId          String? @map("product_id") @db.Uuid
+  propertyId         String? @map("property_id") @db.Uuid
   categoryId         String? @map("category_id") @db.Uuid
   unitId             String? @map("unit_id") @db.Uuid
   itemName           String  @map("item_name") @db.VarChar(180)
@@ -1181,12 +1343,12 @@ model QuotationRequestItem {
   sortOrder          Int     @default(0) @map("sort_order")
 
   quotationRequest QuotationRequest @relation(fields: [quotationRequestId], references: [id], onDelete: Cascade)
-  product          Product?         @relation(fields: [productId], references: [id], onDelete: SetNull)
+  property         Property?        @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   category         Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   unit             MeasurementUnit? @relation(fields: [unitId], references: [id], onDelete: SetNull)
 
   @@index([quotationRequestId, sortOrder])
-  @@index([productId])
+  @@index([propertyId])
   @@index([categoryId])
   @@map("quotation_request_items")
 }
@@ -1212,23 +1374,24 @@ model QuotationConversation {
 }
 
 model NewsletterSubscriber {
-  id             String           @id @default(uuid()) @db.Uuid
-  email          String           @unique @db.VarChar(160)
-  fullName       String?          @map("full_name") @db.VarChar(140)
-  status         NewsletterStatus @default(SUBSCRIBED)
-  source         String?          @db.VarChar(120)
-  consentAccepted Boolean         @default(false) @map("consent_accepted")
-  ipAddress      String?          @map("ip_address") @db.VarChar(64)
-  userAgent      String?          @map("user_agent") @db.Text
-  recaptchaScore Decimal?         @map("recaptcha_score") @db.Decimal(5, 2)
-  recaptchaAction String?         @map("recaptcha_action") @db.VarChar(80)
-  spamScore      Int              @default(0) @map("spam_score")
-  spamReason     String?          @map("spam_reason") @db.Text
-  subscribedAt   DateTime         @default(now()) @map("subscribed_at")
-  unsubscribedAt DateTime?        @map("unsubscribed_at")
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
-  deletedAt      DateTime?        @map("deleted_at")
+  id              String           @id @default(uuid()) @db.Uuid
+  email           String           @unique @db.VarChar(160)
+  fullName        String?          @map("full_name") @db.VarChar(140)
+  status          NewsletterStatus @default(SUBSCRIBED)
+  source          String?          @db.VarChar(120)
+  consentAccepted Boolean          @default(false) @map("consent_accepted")
+  ipAddress       String?          @map("ip_address") @db.VarChar(64)
+  userAgent       String?          @map("user_agent") @db.Text
+  recaptchaScore  Decimal?         @map("recaptcha_score") @db.Decimal(5, 2)
+  recaptchaAction String?          @map("recaptcha_action") @db.VarChar(80)
+  spamScore       Int              @default(0) @map("spam_score")
+  spamReason      String?          @map("spam_reason") @db.Text
+  isDemo          Boolean          @default(false) @map("is_demo")
+  subscribedAt    DateTime         @default(now()) @map("subscribed_at")
+  unsubscribedAt  DateTime?        @map("unsubscribed_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  deletedAt       DateTime?        @map("deleted_at")
 
   campaigns NewsletterCampaignRecipient[]
 
@@ -1282,6 +1445,7 @@ model Download {
   slug        String        @unique @db.VarChar(200)
   description String?       @db.Text
   status      ContentStatus @default(DRAFT)
+  isDemo      Boolean       @default(false) @map("is_demo")
   sortOrder   Int           @default(0) @map("sort_order")
   publishedAt DateTime?     @map("published_at")
   createdAt   DateTime      @default(now()) @map("created_at")

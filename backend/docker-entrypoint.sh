@@ -6,7 +6,7 @@ npx prisma migrate deploy
 
 if [ "$RUN_SEED" = "true" ]; then
   echo "==> Seeding Database..."
-  npx prisma db seed || echo "Seeding skipped or already applied."
+  npx prisma db seed
 fi
 
 echo "==> Starting Production Backend Application..."

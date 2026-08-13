@@ -2,6 +2,14 @@
 
 Production-ready, high-performance web application and REST API for Staria Properties. Built with Node.js, Express, PostgreSQL, Prisma ORM, TypeScript, and React.
 
+Project status and remaining phases: [`docs/project-roadmap.md`](docs/project-roadmap.md)
+
+New developer setup (including a fresh Windows computer):
+[`docs/phase-4-local-setup.md`](docs/phase-4-local-setup.md)
+
+Stakeholder demo deployment:
+[`docs/phase-5-deployment.md`](docs/phase-5-deployment.md)
+
 ---
 
 ## Technical Stack
@@ -89,6 +97,7 @@ docker-compose up -d --build
 
 Access services:
 - **Frontend App**: `http://localhost`
+- **Admin Portal**: `http://localhost/admin/login`
 - **Backend API**: `http://localhost:5000/api/v1`
 - **Swagger Documentation**: `http://localhost:5000/api-docs`
 - **Health Endpoint**: `http://localhost:5000/health`
@@ -107,12 +116,16 @@ Access services:
 
 ### Option 3: Render Deployment
 
-1. Go to [render.com](https://render.com) and navigate to **Blueprints**.
-2. Connect your GitHub repository.
-3. Render will parse `render.yaml` and automatically provision:
-   - Managed PostgreSQL Database
-   - Node.js Web Service with `/health` check path.
-4. Set production JWT secrets in the Render environment variables dashboard.
+The Phase 5 stakeholder demo uses Neon Free PostgreSQL and one Render web service. The
+service serves both the compiled React site and Express API from a single HTTPS origin.
+
+1. Create a Neon project and copy its direct TLS PostgreSQL connection URL.
+2. In Render, create a Blueprint from the `full-stack-demo` branch.
+3. Render parses `render.yaml` and creates the Node.js web service with `/health`.
+4. Enter `DATABASE_URL`, `SEED_ADMIN_PASSWORD`, and `SEED_REVIEWER_PASSWORD` when
+   prompted. Render generates the JWT secrets.
+5. Follow the complete account, URL, and acceptance checklist in
+   [`docs/phase-5-deployment.md`](docs/phase-5-deployment.md).
 
 ---
 
@@ -134,13 +147,14 @@ Run database migrations manually or in production:
 # Apply migrations to production database
 npm run db:migrate
 
-# Seed default administrator and initial content
+# Seed the demo administrator accounts and stakeholder-review content
 npm run db:seed
 ```
 
-Default Seed Credentials:
-- **Email**: `admin@staria.com.bd`
-- **Password**: `Admin12345` *(Must be updated immediately upon first login)*
+Before seeding, set unique passwords of at least 12 characters in `SEED_ADMIN_PASSWORD` and
+`SEED_REVIEWER_PASSWORD`. Demo email addresses can be configured with `SEED_ADMIN_EMAIL` and
+`SEED_REVIEWER_EMAIL`. No default passwords are stored in this repository. See
+`docs/phase-2-demo-data.md` for the full seed and cleanup workflow.
 
 ---
 

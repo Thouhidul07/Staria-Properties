@@ -47,6 +47,7 @@ export default function ContactPage() {
   const inputClass = "w-full bg-white/[0.06] border border-white/[0.12] rounded-2xl px-5 py-3.5 text-white text-[0.9rem] placeholder:text-white/25 focus:outline-none focus:border-[#D9A11A]/55 focus:bg-white/[0.09] transition-all duration-300";
   const labelClass = "block text-white/45 text-[0.65rem] tracking-[0.45em] uppercase font-medium mb-2.5";
   const mapAddress = "House 14, Road 11, Gulshan-2, Dhaka 1212, Bangladesh";
+  const mapShareUrl = "https://maps.app.goo.gl/qmvGMLxUJoXDC1i79";
 
   return (
     <section className="bg-[#082D1C] pt-36 pb-28">
@@ -73,13 +74,17 @@ export default function ContactPage() {
           {/* Map / contact info */}
           <motion.div initial={{ opacity: 0, x: -44 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
             className="relative rounded-3xl overflow-hidden" style={{ background: "#082D1C", minHeight: "540px" }}>
-            <GoogleMapEmbed title="STARIA Headquarters map" query={mapAddress} />
+            <GoogleMapEmbed title="STARIA Headquarters map" query={mapAddress} placeUrl={mapShareUrl} />
             <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(8,45,28,0.08), rgba(8,45,28,0.16) 58%, rgba(8,45,28,0.92))" }} />
 
             <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 flex justify-center pointer-events-none">
-              <div className="bg-[#082D1C]/85 border border-white/[0.12] rounded-2xl px-8 py-5 text-center backdrop-blur-sm shadow-2xl shadow-black/30">
+              <div className="bg-[#082D1C]/85 border border-white/[0.12] rounded-2xl px-8 py-5 text-center backdrop-blur-sm shadow-2xl shadow-black/30 pointer-events-auto">
                 <p className="text-white text-[0.92rem] font-semibold mb-1.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>STARIA Headquarters</p>
                 <p className="text-white/55 text-[0.8rem] leading-[1.65]" style={{ fontFamily: "'DM Sans', sans-serif" }}>House 14, Road 11, Gulshan-2<br />Dhaka 1212, Bangladesh</p>
+                <a href={mapShareUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#D9A11A]/35 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#D9A11A] transition-colors hover:bg-[#D9A11A] hover:text-[#1B1B1B]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <MapPin size={12} />
+                  Open exact location
+                </a>
               </div>
             </div>
 

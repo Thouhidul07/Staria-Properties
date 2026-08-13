@@ -1,12 +1,14 @@
 interface GoogleMapEmbedProps {
   query: string;
   title: string;
+  placeUrl?: string;
   zoom?: number;
 }
 
-export function GoogleMapEmbed({ query, title, zoom = 15 }: GoogleMapEmbedProps) {
+export function GoogleMapEmbed({ query, title, placeUrl, zoom = 15 }: GoogleMapEmbedProps) {
   const apiKey = String(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").trim();
   const useEmbedApi = String(import.meta.env.VITE_GOOGLE_MAPS_EMBED_API_ENABLED || "false") === "true";
+  const publicMapTarget = placeUrl || query;
 
   const params = new URLSearchParams({
     key: apiKey,
@@ -15,7 +17,7 @@ export function GoogleMapEmbed({ query, title, zoom = 15 }: GoogleMapEmbedProps)
     maptype: "roadmap"
   });
   const fallbackParams = new URLSearchParams({
-    q: query,
+    q: publicMapTarget,
     z: String(zoom),
     output: "embed"
   });

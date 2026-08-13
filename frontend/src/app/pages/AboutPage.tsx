@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { Globe, Eye, Users, Cpu, Leaf, Heart } from "lucide-react";
 import { PageHero } from "../components/shared/PageHero";
+import { OurTeamSection } from "../components/OurTeamSection";
 import {
   VisionMissionSection,
   CoreValuesSection,
@@ -121,6 +122,7 @@ export default function AboutPage() {
         image="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1920&h=900&fit=crop&auto=format&q=92"
       />
       <AboutDetailSection />
+      <OurTeamSection />
       <StatisticsSection />
       <VisionMissionSection />
       <CoreValuesSection />

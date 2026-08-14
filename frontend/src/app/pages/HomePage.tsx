@@ -9,6 +9,8 @@ import {
   Star, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { StatisticsSection, CtaBannerSection } from "../components/corporate-sections";
+import { api } from "../services/api";
+import { displayLocation, displayPrice, primaryImage, useApiList } from "../services/content";
 
 // ─── Shared font strings ───────────────────────────────────────────────────────
 const gilda = "'Gilda Display', Georgia, serif";
@@ -25,19 +27,21 @@ const SERVICES = [
 ];
 
 const FEATURED_PROJECTS = [
-  { id: 1, name: "Staria Heights", location: "Gulshan-2, Dhaka", type: "Luxury Apartment", status: "Ready to Move", statusBg: "bg-[#0B5E3C]", category: "Residential", image: "https://images.unsplash.com/photo-1601881403737-2a6085443ba2?w=900&h=700&fit=crop&auto=format&q=92" },
-  { id: 2, name: "The Pinnacle Tower", location: "Banani, Dhaka", type: "Penthouse & Residences", status: "Under Construction", statusBg: "bg-[#D9A11A]", category: "Residential", image: "https://images.unsplash.com/photo-1777734582224-f9b002fa116c?w=900&h=700&fit=crop&auto=format&q=92" },
-  { id: 3, name: "Trade Centre One", location: "Motijheel, Dhaka", type: "Commercial Complex", status: "Ready to Move", statusBg: "bg-[#0B5E3C]", category: "Commercial", image: "https://images.unsplash.com/photo-1621831337128-35676ca30868?w=900&h=700&fit=crop&auto=format&q=92" },
+  { id: 1, name: "Staria Heights", location: "Gulshan-2, Dhaka", type: "Luxury Apartment", status: "Upcoming", statusBg: "bg-[#6366F1]", category: "Residential", image: "https://images.unsplash.com/photo-1601881403737-2a6085443ba2?w=900&h=700&fit=crop&auto=format&q=92", isDemo: true },
+  { id: 2, name: "The Pinnacle Tower", location: "Banani, Dhaka", type: "Penthouse & Residences", status: "Upcoming", statusBg: "bg-[#6366F1]", category: "Residential", image: "https://images.unsplash.com/photo-1777734582224-f9b002fa116c?w=900&h=700&fit=crop&auto=format&q=92", isDemo: true },
+  { id: 3, name: "Trade Centre One", location: "Motijheel, Dhaka", type: "Commercial Complex", status: "Upcoming", statusBg: "bg-[#6366F1]", category: "Commercial", image: "https://images.unsplash.com/photo-1621831337128-35676ca30868?w=900&h=700&fit=crop&auto=format&q=92", isDemo: true },
 ];
 
 const FEATURED_PROPERTIES = [
-  { id: "p1", name: "STARIA Heights Penthouse", location: "Gulshan, Dhaka", price: "৳4.2 Cr", type: "Penthouse", status: "For Sale" as const, beds: 4, baths: 4, area: "3,200", image: "https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=700&h=500&fit=crop&auto=format&q=92" },
-  { id: "p2", name: "STARIA Garden Villa", location: "Bashundhara, Dhaka", price: "৳7.8 Cr", type: "Private Villa", status: "For Sale" as const, beds: 5, baths: 5, area: "5,800", image: "https://images.unsplash.com/photo-1706808849780-7a04fbac83ef?w=700&h=500&fit=crop&auto=format&q=92" },
-  { id: "p3", name: "STARIA Commerce One", location: "Motijheel, Dhaka", price: "৳15 Cr", type: "Commercial", status: "For Sale" as const, beds: null, baths: null, area: "18,000", image: "https://images.unsplash.com/photo-1600531529272-023c4b821f14?w=700&h=500&fit=crop&auto=format&q=92" },
+  { id: "p1", name: "STARIA Heights Penthouse", location: "Gulshan, Dhaka", price: "Contact with us", type: "Penthouse", status: "For Sale" as const, beds: 4, baths: 4, area: "3,200", image: "https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=700&h=500&fit=crop&auto=format&q=92" },
+  { id: "p2", name: "STARIA Garden Villa", location: "Bashundhara, Dhaka", price: "Contact with us", type: "Private Villa", status: "For Sale" as const, beds: 5, baths: 5, area: "5,800", image: "https://images.unsplash.com/photo-1706808849780-7a04fbac83ef?w=700&h=500&fit=crop&auto=format&q=92" },
+  { id: "p3", name: "STARIA Commerce One", location: "Motijheel, Dhaka", price: "Contact with us", type: "Commercial", status: "For Sale" as const, beds: null, baths: null, area: "18,000", image: "https://images.unsplash.com/photo-1600531529272-023c4b821f14?w=700&h=500&fit=crop&auto=format&q=92" },
 ];
 
 const STATUS_BADGE = {
   "For Sale": "bg-[#0B5E3C] text-white",
+  "For Rent": "bg-[#2A5AA5] text-white",
+  "For Lease": "bg-[#7A5600] text-white",
   "Ready": "bg-white text-[#0B5E3C]",
   "New": "bg-[#D9A11A] text-[#1B1B1B]",
 };
@@ -64,7 +68,7 @@ const TESTIMONIALS = [
 ] as const;
 
 // ─── Property Card ─────────────────────────────────────────────────────────────
-function PropertyCard({ name, location, price, type, status, beds, baths, area, image, delay }: typeof FEATURED_PROPERTIES[number] & { delay: number }) {
+function PropertyCard({ id, name, location, type, status, beds, baths, area, image, delay }: (Omit<typeof FEATURED_PROPERTIES[number], "status"> & { status: keyof typeof STATUS_BADGE; delay: number })) {
   const [hovered, setHovered] = useState(false);
   return (
     <motion.div initial={{ opacity: 0, y: 36 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
@@ -81,7 +85,7 @@ function PropertyCard({ name, location, price, type, status, beds, baths, area, 
       <div className="p-5 xl:p-6">
         <h3 className="text-[#1B1B1B] leading-tight mb-1.5" style={{ fontFamily: gilda, fontSize: "clamp(20px, 1.8vw, 26px)" }}>{name}</h3>
         <div className="flex items-center gap-1.5 mb-4"><MapPin size={12} className="text-[#0B5E3C] shrink-0" /><span className="text-[0.79rem] text-[#555555]" style={{ fontFamily: dm }}>{location}</span></div>
-        <p className="text-[#0B5E3C] font-semibold mb-4" style={{ fontFamily: dm, fontSize: "clamp(20px, 1.8vw, 26px)" }}>{price}</p>
+        <p className="text-[#0B5E3C] font-semibold mb-4" style={{ fontFamily: dm, fontSize: "clamp(20px, 1.8vw, 26px)" }}>Contact with us</p>
         <span className="block w-full h-px bg-black/[0.06] mb-4" />
         <div className="flex items-center gap-0 mb-5">
           {beds !== null ? (
@@ -100,11 +104,10 @@ function PropertyCard({ name, location, price, type, status, beds, baths, area, 
             </>
           )}
         </div>
-        <motion.button className="w-full py-3 rounded-2xl border text-[1rem] font-semibold tracking-[0.02em] flex items-center justify-center gap-2 transition-colors duration-300"
-          animate={{ backgroundColor: hovered ? "#0B5E3C" : "transparent", borderColor: "#0B5E3C", color: hovered ? "#FFFFFF" : "#0B5E3C" }}
-          transition={{ duration: 0.3 }} style={{ fontFamily: dm }}>
+        <Link to={`/properties/${id}`} className="w-full py-3 rounded-2xl border text-[1rem] font-semibold tracking-[0.02em] flex items-center justify-center gap-2 transition-colors duration-300"
+          style={{ fontFamily: dm, backgroundColor: hovered ? "#0B5E3C" : "transparent", borderColor: "#0B5E3C", color: hovered ? "#FFFFFF" : "#0B5E3C" }}>
           View Details <motion.span animate={{ x: hovered ? 4 : 0 }} transition={{ duration: 0.3 }}><ArrowRight size={14} /></motion.span>
-        </motion.button>
+        </Link>
       </div>
     </motion.div>
   );
@@ -158,19 +161,28 @@ const slideVariants = {
 };
 
 function TestimonialsSection() {
+  const { items } = useApiList(() => api.getTestimonials(), []);
+  const databaseTestimonials = items.map((testimonial, index) => ({
+    quote: testimonial.quote,
+    name: testimonial.clientContact?.name ?? testimonial.client?.name ?? "Staria Client",
+    role: testimonial.clientContact?.designation ?? "Client",
+    company: testimonial.client?.name ?? "Verified customer",
+    photo: TESTIMONIALS[index % TESTIMONIALS.length].photo
+  }));
+  const displayedTestimonials = databaseTestimonials.length > 0 ? databaseTestimonials : TESTIMONIALS;
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     if (paused) return;
-    const id = setInterval(() => { setDirection(1); setCurrent((c) => (c + 1) % TESTIMONIALS.length); }, 5000);
+    const id = setInterval(() => { setDirection(1); setCurrent((c) => (c + 1) % displayedTestimonials.length); }, 5000);
     return () => clearInterval(id);
-  }, [paused]);
+  }, [paused, displayedTestimonials.length]);
 
-  const handlePrev = () => { setDirection(-1); setCurrent((c) => (c - 1 + TESTIMONIALS.length) % TESTIMONIALS.length); };
-  const handleNext = () => { setDirection(1); setCurrent((c) => (c + 1) % TESTIMONIALS.length); };
-  const t = TESTIMONIALS[current];
+  const handlePrev = () => { setDirection(-1); setCurrent((c) => (c - 1 + displayedTestimonials.length) % displayedTestimonials.length); };
+  const handleNext = () => { setDirection(1); setCurrent((c) => (c + 1) % displayedTestimonials.length); };
+  const t = displayedTestimonials[current % displayedTestimonials.length];
 
   return (
     <section className="bg-[#F7F7F5] py-36 overflow-hidden">
@@ -223,7 +235,7 @@ function TestimonialsSection() {
           </div>
 
           <div className="flex items-center justify-center gap-2 mt-7">
-            {TESTIMONIALS.map((_, i) => (
+            {displayedTestimonials.map((_, i) => (
               <button key={i} onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}
                 className={`rounded-full transition-all duration-400 ${i === current ? "w-7 h-2 bg-[#0B5E3C]" : "w-2 h-2 bg-[#0B5E3C]/25 hover:bg-[#0B5E3C]/50"}`} />
             ))}
@@ -282,6 +294,8 @@ function InteriorPreview() {
 
 // ─── Hero ──────────────────────────────────────────────────────────────────────
 function HeroSection() {
+  const { items } = useApiList(() => api.getHeroSlides(), []);
+  const slide = items[0];
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 480], [1, 0]);
   const heroY = useTransform(scrollY, [0, 480], [0, -72]);
@@ -289,7 +303,7 @@ function HeroSection() {
   return (
     <section className="relative min-h-screen overflow-hidden flex flex-col">
       <motion.div className="absolute inset-0 will-change-transform" initial={{ scale: 1.0 }} animate={{ scale: 1.1 }} transition={{ duration: 18, ease: [0.0, 0.0, 0.2, 1] }}>
-        <img src="https://images.unsplash.com/photo-1762777973560-76a142ddedef?w=1920&h=1080&fit=crop&auto=format&q=92" alt="Skyscrapers silhouetted against a dramatic sunset sky" className="w-full h-full object-cover" />
+        <img src={slide?.media.secureUrl ?? "https://images.unsplash.com/photo-1762777973560-76a142ddedef?w=1920&h=1080&fit=crop&auto=format&q=92"} alt={slide?.media.altText ?? "Staria premium real estate"} className="w-full h-full object-cover" />
       </motion.div>
       <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/20" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
@@ -298,20 +312,18 @@ function HeroSection() {
       <motion.div style={{ opacity: heroOpacity, y: heroY }} className="relative z-10 flex-1 flex flex-col justify-center w-full max-w-[1440px] mx-auto px-12 xl:px-20 pt-28 pb-10">
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }} className="flex items-center gap-3 mb-7">
           <span className="block w-8 h-px bg-[#D9A11A]" />
-          <span className="text-[#D9A11A] text-[0.8125rem] tracking-[0.32em] uppercase font-semibold" style={{ fontFamily: dm }}>Premium Real Estate · Est. 1999</span>
+          <span className="text-[#D9A11A] text-[0.8125rem] tracking-[0.32em] uppercase font-semibold" style={{ fontFamily: dm }}>{slide?.eyebrow ?? "Premium Real Estate · Staria Properties"}</span>
         </motion.div>
 
         <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.0, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
           className="text-[40px] sm:text-[52px] xl:text-[64px] font-normal leading-[1.1] text-white mb-8 max-w-[820px]"
           style={{ fontFamily: gilda }}>
-          Building Smarter<br />Tomorrow,{" "}
-          <span className="italic text-white/90">Sustaining</span><br />
-          <span>Forever<span className="text-[#D9A11A]">.</span></span>
+          {slide?.title ?? <>Building Smarter<br />Tomorrow,{" "}<span className="italic text-white/90">Sustaining</span><br /><span>Forever<span className="text-[#D9A11A]">.</span></span></>}
         </motion.h1>
 
         <motion.p initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.56, ease: [0.22, 1, 0.36, 1] }}
           className="text-white/65 text-[1.05rem] leading-[1.85] max-w-[500px] mb-11" style={{ fontFamily: dm }}>
-          Premium Property Development, Interior Design, Property Management and Real Estate Solutions.
+          {slide?.subtitle ?? "Premium Property Development, Interior Design, Property Management and Real Estate Solutions."}
         </motion.p>
 
         <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.7, ease: [0.22, 1, 0.36, 1] }} className="flex items-center flex-wrap gap-4">
@@ -430,6 +442,20 @@ function BusinessDivisionsSection() {
 
 // ─── Featured Projects (home - first 3) ───────────────────────────────────────
 function FeaturedProjectsSection() {
+  const { items } = useApiList(() => api.getProjects({ limit: 3, isFeatured: true }), []);
+  const databaseProjects = items.map((project) => ({
+    id: project.slug,
+    name: project.title,
+    location: displayLocation(project.address),
+    type: project.category?.name ?? "Development",
+    status: project.developmentStatus === "COMPLETED" ? "Completed" : project.developmentStatus === "ONGOING" ? "Under Construction" : "Upcoming",
+    statusBg: project.developmentStatus === "COMPLETED" ? "bg-[#0B5E3C]" : project.developmentStatus === "ONGOING" ? "bg-[#D9A11A]" : "bg-[#6366F1]",
+    category: project.category?.name.replace(" Projects", "") ?? "Development",
+    image: primaryImage(project.media, FEATURED_PROJECTS[0].image),
+    isDemo: false
+  }));
+  const displayedProjects = databaseProjects.length > 0 ? databaseProjects : FEATURED_PROJECTS;
+
   return (
     <section className="bg-[#F7F7F5] py-36">
       <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
@@ -450,7 +476,7 @@ function FeaturedProjectsSection() {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {FEATURED_PROJECTS.map((project, i) => (
+          {displayedProjects.map((project, i) => (
             <motion.div key={project.id} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
               className="group bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:-translate-y-2.5 hover:shadow-[0_20px_60px_rgba(0,0,0,0.10)] transition-all duration-500 cursor-pointer">
               <div className="relative h-[320px] overflow-hidden bg-[#E0E0E0]">
@@ -458,6 +484,11 @@ function FeaturedProjectsSection() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                 <span className={`absolute top-4 left-4 ${project.statusBg} text-white text-[0.68rem] font-semibold tracking-wider uppercase px-3 py-1.5 rounded-full`} style={{ fontFamily: dm }}>{project.status}</span>
                 <span className="absolute top-4 right-4 bg-white/15 backdrop-blur-md border border-white/25 text-white text-[0.68rem] font-medium tracking-wider uppercase px-3 py-1.5 rounded-full" style={{ fontFamily: dm }}>{project.category}</span>
+                {project.isDemo && (
+                  <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/92 px-7 py-2.5 text-center text-[0.78rem] font-bold uppercase tracking-[0.22em] text-[#0B5E3C] shadow-[0_10px_30px_rgba(0,0,0,0.20)] ring-1 ring-white/70 backdrop-blur-md" style={{ fontFamily: dm }}>
+                    Upcoming
+                  </div>
+                )}
                 <div className="absolute bottom-4 right-4 w-9 h-9 rounded-full bg-[#D9A11A] flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-400 shadow-lg"><ArrowUpRight size={16} className="text-white" /></div>
                 <div className="absolute bottom-0 left-0 right-0 px-5 pb-5"><h3 className="text-white text-[1.3rem] font-normal leading-tight" style={{ fontFamily: gilda }}>{project.name}</h3></div>
               </div>
@@ -467,7 +498,7 @@ function FeaturedProjectsSection() {
                   <div><p className="text-[0.8125rem] text-[#666666] uppercase tracking-widest mb-0.5" style={{ fontFamily: dm }}>Property Type</p><p className="text-[0.88rem] text-[#222222] font-medium" style={{ fontFamily: dm }}>{project.type}</p></div>
                   <div className="text-right"><p className="text-[0.8125rem] text-[#666666] uppercase tracking-widest mb-0.5" style={{ fontFamily: dm }}>Status</p><p className="text-[0.88rem] text-[#222222] font-medium" style={{ fontFamily: dm }}>{project.status}</p></div>
                 </div>
-                <button className="w-full py-3 border border-[#0B5E3C]/25 hover:bg-[#0B5E3C] hover:border-[#0B5E3C] text-[#0B5E3C] hover:text-white text-[1rem] font-semibold tracking-[0.02em] rounded-xl flex items-center justify-center gap-2 transition-all duration-400" style={{ fontFamily: dm }}>View Details <ArrowRight size={13} /></button>
+                <Link to={`/projects/${project.id}`} className="w-full py-3 border border-[#0B5E3C]/25 hover:bg-[#0B5E3C] hover:border-[#0B5E3C] text-[#0B5E3C] hover:text-white text-[1rem] font-semibold tracking-[0.02em] rounded-xl flex items-center justify-center gap-2 transition-all duration-400" style={{ fontFamily: dm }}>View Details <ArrowRight size={13} /></Link>
               </div>
             </motion.div>
           ))}
@@ -479,6 +510,21 @@ function FeaturedProjectsSection() {
 
 // ─── Featured Properties (home - first 3) ─────────────────────────────────────
 function FeaturedPropertiesSection() {
+  const { items } = useApiList(() => api.getProperties({ limit: 3, isFeatured: true }), []);
+  const databaseProperties = items.map((property) => ({
+    id: property.slug,
+    name: property.title,
+    location: displayLocation(property.address),
+    price: displayPrice(property.priceLabel, property.price, property.currency),
+    type: property.categories.find((category) => category.isPrimary)?.category.name ?? property.listingType,
+    status: (property.listingType === "RENT" ? "For Rent" : property.listingType === "LEASE" ? "For Lease" : "For Sale") as keyof typeof STATUS_BADGE,
+    beds: property.bedrooms ?? null,
+    baths: property.bathrooms === null || property.bathrooms === undefined ? null : Number(property.bathrooms),
+    area: property.areaSqft ? Number(property.areaSqft).toLocaleString("en-BD") : "—",
+    image: primaryImage(property.media, FEATURED_PROPERTIES[0].image)
+  }));
+  const displayedProperties = databaseProperties.length > 0 ? databaseProperties : FEATURED_PROPERTIES;
+
   return (
     <section className="py-28 bg-white">
       <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
@@ -498,7 +544,7 @@ function FeaturedPropertiesSection() {
           </div>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {FEATURED_PROPERTIES.map((prop, i) => <PropertyCard key={prop.id} {...prop} delay={i * 0.09} />)}
+          {displayedProperties.map((prop, i) => <PropertyCard key={prop.id} {...prop} delay={i * 0.09} />)}
         </div>
       </div>
     </section>
@@ -507,6 +553,15 @@ function FeaturedPropertiesSection() {
 
 // ─── Services Overview ─────────────────────────────────────────────────────────
 function ServicesSection() {
+  const { items } = useApiList(() => api.getServices(), []);
+  const databaseServices = items.map((service, index) => ({
+    Icon: SERVICES[index % SERVICES.length].Icon,
+    title: service.title,
+    desc: service.summary,
+    image: primaryImage(service.media, SERVICES[index % SERVICES.length].image)
+  }));
+  const displayedServices = databaseServices.length > 0 ? databaseServices : SERVICES;
+
   return (
     <section className="bg-white py-36">
       <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
@@ -528,7 +583,7 @@ function ServicesSection() {
           </motion.p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SERVICES.map((svc, i) => (
+          {displayedServices.map((svc, i) => (
             <motion.div key={svc.title} initial={{ opacity: 0, y: 44 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-40px" }} transition={{ duration: 0.68, delay: i * 0.09, ease: [0.22, 1, 0.36, 1] }}
               className="group relative bg-white rounded-2xl overflow-hidden border border-black/[0.07] hover:-translate-y-2.5 hover:shadow-[0_20px_60px_rgba(0,0,0,0.09)] transition-all duration-500 cursor-pointer">
               <span className="absolute bottom-0 left-0 z-10 h-[3px] w-0 group-hover:w-full bg-[#D9A11A] transition-all duration-500 ease-out" />

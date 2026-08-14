@@ -1,27 +1,33 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, ChevronDown, MapPin, BedDouble, Bath, Maximize2, Building2, Search } from "lucide-react";
+import { Link, useParams } from "react-router";
 import { PageHero } from "../components/shared/PageHero";
+import { api } from "../services/api";
+import { displayLocation, displayPrice, primaryImage, useApiList } from "../services/content";
 
 type FeaturedProperty = {
   id: string; name: string; location: string; price: string;
-  type: string; status: "For Sale" | "Ready" | "New";
+  type: string; status: "For Sale" | "For Rent" | "For Lease" | "Ready" | "New";
   beds: number | null; baths: number | null; area: string; image: string;
+  description?: string;
 };
 
 const STATUS_BADGE: Record<FeaturedProperty["status"], string> = {
   "For Sale": "bg-[#0B5E3C] text-white",
+  "For Rent": "bg-[#2A5AA5] text-white",
+  "For Lease": "bg-[#7A5600] text-white",
   "Ready": "bg-white text-[#0B5E3C]",
   "New": "bg-[#D9A11A] text-[#1B1B1B]",
 };
 
 const FEATURED_PROPERTIES: FeaturedProperty[] = [
-  { id: "p1", name: "STARIA Heights Penthouse", location: "Gulshan, Dhaka", price: "৳4.2 Cr", type: "Penthouse", status: "For Sale", beds: 4, baths: 4, area: "3,200", image: "https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=700&h=500&fit=crop&auto=format&q=92" },
-  { id: "p2", name: "STARIA Garden Villa", location: "Bashundhara, Dhaka", price: "৳7.8 Cr", type: "Private Villa", status: "For Sale", beds: 5, baths: 5, area: "5,800", image: "https://images.unsplash.com/photo-1706808849780-7a04fbac83ef?w=700&h=500&fit=crop&auto=format&q=92" },
-  { id: "p3", name: "STARIA Commerce One", location: "Motijheel, Dhaka", price: "৳15 Cr", type: "Commercial", status: "For Sale", beds: null, baths: null, area: "18,000", image: "https://images.unsplash.com/photo-1600531529272-023c4b821f14?w=700&h=500&fit=crop&auto=format&q=92" },
-  { id: "p4", name: "STARIA Skyview Residency", location: "Banani, Dhaka", price: "৳2.9 Cr", type: "Apartment", status: "Ready", beds: 3, baths: 3, area: "1,950", image: "https://images.unsplash.com/photo-1565623833408-d77e39b88af6?w=700&h=500&fit=crop&auto=format&q=92" },
-  { id: "p5", name: "STARIA Vista Villas", location: "Chittagong", price: "৳6.5 Cr", type: "Villa Estate", status: "New", beds: 4, baths: 4, area: "4,200", image: "https://images.unsplash.com/photo-1767950470198-c9cd97f8ed87?w=700&h=500&fit=crop&auto=format&q=92" },
-  { id: "p6", name: "STARIA Business Hub", location: "Gulshan 2, Dhaka", price: "৳22 Cr", type: "Office Complex", status: "New", beds: null, baths: null, area: "22,000", image: "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=700&h=500&fit=crop&auto=format&q=92" },
+  { id: "p1", name: "STARIA Heights Penthouse", location: "Gulshan, Dhaka", price: "Contact with us", type: "Penthouse", status: "For Sale", beds: 4, baths: 4, area: "3,200", image: "https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=700&h=500&fit=crop&auto=format&q=92" },
+  { id: "p2", name: "STARIA Garden Villa", location: "Bashundhara, Dhaka", price: "Contact with us", type: "Private Villa", status: "For Sale", beds: 5, baths: 5, area: "5,800", image: "https://images.unsplash.com/photo-1706808849780-7a04fbac83ef?w=700&h=500&fit=crop&auto=format&q=92" },
+  { id: "p3", name: "STARIA Commerce One", location: "Motijheel, Dhaka", price: "Contact with us", type: "Commercial", status: "For Sale", beds: null, baths: null, area: "18,000", image: "https://images.unsplash.com/photo-1600531529272-023c4b821f14?w=700&h=500&fit=crop&auto=format&q=92" },
+  { id: "p4", name: "STARIA Skyview Residency", location: "Banani, Dhaka", price: "Contact with us", type: "Apartment", status: "Ready", beds: 3, baths: 3, area: "1,950", image: "https://images.unsplash.com/photo-1565623833408-d77e39b88af6?w=700&h=500&fit=crop&auto=format&q=92" },
+  { id: "p5", name: "STARIA Vista Villas", location: "Chittagong", price: "Contact with us", type: "Villa Estate", status: "New", beds: 4, baths: 4, area: "4,200", image: "https://images.unsplash.com/photo-1767950470198-c9cd97f8ed87?w=700&h=500&fit=crop&auto=format&q=92" },
+  { id: "p6", name: "STARIA Business Hub", location: "Gulshan 2, Dhaka", price: "Contact with us", type: "Office Complex", status: "New", beds: null, baths: null, area: "22,000", image: "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=700&h=500&fit=crop&auto=format&q=92" },
 ];
 
 const PROPERTY_CATEGORIES = [
@@ -39,7 +45,7 @@ const SEARCH_OPTIONS = {
   budgets: ["Under ৳50 Lakh", "৳50 L – ৳1 Cr", "৳1 Cr – ৳3 Cr", "৳3 Cr – ৳7 Cr", "৳7 Cr – ৳15 Cr", "Above ৳15 Cr"],
 } as const;
 
-function PropertyCard({ name, location, price, type, status, beds, baths, area, image, delay }: FeaturedProperty & { delay: number }) {
+function PropertyCard({ id, name, location, type, status, beds, baths, area, image, delay }: FeaturedProperty & { delay: number }) {
   const [hovered, setHovered] = useState(false);
   return (
     <motion.div initial={{ opacity: 0, y: 36 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
@@ -56,7 +62,7 @@ function PropertyCard({ name, location, price, type, status, beds, baths, area, 
       <div className="p-5 xl:p-6">
         <h3 className="text-[#1B1B1B] leading-tight mb-1.5" style={{ fontFamily: "'Gilda Display', Georgia, serif", fontSize: "clamp(20px, 1.8vw, 26px)" }}>{name}</h3>
         <div className="flex items-center gap-1.5 mb-4"><MapPin size={12} className="text-[#0B5E3C] shrink-0" /><span className="text-[0.79rem] text-[#555555]" style={{ fontFamily: "'DM Sans', sans-serif" }}>{location}</span></div>
-        <p className="text-[#0B5E3C] font-semibold mb-4" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "clamp(20px, 1.8vw, 26px)" }}>{price}</p>
+        <p className="text-[#0B5E3C] font-semibold mb-4" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "clamp(20px, 1.8vw, 26px)" }}>Contact with us</p>
         <span className="block w-full h-px bg-black/[0.06] mb-4" />
         <div className="flex items-center gap-0 mb-5">
           {beds !== null ? (
@@ -75,11 +81,10 @@ function PropertyCard({ name, location, price, type, status, beds, baths, area, 
             </>
           )}
         </div>
-        <motion.button className="w-full py-3 rounded-2xl border text-[1rem] font-semibold tracking-[0.02em] flex items-center justify-center gap-2 transition-colors duration-300"
-          animate={{ backgroundColor: hovered ? "#0B5E3C" : "transparent", borderColor: "#0B5E3C", color: hovered ? "#FFFFFF" : "#0B5E3C" }}
-          transition={{ duration: 0.3, ease: "easeInOut" }} style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <Link to={`/properties/${id}`} className="w-full py-3 rounded-2xl border text-[1rem] font-semibold tracking-[0.02em] flex items-center justify-center gap-2 transition-colors duration-300"
+          style={{ fontFamily: "'DM Sans', sans-serif", backgroundColor: hovered ? "#0B5E3C" : "transparent", borderColor: "#0B5E3C", color: hovered ? "#FFFFFF" : "#0B5E3C" }}>
           View Details <motion.span animate={{ x: hovered ? 4 : 0 }} transition={{ duration: 0.3 }}><ArrowRight size={14} /></motion.span>
-        </motion.button>
+        </Link>
       </div>
     </motion.div>
   );
@@ -175,6 +180,24 @@ function PropertySearchBar() {
 }
 
 export default function PropertiesPage() {
+  const { id } = useParams();
+  const { items, loading, error } = useApiList(() => api.getProperties({ limit: 100 }), []);
+  const databaseProperties: FeaturedProperty[] = items.map((property) => ({
+    id: property.slug,
+    name: property.title,
+    location: displayLocation(property.address),
+    price: displayPrice(property.priceLabel, property.price, property.currency),
+    type: property.categories.find((category) => category.isPrimary)?.category.name ?? property.listingType,
+    status: property.listingType === "RENT" ? "For Rent" : property.listingType === "LEASE" ? "For Lease" : "For Sale",
+    beds: property.bedrooms ?? null,
+    baths: property.bathrooms === null || property.bathrooms === undefined ? null : Number(property.bathrooms),
+    area: property.areaSqft ? Number(property.areaSqft).toLocaleString("en-BD") : "—",
+    image: primaryImage(property.media, FEATURED_PROPERTIES[0].image),
+    description: property.description ?? property.shortDescription ?? undefined
+  }));
+  const displayedProperties = databaseProperties.length > 0 ? databaseProperties : FEATURED_PROPERTIES;
+  const selectedProperty = id ? displayedProperties.find((property) => property.id === id) : undefined;
+
   return (
     <>
       <PageHero
@@ -185,6 +208,14 @@ export default function PropertiesPage() {
         image="https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=1920&h=900&fit=crop&auto=format&q=92"
       />
       <PropertySearchBar />
+      {selectedProperty && (
+        <section className="bg-white py-16 border-b border-black/[0.06]">
+          <div className="max-w-[1200px] mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-10 items-center">
+            <img src={selectedProperty.image} alt={selectedProperty.name} className="w-full h-[380px] object-cover rounded-3xl" />
+            <div><p className="text-[#0B5E3C] uppercase tracking-[.25em] text-xs font-semibold mb-4">{selectedProperty.status}</p><h1 className="text-4xl mb-3" style={{ fontFamily: "'Gilda Display', Georgia, serif" }}>{selectedProperty.name}</h1><p className="text-[#666] mb-5 flex items-center gap-2"><MapPin size={15} /> {selectedProperty.location}</p><p className="text-3xl text-[#0B5E3C] font-semibold mb-6">Contact with us</p><p className="text-[#555] leading-8 mb-7">{selectedProperty.description || "Contact our team for complete information about this property."}</p><div className="flex gap-3"><Link to="/contact" className="px-6 py-3 rounded-full bg-[#0B5E3C] text-white font-semibold">Request a viewing</Link><Link to="/properties" className="px-6 py-3 rounded-full border border-black/15 font-semibold">Close details</Link></div></div>
+          </div>
+        </section>
+      )}
 
       {/* Property Categories */}
       <section className="py-28 bg-[#F7F7F5]">
@@ -234,7 +265,9 @@ export default function PropertiesPage() {
             <p className="text-[0.95rem] leading-[1.8] text-[#555555] max-w-[360px] xl:text-right xl:pb-1.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>A curated selection of STARIA's finest residential and commercial properties across Bangladesh's premier locations.</p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {FEATURED_PROPERTIES.map((prop, i) => <PropertyCard key={prop.id} {...prop} delay={i * 0.09} />)}
+            {error && <div className="md:col-span-2 xl:col-span-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm">Live database content is temporarily unavailable; representative demo listings are shown.</div>}
+            {loading && <div className="md:col-span-2 xl:col-span-3 text-center text-[#777] py-4">Loading live properties…</div>}
+            {displayedProperties.map((prop, i) => <PropertyCard key={prop.id} {...prop} delay={i * 0.09} />)}
           </div>
         </div>
       </section>

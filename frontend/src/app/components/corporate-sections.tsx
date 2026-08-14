@@ -549,8 +549,8 @@ function TeamMemberCard({ member, index }: { member: TeamMember; index: number }
       transition={{ duration: 0.68, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
       className={index === 4 ? "md:col-span-2 md:max-w-[420px] md:mx-auto xl:col-span-1 xl:max-w-none xl:mx-0" : ""}
     >
-      <div className="group flex h-full flex-col overflow-hidden rounded-xl border border-black/[0.07] bg-white shadow-[0_10px_34px_rgba(11,94,60,0.04)] transition-all duration-500 hover:-translate-y-1 hover:border-[#0B5E3C]/20 hover:shadow-[0_16px_52px_rgba(11,94,60,0.10)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
-        <div className="relative aspect-[6/5] overflow-hidden bg-[#F7F7F5]">
+      <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-black/[0.07] bg-[#FEFEFC] shadow-[0_10px_34px_rgba(11,94,60,0.04)] transition-all duration-500 hover:-translate-y-1 hover:border-[#0B5E3C]/20 hover:shadow-[0_16px_52px_rgba(11,94,60,0.10)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+        <div className="relative aspect-[4/5] overflow-hidden bg-[#F7F7F5]">
           {member.image ? (
             <img
               src={member.image}
@@ -578,7 +578,7 @@ function TeamMemberCard({ member, index }: { member: TeamMember; index: number }
           <span className="absolute inset-x-0 bottom-0 h-px bg-[#D9A11A]/60" />
         </div>
 
-        <div className="flex flex-1 flex-col p-5 xl:p-6">
+        <div className="flex flex-1 flex-col p-5 sm:p-6">
           <h3 className="text-[#1B1B1B] leading-[1.22] mb-2 transition-colors duration-300 group-hover:text-[#0B5E3C]" style={{ fontFamily: gilda, fontSize: "clamp(1.16rem, 1.25vw, 1.35rem)", fontWeight: 400 }}>
             {member.name}
           </h3>
@@ -622,7 +622,7 @@ function TeamMemberCard({ member, index }: { member: TeamMember; index: number }
 
 export function LeadershipSection() {
   return (
-    <section id="leadership" className="bg-white py-36">
+    <section id="leadership" aria-labelledby="leadership-heading" className="bg-white py-36">
       <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-12 xl:px-20">
         <div className="text-center mb-16">
           <motion.div
@@ -639,6 +639,7 @@ export function LeadershipSection() {
             <span className="block w-7 h-px bg-[#D9A11A]" />
           </motion.div>
           <motion.h2
+            id="leadership-heading"
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
@@ -660,7 +661,7 @@ export function LeadershipSection() {
           </motion.p>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {TEAM_MEMBERS.map((member, index) => (
             <TeamMemberCard key={member.sourceUrl} member={member} index={index} />
           ))}

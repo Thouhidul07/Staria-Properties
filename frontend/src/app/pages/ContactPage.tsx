@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { MapPin, Phone, Mail, Send, CheckCheck, Loader2 } from "lucide-react";
+import { ExternalLink, MapPin, Phone, Mail, Send, CheckCheck, Loader2 } from "lucide-react";
 import { api } from "../services/api";
+import { GoogleMapEmbed } from "../components/shared/GoogleMapEmbed";
+import { MAP_COORDINATES, MAP_SHARE_URL } from "../services/contactDetails";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
@@ -66,38 +68,23 @@ export default function ContactPage() {
 
           {/* Map / contact info */}
           <motion.div initial={{ opacity: 0, x: -44 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-3xl overflow-hidden" style={{ background: "#082D1C", minHeight: "540px" }}>
-            <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px)", backgroundSize: "56px 56px" }} />
-            <div className="absolute inset-0" style={{ background: "radial-gradient(circle 280px at 50% 46%, rgba(11, 94, 60,0.18) 0%, transparent 100%)" }} />
-
-            <div className="absolute inset-0 flex flex-col items-center justify-center pb-12">
-              <div className="relative flex items-center justify-center mb-8">
-                <span className="absolute w-[90px] h-[90px] rounded-full animate-ping" style={{ background: "rgba(11, 94, 60,0.18)" }} />
-                <span className="absolute w-[64px] h-[64px] rounded-full" style={{ background: "rgba(11, 94, 60,0.22)" }} />
-                <div className="relative z-10 w-[52px] h-[52px] rounded-full bg-[#0B5E3C] flex items-center justify-center" style={{ boxShadow: "0 0 36px rgba(11, 94, 60,0.7)" }}>
-                  <MapPin size={22} className="text-white" />
-                </div>
-              </div>
-              <div className="bg-white/[0.06] border border-white/[0.09] rounded-2xl px-8 py-5 text-center backdrop-blur-sm">
-                <p className="text-white text-[0.92rem] font-semibold mb-1.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>STARIA Headquarters</p>
-                <p className="text-white/40 text-[0.8rem] leading-[1.65]" style={{ fontFamily: "'DM Sans', sans-serif" }}>House 14, Road 11, Gulshan-2<br />Dhaka 1212, Bangladesh</p>
-              </div>
+            className="relative overflow-hidden rounded-3xl border border-white/[0.08]" style={{ background: "#082D1C", minHeight: "540px" }}>
+            <GoogleMapEmbed title="STARIA Bangladesh location map" query={MAP_COORDINATES} />
+            <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(8,45,28,0.02), rgba(8,45,28,0.05) 45%, rgba(8,45,28,0.72) 100%)" }} />
+            <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/[0.1] bg-[#082D1C]/82 px-4 py-2 shadow-lg shadow-black/15 backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#D9A11A] animate-pulse" />
+              <span className="text-[#D9A11A] text-[0.66rem] tracking-[0.24em] uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>BD Office Map</span>
             </div>
-
-            <div className="absolute top-6 right-6 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#D9A11A] animate-pulse" />
-              <span className="text-[#D9A11A]/55 text-[0.66rem] tracking-[0.38em] uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>Our Location</span>
-            </div>
-
-            <div className="absolute bottom-0 left-0 right-0 px-8 pb-8 pt-16" style={{ background: "linear-gradient(to top, #082D1C 60%, transparent)" }}>
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3">
-                  <Phone size={13} className="text-[#D9A11A] shrink-0" />
-                  <span className="text-white/45 text-[0.8rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>+880 1700 000 000</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Mail size={13} className="text-[#D9A11A] shrink-0" />
-                  <span className="text-white/45 text-[0.8rem]" style={{ fontFamily: "'DM Sans', sans-serif" }}>info@staria.com.bd</span>
+            <div className="absolute inset-x-4 bottom-4 sm:inset-x-6 sm:bottom-6">
+              <div className="rounded-2xl border border-white/[0.12] bg-[#082D1C]/92 p-5 shadow-2xl shadow-black/25 backdrop-blur-md">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="text-white text-[0.95rem] font-semibold" style={{ fontFamily: "'DM Sans', sans-serif" }}>STARIA Bangladesh</p>
+                    <p className="mt-1 text-white/45 text-[0.76rem] leading-relaxed" style={{ fontFamily: "'DM Sans', sans-serif" }}>Our Dhaka office location.</p>
+                  </div>
+                  <a href={MAP_SHARE_URL} target="_blank" rel="noopener noreferrer" className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-[#D9A11A]/35 px-4 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-[#D9A11A] transition-colors hover:bg-[#D9A11A] hover:text-[#1B1B1B]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    <MapPin size={13} /> Open Map <ExternalLink size={12} />
+                  </a>
                 </div>
               </div>
             </div>

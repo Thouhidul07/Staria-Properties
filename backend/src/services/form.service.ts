@@ -398,7 +398,7 @@ export class FormService {
   private notifyAdminsContact(contact: ContactMessageWithAssignee) {
     if (env.adminEmails.length === 0) return Promise.resolve(null);
 
-    const adminUrl = `${env.ADMIN_APP_URL}/contact-submissions/${contact.id}`;
+    const adminUrl = `${env.ADMIN_APP_URL.replace(/\/$/, "")}/enquiries`;
     return sendMail({
       to: env.adminEmails,
       subject: `New contact submission: ${contact.subject ?? contact.fullName}`,

@@ -4,15 +4,18 @@ import {
   CategoryType,
   ContentStatus,
   EmploymentType,
+  FurnishingStatus,
   MediaUsageRole,
   PageType,
-  ProductStatus,
+  ProjectDevelopmentStatus,
+  PropertyAvailability,
+  PropertyListingType,
   RecordStatus
 } from "@prisma/client";
 import { z } from "zod";
 
 export type CmsAction = "read" | "create" | "update" | "delete";
-export type CmsStatusKind = "content" | "record" | "product" | "career" | "application";
+export type CmsStatusKind = "content" | "record" | "career" | "application";
 
 export type CmsResourceConfig = {
   label: string;
@@ -52,6 +55,7 @@ export const cmsListQuerySchema = z
     deletedOnly: z.coerce.boolean().default(false),
     categoryType: z.nativeEnum(CategoryType).optional(),
     categoryId: uuidSchema.optional(),
+    projectId: uuidSchema.optional(),
     parentId: uuidSchema.optional(),
     pageId: uuidSchema.optional(),
     albumId: uuidSchema.optional(),
@@ -62,6 +66,13 @@ export const cmsListQuerySchema = z
     group: z.string().trim().optional(),
     pageType: z.nativeEnum(PageType).optional(),
     isFeatured: z.coerce.boolean().optional(),
+    isDemo: z.coerce.boolean().optional(),
+    listingType: z.nativeEnum(PropertyListingType).optional(),
+    availability: z.nativeEnum(PropertyAvailability).optional(),
+    developmentStatus: z.nativeEnum(ProjectDevelopmentStatus).optional(),
+    bedrooms: z.coerce.number().int().nonnegative().optional(),
+    minPrice: z.coerce.number().nonnegative().optional(),
+    maxPrice: z.coerce.number().nonnegative().optional(),
     createdFrom: z.coerce.date().optional(),
     createdTo: z.coerce.date().optional()
   })
@@ -100,13 +111,6 @@ const seoInputSchema = z.object({
 const mediaLinkSchema = z.object({
   mediaId: uuidSchema,
   role: z.nativeEnum(MediaUsageRole).optional(),
-  sortOrder: sortOrderSchema
-});
-
-const productSpecificationSchema = z.object({
-  name: z.string().trim().min(1).max(120),
-  value: z.string().trim().min(1).max(255),
-  unit: z.string().trim().max(40).optional().nullable(),
   sortOrder: sortOrderSchema
 });
 
@@ -168,22 +172,70 @@ const categoryCreateSchema = z.object({
   seo: seoInputSchema.optional()
 });
 
-const productCreateSchema = z.object({
-  sku: z.string().trim().min(1).max(80),
-  name: z.string().trim().min(1).max(180),
+const propertyCreateSchema = z.object({
+  projectId: optionalUuidSchema,
+  referenceCode: z.string().trim().min(1).max(80),
+  title: z.string().trim().min(1).max(180),
   slug: z.string().trim().max(200).optional(),
   shortDescription: z.string().trim().max(500).optional().nullable(),
   description: z.string().trim().optional().nullable(),
-  minimumOrderQty: z.coerce.number().int().positive().optional().nullable(),
+  listingType: z.nativeEnum(PropertyListingType),
+  availability: z.nativeEnum(PropertyAvailability).optional(),
+  price: z.coerce.number().nonnegative().optional().nullable(),
+  currency: z.string().trim().min(3).max(10).optional(),
+  priceLabel: z.string().trim().max(80).optional().nullable(),
+  bedrooms: z.coerce.number().int().nonnegative().optional().nullable(),
+  bathrooms: z.coerce.number().nonnegative().optional().nullable(),
+  balconies: z.coerce.number().int().nonnegative().optional().nullable(),
+  parkingSpaces: z.coerce.number().int().nonnegative().optional().nullable(),
+  floorNumber: z.coerce.number().int().optional().nullable(),
+  totalFloors: z.coerce.number().int().positive().optional().nullable(),
+  areaSqft: z.coerce.number().positive().optional().nullable(),
+  landAreaSqft: z.coerce.number().positive().optional().nullable(),
+  furnishing: z.nativeEnum(FurnishingStatus).optional().nullable(),
+  yearBuilt: z.coerce.number().int().min(1800).max(2200).optional().nullable(),
+  availableFrom: nullableDateSchema,
   status: statusSchema,
   isFeatured: z.coerce.boolean().default(false).optional(),
+  isDemo: z.coerce.boolean().default(false).optional(),
   sortOrder: sortOrderSchema,
   publishedAt: nullableDateSchema,
   categoryIds: z.array(uuidSchema).optional(),
   primaryCategoryId: uuidSchema.optional(),
+  amenityIds: z.array(uuidSchema).optional(),
+  address: addressSchema.optional(),
   media: z.array(mediaLinkSchema).optional(),
-  specifications: z.array(productSpecificationSchema).optional(),
   seo: seoInputSchema.optional()
+});
+
+const projectCreateSchema = z.object({
+  categoryId: optionalUuidSchema,
+  title: z.string().trim().min(1).max(180),
+  slug: z.string().trim().max(200).optional(),
+  summary: z.string().trim().max(600).optional().nullable(),
+  description: z.string().trim().optional().nullable(),
+  developmentStatus: z.nativeEnum(ProjectDevelopmentStatus).optional(),
+  completionPercent: z.coerce.number().min(0).max(100).optional().nullable(),
+  startDate: nullableDateSchema,
+  expectedCompletion: nullableDateSchema,
+  completedAt: nullableDateSchema,
+  status: statusSchema,
+  isFeatured: z.coerce.boolean().default(false).optional(),
+  isDemo: z.coerce.boolean().default(false).optional(),
+  sortOrder: sortOrderSchema,
+  publishedAt: nullableDateSchema,
+  amenityIds: z.array(uuidSchema).optional(),
+  address: addressSchema.optional(),
+  media: z.array(mediaLinkSchema).optional(),
+  seo: seoInputSchema.optional()
+});
+
+const amenityCreateSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  slug: z.string().trim().max(140).optional(),
+  icon: z.string().trim().max(80).optional().nullable(),
+  status: statusSchema,
+  sortOrder: sortOrderSchema
 });
 
 const serviceCreateSchema = z.object({
@@ -247,6 +299,16 @@ const testimonialCreateSchema = z.object({
   clientContactId: optionalUuidSchema,
   quote: z.string().trim().min(1),
   rating: z.coerce.number().int().min(1).max(5).optional().nullable(),
+  status: statusSchema,
+  isFeatured: z.coerce.boolean().default(false).optional(),
+  sortOrder: sortOrderSchema,
+  publishedAt: nullableDateSchema
+});
+
+const faqCreateSchema = z.object({
+  question: z.string().trim().min(1).max(255),
+  answer: z.string().trim().min(1),
+  group: z.string().trim().max(100).optional().nullable(),
   status: statusSchema,
   isFeatured: z.coerce.boolean().default(false).optional(),
   sortOrder: sortOrderSchema,
@@ -337,7 +399,8 @@ const seoCreateSchema = seoInputSchema.extend({
   title: z.string().trim().min(1).max(180),
   pageId: optionalUuidSchema,
   categoryId: optionalUuidSchema,
-  productId: optionalUuidSchema,
+  propertyId: optionalUuidSchema,
+  projectId: optionalUuidSchema,
   serviceId: optionalUuidSchema,
   galleryAlbumId: optionalUuidSchema,
   certificateId: optionalUuidSchema,
@@ -410,20 +473,62 @@ export const cmsResourceConfigs = {
     slugSource: "name",
     createSchema: categoryCreateSchema
   }),
-  products: resource({
-    label: "Products",
-    model: "product",
-    permissionResource: "products",
-    statusKind: "product",
-    searchFields: ["sku", "name", "slug", "shortDescription", "description"],
-    sortableFields: ["sortOrder", "createdAt", "updatedAt", "publishedAt", "name"],
+  properties: resource({
+    label: "Properties",
+    model: "property",
+    permissionResource: "properties",
+    statusKind: "content",
+    searchFields: ["referenceCode", "title", "slug", "shortDescription", "description", "priceLabel"],
+    sortableFields: ["sortOrder", "createdAt", "updatedAt", "publishedAt", "title", "price", "areaSqft"],
     defaultSortBy: "sortOrder",
     defaultSortOrder: "asc",
     softDelete: true,
-    include: { categories: { include: { category: true } }, media: { include: { media: true } }, specifications: true, seo: true },
-    filterFields: ["categoryId", "isFeatured"],
+    include: {
+      project: true,
+      address: true,
+      categories: { include: { category: true } },
+      amenities: { include: { amenity: true } },
+      media: { include: { media: true } },
+      seo: true
+    },
+    filterFields: ["categoryId", "projectId", "listingType", "availability", "bedrooms", "isFeatured", "isDemo"],
+    slugSource: "title",
+    createSchema: propertyCreateSchema
+  }),
+  projects: resource({
+    label: "Projects",
+    model: "project",
+    permissionResource: "projects",
+    statusKind: "content",
+    searchFields: ["title", "slug", "summary", "description"],
+    sortableFields: ["sortOrder", "createdAt", "updatedAt", "publishedAt", "title", "expectedCompletion"],
+    defaultSortBy: "sortOrder",
+    defaultSortOrder: "asc",
+    softDelete: true,
+    include: {
+      category: true,
+      address: true,
+      amenities: { include: { amenity: true } },
+      media: { include: { media: true } },
+      seo: true,
+      _count: { select: { properties: true } }
+    },
+    filterFields: ["categoryId", "developmentStatus", "isFeatured", "isDemo"],
+    slugSource: "title",
+    createSchema: projectCreateSchema
+  }),
+  amenities: resource({
+    label: "Amenities",
+    model: "amenity",
+    permissionResource: "properties",
+    statusKind: "record",
+    searchFields: ["name", "slug", "icon"],
+    sortableFields: ["sortOrder", "createdAt", "updatedAt", "name"],
+    defaultSortBy: "sortOrder",
+    defaultSortOrder: "asc",
+    softDelete: false,
     slugSource: "name",
-    createSchema: productCreateSchema
+    createSchema: amenityCreateSchema
   }),
   services: resource({
     label: "Services",
@@ -544,6 +649,19 @@ export const cmsResourceConfigs = {
     include: { client: true, clientContact: true },
     filterFields: ["clientId", "clientContactId", "isFeatured"],
     createSchema: testimonialCreateSchema
+  }),
+  faqs: resource({
+    label: "FAQs",
+    model: "faq",
+    permissionResource: "content",
+    statusKind: "content",
+    searchFields: ["question", "answer", "group"],
+    sortableFields: ["sortOrder", "createdAt", "updatedAt", "publishedAt", "question"],
+    defaultSortBy: "sortOrder",
+    defaultSortOrder: "asc",
+    softDelete: true,
+    filterFields: ["group", "isFeatured"],
+    createSchema: faqCreateSchema
   }),
   partners: resource({
     label: "Partners",
@@ -744,7 +862,6 @@ export const cmsResourceNames = Object.keys(cmsResourceConfigs);
 export const cmsStatusEnums = {
   content: ContentStatus,
   record: RecordStatus,
-  product: ProductStatus,
   career: CareerStatus,
   application: ApplicationStatus
 };

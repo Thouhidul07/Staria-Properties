@@ -80,6 +80,11 @@ export class CmsController {
     return sendSuccess(res, 201, "Image uploaded successfully", data);
   };
 
+  listMedia = async (req: Request, res: Response) => {
+    const data = await this.uploadService.list(req.query as never);
+    return sendSuccess(res, 200, "Media library retrieved successfully", data);
+  };
+
   uploadFile = async (req: Request, res: Response) => {
     const data = await this.uploadService.uploadFile(req.file, req.user?.id, req.body.altText);
     return sendSuccess(res, 201, "File uploaded successfully", data);

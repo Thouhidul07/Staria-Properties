@@ -1,6 +1,6 @@
-import swaggerJsdoc from "swagger-jsdoc";
 import { env } from "../config/env";
 import { cmsResourceNames } from "../config/cmsResources";
+import { getZodOpenApiComponents } from "./openapi/zodComponents";
 
 const apiResponse = {
   "application/json": {
@@ -14,27 +14,25 @@ const errorResponse = {
   }
 };
 
-export const swaggerSpec = swaggerJsdoc({
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Staria Properties API",
-      version: "1.0.0",
-      description: "Enterprise Node.js and Express API for Staria Properties apparel sourcing operations."
-    },
-    servers: [
-      {
-        url: env.API_PREFIX,
-        description: "Current API"
-      }
-    ],
-    paths: {
+const zodComponents = getZodOpenApiComponents();
+
+export const swaggerSpec = {
+  openapi: "3.0.3",
+  info: {
+    title: "Staria Properties API",
+    version: "1.0.0",
+    description:
+      "Enterprise REST API for Staria Properties real-estate listings, developments, content, enquiries and administration. All versioned routes are served under /api/v1."
+  },
+  servers: [{ url: env.API_PREFIX, description: "Current API version" }],
+  paths: {
       "/site": {
         get: {
           tags: ["Site"],
           summary: "Get public website metadata",
           responses: {
-            "200": { description: "Site metadata retrieved", content: apiResponse }
+            "200": { description: "Site metadata retrieved", content: apiResponse },
+            "429": { description: "Rate limit exceeded", content: errorResponse }
           }
         }
       },
@@ -102,6 +100,19 @@ export const swaggerSpec = swaggerJsdoc({
           responses: {
             "200": { description: "Password reset successfully", content: apiResponse },
             "400": { description: "Reset token invalid or expired", content: errorResponse }
+          }
+        }
+      },
+      "/auth/change-password": {
+        post: {
+          tags: ["Auth"],
+          security: [{ bearerAuth: [] }, { accessCookie: [] }],
+          summary: "Change the authenticated admin password and revoke all sessions",
+          requestBody: { $ref: "#/components/requestBodies/ChangePassword" },
+          responses: {
+            "200": { description: "Password changed; sign in again", content: apiResponse },
+            "400": { description: "Current password or new password is invalid", content: errorResponse },
+            "401": { description: "Authentication required", content: errorResponse }
           }
         }
       },
@@ -213,6 +224,23 @@ export const swaggerSpec = swaggerJsdoc({
           responses: {
             "201": { description: "Image uploaded", content: apiResponse },
             "403": { description: "Requires media:upload permission", content: errorResponse }
+          }
+        }
+      },
+      "/admin/cms/media": {
+        get: {
+          tags: ["CMS Media"],
+          security: [{ bearerAuth: [] }, { accessCookie: [] }],
+          summary: "Browse and search the media library",
+          parameters: [
+            { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+            { name: "limit", in: "query", schema: { type: "integer", default: 24, maximum: 100 } },
+            { name: "search", in: "query", schema: { type: "string" } },
+            { name: "resourceType", in: "query", schema: { type: "string", enum: ["IMAGE", "VIDEO", "PDF", "RAW"] } }
+          ],
+          responses: {
+            "200": { description: "Media assets retrieved", content: apiResponse },
+            "403": { description: "Requires media:read permission", content: errorResponse }
           }
         }
       },
@@ -595,6 +623,7 @@ export const swaggerSpec = swaggerJsdoc({
       }
     },
     components: {
+      ...(zodComponents as Record<string, unknown>),
       parameters: {
         CmsResource: {
           name: "resource",
@@ -629,14 +658,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["email", "password"],
-                properties: {
-                  email: { type: "string", format: "email" },
-                  password: { type: "string", format: "password" }
-                }
-              }
+              schema: { $ref: "#/components/schemas/LoginRequest" }
             }
           }
         },
@@ -644,21 +666,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["name", "email", "password"],
-                properties: {
-                  name: { type: "string", example: "Content Manager" },
-                  email: { type: "string", format: "email" },
-                  password: { type: "string", format: "password" },
-                  roleSlugs: {
-                    type: "array",
-                    items: { type: "string" },
-                    example: ["content-editor"]
-                  },
-                  sendVerificationEmail: { type: "boolean", default: true }
-                }
-              }
+              schema: { $ref: "#/components/schemas/CreateAdminRequest" }
             }
           }
         },
@@ -666,13 +674,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["email"],
-                properties: {
-                  email: { type: "string", format: "email" }
-                }
-              }
+              schema: { $ref: "#/components/schemas/ForgotPasswordRequest" }
             }
           }
         },
@@ -680,14 +682,15 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["token", "password"],
-                properties: {
-                  token: { type: "string" },
-                  password: { type: "string", format: "password" }
-                }
-              }
+              schema: { $ref: "#/components/schemas/ResetPasswordRequest" }
+            }
+          }
+        },
+        ChangePassword: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ChangePasswordRequest" }
             }
           }
         },
@@ -695,12 +698,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: false,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  email: { type: "string", format: "email" }
-                }
-              }
+              schema: { $ref: "#/components/schemas/EmailVerificationRequest" }
             }
           }
         },
@@ -708,13 +706,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["token"],
-                properties: {
-                  token: { type: "string" }
-                }
-              }
+              schema: { $ref: "#/components/schemas/VerifyEmailRequest" }
             }
           }
         },
@@ -722,38 +714,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["contactPerson", "email", "items"],
-                properties: {
-                  companyName: { type: "string", example: "Global Apparel Buyer Ltd." },
-                  companyWebsite: { type: "string", example: "https://example.com" },
-                  contactPerson: { type: "string", example: "Sarah Ahmed" },
-                  email: { type: "string", format: "email" },
-                  phone: { type: "string" },
-                  country: { type: "string", example: "United States" },
-                  source: { type: "string", example: "website" },
-                  expectedDeliveryDate: { type: "string", format: "date-time" },
-                  estimatedBudget: { type: "number" },
-                  currency: { type: "string", example: "USD" },
-                  message: { type: "string" },
-                  items: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      required: ["itemName", "quantity"],
-                      properties: {
-                        productId: { type: "string", format: "uuid" },
-                        categoryId: { type: "string", format: "uuid" },
-                        unitId: { type: "string", format: "uuid" },
-                        itemName: { type: "string", example: "Cotton T-Shirt" },
-                        description: { type: "string" },
-                        quantity: { type: "number", example: 5000 }
-                      }
-                    }
-                  }
-                }
-              }
+              schema: { $ref: "#/components/schemas/CreateQuotationRequest" }
             }
           }
         },
@@ -761,15 +722,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  internalNotes: { type: "string" },
-                  expectedDeliveryDate: { type: "string", format: "date-time" },
-                  estimatedBudget: { type: "number" },
-                  currency: { type: "string" }
-                }
-              }
+              schema: { $ref: "#/components/schemas/UpdateQuotationRequest" }
             }
           }
         },
@@ -777,14 +730,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["salesExecutiveId"],
-                properties: {
-                  salesExecutiveId: { type: "string", format: "uuid", nullable: true },
-                  note: { type: "string" }
-                }
-              }
+              schema: { $ref: "#/components/schemas/AssignQuotationRequest" }
             }
           }
         },
@@ -792,18 +738,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["status"],
-                properties: {
-                  status: {
-                    type: "string",
-                    enum: ["PENDING", "IN_REVIEW", "QUOTED", "REJECTED", "COMPLETED"]
-                  },
-                  note: { type: "string" },
-                  notifyCustomer: { type: "boolean", default: false }
-                }
-              }
+              schema: { $ref: "#/components/schemas/QuotationStatusRequest" }
             }
           }
         },
@@ -811,20 +746,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["message"],
-                properties: {
-                  message: { type: "string" },
-                  conversationType: {
-                    type: "string",
-                    enum: ["MESSAGE", "INTERNAL_NOTE", "STATUS_CHANGE", "ASSIGNMENT", "EMAIL"]
-                  },
-                  isInternal: { type: "boolean", default: false },
-                  notifyCustomer: { type: "boolean", default: false },
-                  metadata: { type: "object", additionalProperties: true }
-                }
-              }
+              schema: { $ref: "#/components/schemas/QuotationConversationRequest" }
             }
           }
         },
@@ -832,21 +754,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["fullName", "email", "message"],
-                properties: {
-                  fullName: { type: "string", example: "Sarah Ahmed" },
-                  email: { type: "string", format: "email" },
-                  phone: { type: "string" },
-                  subject: { type: "string" },
-                  message: { type: "string" },
-                  source: { type: "string", example: "website" },
-                  consentAccepted: { type: "boolean", default: false },
-                  recaptchaToken: { type: "string" },
-                  honeypot: { type: "string", description: "Hidden anti-spam field. Leave empty." }
-                }
-              }
+              schema: { $ref: "#/components/schemas/ContactSubmissionRequest" }
             }
           }
         },
@@ -854,18 +762,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["email"],
-                properties: {
-                  email: { type: "string", format: "email" },
-                  fullName: { type: "string" },
-                  source: { type: "string", example: "website" },
-                  consentAccepted: { type: "boolean", default: false },
-                  recaptchaToken: { type: "string" },
-                  honeypot: { type: "string", description: "Hidden anti-spam field. Leave empty." }
-                }
-              }
+              schema: { $ref: "#/components/schemas/NewsletterSubscriptionRequest" }
             }
           }
         },
@@ -873,15 +770,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["status"],
-                properties: {
-                  status: { type: "string", enum: ["NEW", "ASSIGNED", "RESPONDED", "CLOSED", "SPAM"] },
-                  assignedToId: { type: "string", format: "uuid", nullable: true },
-                  internalNotes: { type: "string", nullable: true }
-                }
-              }
+              schema: { $ref: "#/components/schemas/UpdateContactSubmissionRequest" }
             }
           }
         },
@@ -889,15 +778,7 @@ export const swaggerSpec = swaggerJsdoc({
           required: true,
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                required: ["status"],
-                properties: {
-                  status: { type: "string", enum: ["SUBSCRIBED", "UNSUBSCRIBED", "BOUNCED", "SPAM"] },
-                  fullName: { type: "string", nullable: true },
-                  source: { type: "string", nullable: true }
-                }
-              }
+              schema: { $ref: "#/components/schemas/UpdateNewsletterSubscriberRequest" }
             }
           }
         },
@@ -914,25 +795,8 @@ export const swaggerSpec = swaggerJsdoc({
             }
           }
         }
-      },
-      schemas: {
-        ApiSuccess: {
-          type: "object",
-          properties: {
-            success: { type: "boolean", example: true },
-            message: { type: "string" },
-            data: { type: "object" }
-          }
-        },
-        ApiError: {
-          type: "object",
-          properties: {
-            success: { type: "boolean", example: false },
-            message: { type: "string" }
-          }
-        }
       }
     }
-  },
-  apis: ["./src/routes/*.ts"]
-});
+  };
+
+

@@ -11,7 +11,7 @@ const quotationInclude = {
   },
   items: {
     include: {
-      product: true,
+      property: true,
       category: true,
       unit: true
     },

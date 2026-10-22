@@ -4,7 +4,6 @@ import {
   CareerStatus,
   ContentStatus,
   Prisma,
-  ProductStatus,
   RecordStatus
 } from "@prisma/client";
 import {
@@ -55,6 +54,28 @@ export class CmsService {
   async get(resourceName: string, id: string) {
     const config = this.getConfig(resourceName);
     const item = await this.cmsRepository.findOne(config.model, this.recordWhere(config, id), config.include);
+
+    if (!item) {
+      throw new AppError(`${config.label} record was not found`, 404);
+    }
+
+    return item;
+  }
+
+  async getPublished(resourceName: string, identifier: string) {
+    const config = this.getConfig(resourceName);
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(identifier);
+    const identity = isUuid ? { id: identifier } : { slug: identifier };
+    const item = await this.cmsRepository.findOne(
+      config.model,
+      {
+        ...identity,
+        ...(config.forcedWhere ?? {}),
+        ...(config.softDelete ? { deletedAt: null } : {}),
+        status: this.mapStatus(config.statusKind, "PUBLISHED")
+      },
+      config.include
+    );
 
     if (!item) {
       throw new AppError(`${config.label} record was not found`, 404);
@@ -179,13 +200,20 @@ export class CmsService {
       const value = query[field as keyof CmsQuery];
       if (value === undefined || value === null || value === "") return;
 
-      if (config.model === "product" && field === "categoryId") {
+      if (config.model === "property" && field === "categoryId") {
         where.categories = { some: { categoryId: value } };
         return;
       }
 
       where[field] = value;
     });
+
+    if (config.model === "property" && (query.minPrice !== undefined || query.maxPrice !== undefined)) {
+      where.price = {
+        ...(query.minPrice !== undefined ? { gte: query.minPrice } : {}),
+        ...(query.maxPrice !== undefined ? { lte: query.maxPrice } : {})
+      };
+    }
 
     return where;
   }
@@ -249,8 +277,11 @@ export class CmsService {
       case "categories":
         this.prepareMediaRelation(data, "media", operation);
         break;
-      case "products":
-        this.prepareProductRelations(data, operation);
+      case "properties":
+        this.preparePropertyRelations(data, operation);
+        break;
+      case "projects":
+        this.prepareProjectRelations(data, operation);
         break;
       case "services":
         this.prepareMediaRelation(data, "media", operation);
@@ -313,7 +344,7 @@ export class CmsService {
           };
   }
 
-  private prepareProductRelations(data: CmsInput, operation: "create" | "update") {
+  private preparePropertyRelations(data: CmsInput, operation: "create" | "update") {
     const categoryIds = this.stringArray(data.categoryIds);
     const primaryCategoryId = typeof data.primaryCategoryId === "string" ? data.primaryCategoryId : undefined;
     const shouldUpdateCategories = Array.isArray(data.categoryIds) || Boolean(primaryCategoryId);
@@ -331,22 +362,28 @@ export class CmsService {
       };
     }
 
+    this.prepareAddressRelation(data, operation);
     this.prepareMediaRelation(data, "media", operation);
+    this.prepareAmenityRelations(data, operation);
+  }
 
-    if (Array.isArray(data.specifications)) {
-      const specifications = data.specifications.filter(this.isObject);
-      data.specifications = {
-        ...(operation === "update" ? { deleteMany: {} } : {}),
-        create: specifications.map((specification) =>
-          this.cleanObject({
-            name: specification.name,
-            value: specification.value,
-            unit: specification.unit,
-            sortOrder: specification.sortOrder
-          })
-        )
-      };
-    }
+  private prepareProjectRelations(data: CmsInput, operation: "create" | "update") {
+    this.prepareAddressRelation(data, operation);
+    this.prepareMediaRelation(data, "media", operation);
+    this.prepareAmenityRelations(data, operation);
+  }
+
+  private prepareAmenityRelations(data: CmsInput, operation: "create" | "update") {
+    if (!Array.isArray(data.amenityIds)) return;
+
+    const amenityIds = [...new Set(this.stringArray(data.amenityIds))];
+    delete data.amenityIds;
+    data.amenities = {
+      ...(operation === "update" ? { deleteMany: {} } : {}),
+      create: amenityIds.map((amenityId) => ({
+        amenity: { connect: { id: amenityId } }
+      }))
+    };
   }
 
   private prepareGalleryAlbumRelations(data: CmsInput, operation: "create" | "update") {
@@ -488,8 +525,8 @@ export class CmsService {
     if (!this.hasPublishedAt(config)) return;
 
     const status = String(data.status);
-    const publishedStatuses = [ContentStatus.PUBLISHED, ProductStatus.ACTIVE, CareerStatus.OPEN].map(String);
-    const draftStatuses = [ContentStatus.DRAFT, ProductStatus.DRAFT, CareerStatus.DRAFT].map(String);
+    const publishedStatuses = [ContentStatus.PUBLISHED, CareerStatus.OPEN].map(String);
+    const draftStatuses = [ContentStatus.DRAFT, CareerStatus.DRAFT].map(String);
 
     if (publishedStatuses.includes(status) && data.publishedAt === undefined) {
       data.publishedAt = new Date();
@@ -517,11 +554,6 @@ export class CmsService {
       if (status === "DRAFT") return RecordStatus.INACTIVE;
       if (status === "PUBLISHED") return RecordStatus.ACTIVE;
       if (status in RecordStatus) return status as RecordStatus;
-    }
-
-    if (kind === "product") {
-      if (status === "PUBLISHED") return ProductStatus.ACTIVE;
-      if (status in ProductStatus) return status as ProductStatus;
     }
 
     if (kind === "career") {

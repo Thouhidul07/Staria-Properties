@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { FormService } from "../services/form.service";
 import { sendSuccess } from "../utils/apiResponse";
+import { readCv, removeCv, saveCv } from "../services/cvStorage";
+import { AppError } from "../utils/AppError";
 
 export class FormController {
   constructor(private readonly formService = new FormService()) {}
@@ -8,6 +10,24 @@ export class FormController {
   submitContact = async (req: Request, res: Response) => {
     const data = await this.formService.submitContact(req.body, this.meta(req));
     return sendSuccess(res, 201, "Contact form submitted successfully", data);
+  };
+
+  submitEmployment = async (req: Request, res: Response) => {
+    const key = await saveCv(req.file);
+    try {
+      const data = await this.formService.submitContact({ ...req.body, source: "employment-application", message: `${req.body.message}\n\n[CV:${key}]` }, this.meta(req));
+      return sendSuccess(res, 201, "Employment application submitted successfully", data);
+    } catch (error) { await removeCv(key); throw error; }
+  };
+
+  downloadCv = async (req: Request, res: Response) => {
+    const contact = await this.formService.getContact(this.param(req, "id"));
+    if (contact.source !== "employment-application" || contact.deletedAt) throw new AppError("Application not found", 404);
+    const pdf = await readCv(contact.message);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="application-cv.pdf"');
+    res.setHeader("Cache-Control", "private, no-store");
+    return res.send(pdf);
   };
 
   subscribeNewsletter = async (req: Request, res: Response) => {

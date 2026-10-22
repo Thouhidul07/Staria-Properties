@@ -33,6 +33,7 @@ Authentication supports both `Authorization: Bearer <accessToken>` and HTTP-only
 | `POST` | `/auth/refresh` | Refresh token cookie or body | Refresh token rotation |
 | `POST` | `/auth/forgot-password` | Public, rate limited | Send password reset email if account exists |
 | `POST` | `/auth/reset-password` | Reset token | Reset password and revoke sessions |
+| `POST` | `/auth/change-password` | Authenticated admin | Verify current password, change it, and revoke all sessions |
 | `POST` | `/auth/email-verification/request` | Public, rate limited | Request verification email by address |
 | `POST` | `/auth/email-verification/verify` | Verification token | Verify email |
 | `GET` | `/auth/me` | Authenticated admin | Current admin profile, roles and permissions |
@@ -86,7 +87,9 @@ Supported resources:
 
 ```text
 hero-slides
-products
+properties
+projects
+amenities
 categories
 services
 gallery
@@ -147,6 +150,13 @@ jobPostingId
 group
 pageType
 isFeatured
+isDemo
+listingType
+availability
+developmentStatus
+bedrooms
+minPrice
+maxPrice
 createdFrom
 createdTo
 ```
@@ -154,6 +164,9 @@ createdTo
 Media upload:
 
 ```text
+GET /admin/cms/media
+query: page, limit, search, resourceType
+
 POST /admin/cms/media/images
 field: image
 
@@ -168,11 +181,11 @@ Common mutation conventions:
 - `status` accepts native enum values plus dashboard-friendly aliases like `DRAFT` and `PUBLISHED`.
 - Content models use `DRAFT`, `PUBLISHED`, `ARCHIVED`.
 - Record-style models map `DRAFT` to `INACTIVE` and `PUBLISHED` to `ACTIVE`.
-- Product `PUBLISHED` maps to `ACTIVE`.
 - Career job `PUBLISHED` maps to `OPEN`.
 - Create/update payloads can include nested `seo`.
 - Media-enabled resources accept `media: [{ "mediaId": "...", "role": "COVER", "sortOrder": 0 }]`.
-- Products accept `categoryIds`, `primaryCategoryId`, `specifications`, `media`, and `seo`.
+- Properties accept real-estate details, `categoryIds`, `primaryCategoryId`, `amenityIds`, `address`, `media`, and `seo`.
+- Projects accept development details, `amenityIds`, `address`, `media`, and `seo`.
 - Blogs/news share the normalized `blog_posts` table; `/blogs` writes `postType=BLOG`, `/news` writes `postType=NEWS`.
 - Deletes are soft deletes through `deletedAt`.
 

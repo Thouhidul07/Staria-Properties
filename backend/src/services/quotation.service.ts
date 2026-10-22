@@ -26,7 +26,7 @@ type CreateQuotationInput = {
   currency?: string | null;
   message?: string | null;
   items: Array<{
-    productId?: string | null;
+    propertyId?: string | null;
     categoryId?: string | null;
     unitId?: string | null;
     itemName: string;
@@ -88,7 +88,7 @@ const listInclude = {
   },
   items: {
     include: {
-      product: true,
+      property: true,
       category: true,
       unit: true
     },
@@ -346,7 +346,7 @@ export class QuotationService {
           status: QuoteStatus.PENDING,
           items: {
             create: input.items.map((item, index) => ({
-              product: item.productId ? { connect: { id: item.productId } } : undefined,
+              property: item.propertyId ? { connect: { id: item.propertyId } } : undefined,
               category: item.categoryId ? { connect: { id: item.categoryId } } : undefined,
               unit: item.unitId ? { connect: { id: item.unitId } } : undefined,
               itemName: item.itemName,

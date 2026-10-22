@@ -1,11 +1,9 @@
 import { QuoteConversationType, QuoteStatus } from "@prisma/client";
 import { z } from "zod";
-
-const uuidSchema = z.string().uuid();
-const emailSchema = z.string().trim().email().max(160).transform((value) => value.toLowerCase());
+import { emailSchema, uuidSchema } from "./shared";
 
 const quotationItemSchema = z.object({
-  productId: uuidSchema.optional().nullable(),
+  propertyId: uuidSchema.optional().nullable(),
   categoryId: uuidSchema.optional().nullable(),
   unitId: uuidSchema.optional().nullable(),
   itemName: z.string().trim().min(1).max(180),

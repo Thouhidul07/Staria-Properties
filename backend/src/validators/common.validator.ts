@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { uuidSchema } from "./shared";
 
 export const idParamSchema = z.object({
   params: z.object({
-    id: z.string().uuid("Invalid id")
+    id: uuidSchema
   })
 });
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { emailSchema } from "./shared";
 
 export const passwordSchema = z
   .string()
@@ -8,8 +9,6 @@ export const passwordSchema = z
   .regex(/[a-z]/, "Password must contain a lowercase letter")
   .regex(/[0-9]/, "Password must contain a number")
   .regex(/[^A-Za-z0-9]/, "Password must contain a special character");
-
-const emailSchema = z.string().trim().email().max(160).transform((value) => value.toLowerCase());
 
 export const createAdminSchema = z.object({
   body: z.object({
@@ -47,6 +46,23 @@ export const resetPasswordSchema = z.object({
     token: z.string().min(32, "Reset token is invalid"),
     password: passwordSchema
   })
+});
+
+export const changePasswordSchema = z.object({
+  body: z
+    .object({
+      currentPassword: z.string().min(1, "Current password is required"),
+      newPassword: passwordSchema,
+      confirmPassword: z.string().min(1, "Please confirm the new password")
+    })
+    .refine((input) => input.newPassword === input.confirmPassword, {
+      message: "New password and confirmation do not match",
+      path: ["confirmPassword"]
+    })
+    .refine((input) => input.currentPassword !== input.newPassword, {
+      message: "New password must be different from the current password",
+      path: ["newPassword"]
+    })
 });
 
 export const requestEmailVerificationSchema = z.object({

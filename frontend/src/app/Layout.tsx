@@ -9,7 +9,9 @@ import {
 import { StariaLogo } from "./components/shared/StariaLogo";
 import { LoadingScreen } from "./components/shared/LoadingScreen";
 import { ScrollToTop } from "./components/shared/ScrollToTop";
+import { WhatsAppButton } from "./components/shared/WhatsAppButton";
 import { RouteMetadata } from "./components/shared/RouteMetadata";
+import { ConsultationDialog } from "./components/shared/ConsultationDialog";
 import { api, type SiteInfo } from "./services/api";
 import { BD_ADDRESS, BD_PHONE, BD_PHONE_TEL, US_ADDRESS, US_PHONE, US_PHONE_TEL } from "./services/contactDetails";
 
@@ -278,6 +280,7 @@ function PageTransition() {
 
 // ─── Root Layout ──────────────────────────────────────────────────────────────
 export default function Layout() {
+  const [consultationOpen, setConsultationOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -369,14 +372,15 @@ export default function Layout() {
 
           {/* CTA + hamburger */}
           <div className="flex items-center gap-4 shrink-0">
-            <Link
-              to="/contact"
+            <button
+              type="button"
+              onClick={() => setConsultationOpen(true)}
               className="hidden xl:flex items-center gap-2 px-5 py-2.5 bg-[#D9A11A] hover:bg-[#C08912] text-[#1B1B1B] text-[1rem] font-semibold tracking-[0.02em] rounded-full transition-all duration-300 hover:shadow-[0_8px_32px_rgba(217,161,26,0.28)]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Get Consultation
               <ArrowRight size={13} />
-            </Link>
+            </button>
             <button
               className="xl:hidden text-white p-1"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -421,14 +425,14 @@ export default function Layout() {
               </motion.div>
             ))}
             <div className="pt-5">
-              <Link
-                to="/contact"
-                onClick={() => setMenuOpen(false)}
+              <button
+                type="button"
+                onClick={() => { setMenuOpen(false); setConsultationOpen(true); }}
                 className="block w-full px-5 py-3.5 bg-[#D9A11A] hover:bg-[#C08912] text-[#1B1B1B] font-semibold rounded-full transition-colors text-center"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 Get Consultation
-              </Link>
+              </button>
             </div>
           </div>
         </motion.div>
@@ -438,7 +442,9 @@ export default function Layout() {
       <div id="main-content" tabIndex={-1}><PageTransition /></div>
 
       <Footer siteInfo={siteInfo} />
+      <ConsultationDialog key={String(consultationOpen)} open={consultationOpen} onOpenChange={setConsultationOpen} />
       <ScrollToTop />
+      <WhatsAppButton />
     </div>
   );
 }

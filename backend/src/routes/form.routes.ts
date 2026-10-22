@@ -1,4 +1,5 @@
 import { Router } from "express";
+import multer from "multer";
 import { FormController } from "../controllers/form.controller";
 import { authenticate, requirePermissions } from "../middleware/auth.middleware";
 import { cachePolicies } from "../middleware/cache.middleware";
@@ -23,6 +24,10 @@ export const adminNewsletterRouter = Router();
 const controller = new FormController();
 
 contactRouter.post("/", formLimiter, validate(contactSubmissionSchema), asyncHandler(controller.submitContact));
+contactRouter.post("/employment", formLimiter,
+  multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024, files: 1, fields: 10, fieldSize: 12000 } }).single("cv"),
+  (req, _res, next) => { req.body.consentAccepted = req.body.consentAccepted === "true"; next(); },
+  validate(contactSubmissionSchema), asyncHandler(controller.submitEmployment));
 newsletterSubscriptionRouter.post(
   "/subscribe",
   formLimiter,
@@ -31,6 +36,7 @@ newsletterSubscriptionRouter.post(
 );
 
 adminContactRouter.use(authenticate);
+adminContactRouter.get("/:id/cv", requirePermissions("contact:read"), validate(idParamSchema), asyncHandler(controller.downloadCv));
 adminContactRouter.get(
   "/",
   requirePermissions("contact:read"),

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Award,
   BarChart3,
@@ -28,6 +28,7 @@ import {
 import { Link, NavLink, Outlet, useNavigate } from "react-router";
 import { StariaLogo } from "../components/shared/StariaLogo";
 import { useAdminAuth } from "./AdminAuth";
+import { api } from "../services/api";
 
 const navigationSections = [
   {
@@ -92,6 +93,22 @@ export default function AdminLayout() {
   const { user, signOut, can } = useAdminAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [newEnquiries, setNewEnquiries] = useState(0);
+  const canReadEnquiries = can("inquiries:read");
+
+  useEffect(() => {
+    if (!canReadEnquiries) return;
+    let active = true;
+    const refresh = async () => {
+      try {
+        const result = await api.listContactSubmissions({ status: "NEW", limit: 1 });
+        if (active) setNewEnquiries(result.meta.total);
+      } catch { /* Keep the last known count during temporary connection failures. */ }
+    };
+    void refresh();
+    const timer = window.setInterval(refresh, 30000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [canReadEnquiries]);
 
   const logout = async () => {
     await signOut();
@@ -115,6 +132,7 @@ export default function AdminLayout() {
                 {items.map(({ label, path, icon: Icon, ...item }) => (
                   <NavLink key={path} to={path} end={"end" in item ? item.end : false} onClick={() => setOpen(false)} className={({ isActive }) => `flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-colors ${isActive ? "bg-[#D9A11A] text-[#1B1B1B] font-semibold" : "text-white/60 hover:bg-white/7 hover:text-white"}`}>
                     <Icon size={16} /><span>{label}</span>
+                    {path === "/admin/enquiries" && newEnquiries > 0 && <span aria-label={`${newEnquiries} new enquiries`} className="ml-auto rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">{newEnquiries}</span>}
                   </NavLink>
                 ))}
               </div>

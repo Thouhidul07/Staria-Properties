@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+import { DEVELOPMENT_SERVICES } from "../services/developmentServices";
 import React, { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import {
@@ -7,93 +9,7 @@ import {
 } from "lucide-react";
 
 // ── Services data ──────────────────────────────────────────────────────────────
-const SERVICES = [
-  {
-    num: "01",
-    category: "Residential Development",
-    title: "Landmark Homes Built to Last",
-    subtitle: "Crafting Premium Residences",
-    desc: "From intimate apartment complexes to expansive private villa estates, we develop residential properties that redefine neighbourhood benchmarks. Every project is master-planned for livability, longevity and long-term value.",
-    features: [
-      "Master-planned township and apartment development",
-      "Structural engineering to BNBC standards",
-      "Premium fit-out and finishing specification",
-      "24-month construction defects warranty",
-    ],
-    icon: Home,
-    image: "https://images.unsplash.com/photo-1630061712710-2539eb457c55?w=900&h=650&fit=crop&auto=format&q=92",
-    alt: "Premium high-rise residential development",
-    reversed: false,
-  },
-  {
-    num: "02",
-    category: "Commercial Development",
-    title: "Spaces Where Business Thrives",
-    subtitle: "Commercial Grade Excellence",
-    desc: "Grade-A commercial buildings, mixed-use towers and retail developments engineered to meet the demands of modern enterprise. We integrate smart building systems, efficient floor-plates and future-proof infrastructure from day one.",
-    features: [
-      "Grade-A office and retail floor-plate design",
-      "Smart BMS and energy management integration",
-      "Efficient parking and vertical circulation planning",
-      "LEED and sustainability certification pathways",
-    ],
-    icon: Building2,
-    image: "https://images.unsplash.com/photo-1614595737476-42487331b8a1?w=900&h=650&fit=crop&auto=format&q=92",
-    alt: "Modern commercial building architecture",
-    reversed: true,
-  },
-  {
-    num: "03",
-    category: "Smart Infrastructure",
-    title: "Cities Designed for the Future",
-    subtitle: "Intelligent Urban Systems",
-    desc: "We integrate digital infrastructure — IoT networks, smart utilities, fibre connectivity and automated building controls — directly into the development fabric. Our smart communities are built for the demands of tomorrow's residents and occupiers.",
-    features: [
-      "IoT-enabled utilities and metering systems",
-      "Fibre-to-unit broadband infrastructure",
-      "Automated building and access control",
-      "Smart mobility and EV charging integration",
-    ],
-    icon: Cpu,
-    image: "https://images.unsplash.com/photo-1760553120324-d3d2bf53852b?w=900&h=650&fit=crop&auto=format&q=92",
-    alt: "Smart city architectural model",
-    reversed: false,
-  },
-  {
-    num: "04",
-    category: "Sustainable Construction",
-    title: "Building with the Planet in Mind",
-    subtitle: "Green Development Standards",
-    desc: "Every STARIA development is designed to minimise its environmental footprint without compromising on quality or returns. From passive solar orientation to rainwater harvesting and renewable energy integration, sustainability is built into the brief.",
-    features: [
-      "Passive solar design and natural ventilation",
-      "Rainwater harvesting and greywater recycling",
-      "Solar panel integration and energy storage",
-      "Low-VOC materials and green procurement",
-    ],
-    icon: Leaf,
-    image: "https://images.unsplash.com/photo-1769697264013-d460d0c72785?w=900&h=650&fit=crop&auto=format&q=92",
-    alt: "Sustainable building with solar panels",
-    reversed: true,
-  },
-  {
-    num: "05",
-    category: "Consultancy Services",
-    title: "Expert Guidance, Every Step",
-    subtitle: "Advisory & Development Consulting",
-    desc: "Our consultancy arm brings 25 years of Bangladesh real estate expertise to clients at every stage of the development cycle — from land acquisition feasibility to exit strategy. We provide impartial, data-driven advice with zero conflicts of interest.",
-    features: [
-      "Land acquisition feasibility and due diligence",
-      "Development appraisal and financial modelling",
-      "Planning and regulatory navigation",
-      "Development management and project monitoring",
-    ],
-    icon: Users,
-    image: "https://images.unsplash.com/photo-1526948531399-320e7e40f0ca?w=900&h=650&fit=crop&auto=format&q=92",
-    alt: "Professional real estate consultancy meeting",
-    reversed: false,
-  },
-] as const;
+const SERVICES = DEVELOPMENT_SERVICES;
 
 // ── Development Timeline ────────────────────────────────────────────────────────
 const TIMELINE_STEPS = [
@@ -221,13 +137,14 @@ function ServiceRow({
           </li>
         ))}
       </ul>
-      <button
+      <Link
+        to={`/development/services/${category.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
         className="inline-flex items-center gap-2.5 text-[#0B5E3C] text-[0.8rem] tracking-[0.08em] uppercase font-semibold border-b border-[#0B5E3C]/30 pb-0.5 hover:border-[#0B5E3C] hover:gap-4 transition-all duration-300 group self-start"
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         Explore Service
         <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
-      </button>
+      </Link>
     </div>
   );
 

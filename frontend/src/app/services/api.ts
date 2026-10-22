@@ -95,8 +95,22 @@ export const api = {
   getCompanyStats: () => request<ApiList<StatisticRecord>>("/content/stats?limit=100"),
   getSiteInfo: () => request<SiteInfo>("/site"),
 
-  submitContact: (data: { fullName: string; email: string; phone?: string; subject?: string; message: string; consentAccepted: true }) =>
-    request("/contact", { method: "POST", body: JSON.stringify({ ...data, source: "website" }) }),
+  submitContact: (data: { fullName: string; email: string; phone?: string; subject?: string; message: string; source?: string; consentAccepted: true }) =>
+    request("/contact", { method: "POST", body: JSON.stringify({ ...data, source: data.source ?? "website" }) }),
+  submitEmployment: (data: FormData) => request("/contact/employment", { method: "POST", body: data }),
+  downloadApplicationCv: async (id: string) => {
+    await request("/auth/me");
+    const response = await fetch(`${API_BASE_URL}/admin/contact-submissions/${encodeURIComponent(id)}/cv`, { credentials: "include" });
+    if (!response.ok) throw new Error("The CV could not be downloaded. Please try again.");
+    const url = URL.createObjectURL(await response.blob());
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "application-cv.pdf";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  },
   subscribeNewsletter: (email: string, consentAccepted: true) =>
     request("/newsletter/subscribe", {
       method: "POST",

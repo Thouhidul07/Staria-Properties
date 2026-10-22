@@ -195,7 +195,7 @@ export default function PropertiesPage() {
     image: primaryImage(property.media, FEATURED_PROPERTIES[0].image),
     description: property.description ?? property.shortDescription ?? undefined
   }));
-  const displayedProperties = databaseProperties.length > 0 ? databaseProperties : FEATURED_PROPERTIES;
+  const displayedProperties = loading || error ? [] : databaseProperties;
   const selectedProperty = id ? displayedProperties.find((property) => property.id === id) : undefined;
 
   return (
@@ -265,8 +265,9 @@ export default function PropertiesPage() {
             <p className="text-[0.95rem] leading-[1.8] text-[#555555] max-w-[360px] xl:text-right xl:pb-1.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>A curated selection of STARIA's finest residential and commercial properties across Bangladesh's premier locations.</p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {error && <div className="md:col-span-2 xl:col-span-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm">Live database content is temporarily unavailable; representative demo listings are shown.</div>}
+            {error && <div className="md:col-span-2 xl:col-span-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm">Properties could not be loaded. Please refresh the page to try again.</div>}
             {loading && <div className="md:col-span-2 xl:col-span-3 text-center text-[#777] py-4">Loading live properties…</div>}
+            {!loading && !error && displayedProperties.length === 0 && <p role="status" className="col-span-full py-10 text-center text-[#777]">No properties are available at the moment.</p>}
             {displayedProperties.map((prop, i) => <PropertyCard key={prop.id} {...prop} delay={i * 0.09} />)}
           </div>
         </div>

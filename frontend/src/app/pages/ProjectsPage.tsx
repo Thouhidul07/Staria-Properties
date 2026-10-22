@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, ArrowUpRight, MapPin } from "lucide-react";
 import { Link, useParams } from "react-router";
+import { ConsultationDialog } from "../components/shared/ConsultationDialog";
 import { PageHero } from "../components/shared/PageHero";
 import { api } from "../services/api";
 import { displayLocation, primaryImage, useApiList } from "../services/content";
@@ -18,6 +19,7 @@ const PROJECTS = [
 const PROJECT_FILTERS = ["All", "Residential", "Commercial", "Development", "Interior"];
 
 export default function ProjectsPage() {
+  const [discussionOpen, setDiscussionOpen] = useState(false);
   const [projectFilter, setProjectFilter] = useState("All");
   const { id } = useParams();
   const { items, loading, error } = useApiList(() => api.getProjects({ limit: 100 }), []);
@@ -48,7 +50,7 @@ export default function ProjectsPage() {
       completionPercent: project.completionPercent ? Number(project.completionPercent) : null
     };
   });
-  const displayedProjects = databaseProjects.length > 0 ? databaseProjects : PROJECTS;
+  const displayedProjects = loading || error ? [] : databaseProjects;
   const selectedProject = id ? displayedProjects.find((project) => String(project.id) === id) : undefined;
 
   return (
@@ -60,11 +62,12 @@ export default function ProjectsPage() {
         subtitle="Explore STARIA's portfolio of completed, ongoing and upcoming projects across residential, commercial and interior design."
         image="https://images.unsplash.com/photo-1548263594-a71ea65a8598?w=1920&h=900&fit=crop&auto=format&q=92"
       />
+      {selectedProject && <ConsultationDialog key={`${selectedProject.id}-${discussionOpen}`} open={discussionOpen} onOpenChange={setDiscussionOpen} project={{ title: selectedProject.name, slug: selectedProject.id }} />}
       {selectedProject && (
         <section className="bg-white py-16 border-b border-black/[0.06]">
           <div className="max-w-[1200px] mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-10 items-center">
             <img src={selectedProject.image} alt={selectedProject.name} className="w-full h-[380px] object-cover rounded-3xl" />
-            <div><p className="text-[#0B5E3C] uppercase tracking-[.25em] text-xs font-semibold mb-4">{selectedProject.status}</p><h1 className="text-4xl mb-3" style={{ fontFamily: "'Gilda Display', Georgia, serif" }}>{selectedProject.name}</h1><p className="text-[#666] mb-6 flex items-center gap-2"><MapPin size={15} /> {selectedProject.location}</p>{"completionPercent" in selectedProject && selectedProject.completionPercent !== null && <div className="mb-6"><div className="flex justify-between text-sm mb-2"><span>Project progress</span><strong>{selectedProject.completionPercent}%</strong></div><div className="h-2 bg-black/8 rounded-full"><div className="h-full bg-[#D9A11A] rounded-full" style={{ width: `${selectedProject.completionPercent}%` }} /></div></div>}<p className="text-[#555] leading-8 mb-7">{"description" in selectedProject ? selectedProject.description : "Contact our project team for plans, schedules and availability."}</p><div className="flex gap-3"><Link to="/contact" className="px-6 py-3 rounded-full bg-[#0B5E3C] text-white font-semibold">Discuss this project</Link><Link to="/projects" className="px-6 py-3 rounded-full border border-black/15 font-semibold">Close details</Link></div></div>
+            <div><p className="text-[#0B5E3C] uppercase tracking-[.25em] text-xs font-semibold mb-4">{selectedProject.status}</p><h1 className="text-4xl mb-3" style={{ fontFamily: "'Gilda Display', Georgia, serif" }}>{selectedProject.name}</h1><p className="text-[#666] mb-6 flex items-center gap-2"><MapPin size={15} /> {selectedProject.location}</p>{"completionPercent" in selectedProject && selectedProject.completionPercent !== null && <div className="mb-6"><div className="flex justify-between text-sm mb-2"><span>Project progress</span><strong>{selectedProject.completionPercent}%</strong></div><div className="h-2 bg-black/8 rounded-full"><div className="h-full bg-[#D9A11A] rounded-full" style={{ width: `${selectedProject.completionPercent}%` }} /></div></div>}<p className="text-[#555] leading-8 mb-7">{"description" in selectedProject ? selectedProject.description : "Contact our project team for plans, schedules and availability."}</p><div className="flex gap-3"><button type="button" onClick={() => setDiscussionOpen(true)} className="px-6 py-3 rounded-full bg-[#0B5E3C] text-white font-semibold">Discuss this project</button><Link to="/projects" className="px-6 py-3 rounded-full border border-black/15 font-semibold">Close details</Link></div></div>
           </div>
         </section>
       )}
@@ -101,8 +104,9 @@ export default function ProjectsPage() {
           {/* Grid */}
           <motion.div key={projectFilter} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <AnimatePresence mode="wait">
-              {error && <motion.div className="md:col-span-2 lg:col-span-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm">Live database content is temporarily unavailable; representative demo projects are shown.</motion.div>}
+              {error && <motion.div className="md:col-span-2 lg:col-span-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm">Projects could not be loaded. Please refresh the page to try again.</motion.div>}
               {loading && <motion.div className="md:col-span-2 lg:col-span-3 text-center text-[#777]">Loading live projects…</motion.div>}
+              {!loading && !error && !displayedProjects.some((project) => projectFilter === "All" || project.category === projectFilter) && <motion.p role="status" className="col-span-full py-10 text-center text-[#777]">{displayedProjects.length === 0 ? "No projects are available at the moment." : "No projects match this category."}</motion.p>}
               {displayedProjects.filter((p) => projectFilter === "All" || p.category === projectFilter).map((project, i) => (
                 <motion.div key={project.id} initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                   className="group bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:-translate-y-2.5 hover:shadow-[0_20px_60px_rgba(0,0,0,0.10)] transition-all duration-500 cursor-pointer">

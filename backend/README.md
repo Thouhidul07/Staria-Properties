@@ -248,3 +248,10 @@ Start command:
 ```bash
 npm run db:migrate && npm start
 ```
+# Employment CV storage
+
+Employment applications accept PDF CVs up to 5 MB through `POST /api/v1/contact/employment`.
+Files are stored privately in `private-uploads/cvs` under the backend working directory.
+Set `CV_STORAGE_DIR` to an absolute path on a persistent volume when deploying, and back
+up that directory together with the database. These files are not served publicly;
+authenticated admins with contact read permission download them from the enquiry.

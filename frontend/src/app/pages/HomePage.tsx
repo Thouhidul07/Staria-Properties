@@ -442,7 +442,7 @@ function BusinessDivisionsSection() {
 
 // ─── Featured Projects (home - first 3) ───────────────────────────────────────
 function FeaturedProjectsSection() {
-  const { items } = useApiList(() => api.getProjects({ limit: 3, isFeatured: true }), []);
+  const { items, loading, error } = useApiList(() => api.getProjects({ limit: 3, isFeatured: true }), []);
   const databaseProjects = items.map((project) => ({
     id: project.slug,
     name: project.title,
@@ -453,7 +453,7 @@ function FeaturedProjectsSection() {
     category: project.category?.name.replace(" Projects", "") ?? "Development",
     image: primaryImage(project.media, FEATURED_PROJECTS[0].image)
   }));
-  const displayedProjects = databaseProjects.length > 0 ? databaseProjects : FEATURED_PROJECTS;
+  const displayedProjects = loading || error ? [] : databaseProjects;
 
   return (
     <section className="bg-[#F7F7F5] py-36">
@@ -475,6 +475,7 @@ function FeaturedProjectsSection() {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <ListingState loading={loading} error={error} empty={displayedProjects.length === 0} label="featured projects" />
           {displayedProjects.map((project, i) => (
             <motion.div key={project.id} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
               className="group bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:-translate-y-2.5 hover:shadow-[0_20px_60px_rgba(0,0,0,0.10)] transition-all duration-500 cursor-pointer">
@@ -503,8 +504,15 @@ function FeaturedProjectsSection() {
 }
 
 // ─── Featured Properties (home - first 3) ─────────────────────────────────────
+function ListingState({ loading, error, empty, label }: { loading: boolean; error: string | null; empty: boolean; label: string }) {
+  if (!loading && !error && !empty) return null;
+  return <p role={error ? "alert" : "status"} className="col-span-full rounded-xl border border-black/10 bg-white px-6 py-8 text-center text-sm text-[#666]">
+    {loading ? `Loading ${label}?` : error ? `Unable to load ${label}. Please refresh the page to try again.` : `No ${label} are available at the moment.`}
+  </p>;
+}
+
 function FeaturedPropertiesSection() {
-  const { items } = useApiList(() => api.getProperties({ limit: 3, isFeatured: true }), []);
+  const { items, loading, error } = useApiList(() => api.getProperties({ limit: 3, isFeatured: true }), []);
   const databaseProperties = items.map((property) => ({
     id: property.slug,
     name: property.title,
@@ -517,7 +525,7 @@ function FeaturedPropertiesSection() {
     area: property.areaSqft ? Number(property.areaSqft).toLocaleString("en-BD") : "—",
     image: primaryImage(property.media, FEATURED_PROPERTIES[0].image)
   }));
-  const displayedProperties = databaseProperties.length > 0 ? databaseProperties : FEATURED_PROPERTIES;
+  const displayedProperties = loading || error ? [] : databaseProperties;
 
   return (
     <section className="py-28 bg-white">
@@ -538,6 +546,7 @@ function FeaturedPropertiesSection() {
           </div>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <ListingState loading={loading} error={error} empty={displayedProperties.length === 0} label="featured properties" />
           {displayedProperties.map((prop, i) => <PropertyCard key={prop.id} {...prop} delay={i * 0.09} />)}
         </div>
       </div>

@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "motion/react";
 import { ExternalLink, MapPin, Phone, Mail, Send, CheckCheck, Loader2 } from "lucide-react";
 import { api } from "../services/api";
 import { Link } from "react-router";
+import { EmploymentDialog } from "../components/shared/EmploymentDialog";
 import { GoogleMapEmbed } from "../components/shared/GoogleMapEmbed";
 import { BD_ADDRESS, BD_PHONE, BD_PHONE_TEL, MAP_COORDINATES, MAP_SHARE_URL, US_ADDRESS, US_PHONE, US_PHONE_TEL } from "../services/contactDetails";
 
 export default function ContactPage() {
+  const [employmentOpen, setEmploymentOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
   const [formSent, setFormSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -187,6 +189,17 @@ export default function ContactPage() {
 
         </div>
       </div>
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 xl:px-20 mt-20">
+        <div className="rounded-3xl border border-white/15 bg-white/5 p-8 md:p-12 flex flex-col md:flex-row md:items-center justify-between gap-8">
+          <div className="max-w-xl">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[.25em] text-[#D9A11A]">Careers at Staria</p>
+            <h2 className="mb-4 text-3xl md:text-4xl text-white" style={{ fontFamily: "'Gilda Display', Georgia, serif" }}>Join us</h2>
+            <p className="text-white/65 leading-7">Build your career with Staria Properties. Share your experience and skills with our team by submitting an employment application.</p>
+          </div>
+          <button type="button" onClick={() => setEmploymentOpen(true)} className="shrink-0 rounded-full bg-[#D9A11A] px-10 py-4 font-semibold text-[#1B1B1B] hover:bg-[#C08912]">Apply</button>
+        </div>
+      </div>
+      <EmploymentDialog key={String(employmentOpen)} open={employmentOpen} onOpenChange={setEmploymentOpen} />
     </section>
   );
 }

@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
+import { ConsultationDialog } from "./shared/ConsultationDialog";
+import { BD_PHONE_TEL } from "../services/contactDetails";
 import {
   Users, CreditCard, Wrench, FileText, Eye, Globe, BarChart2,
   ArrowRight, CheckCheck, Shield, Star, Phone,
@@ -209,6 +211,7 @@ function PrimaryServiceRow({
 
 // ── Main export ───────────────────────────────────────────────────────────────
 export function PropertyManagementSection() {
+  const [consultationOpen, setConsultationOpen] = useState(false);
   return (
     <div id="property-management">
 
@@ -467,6 +470,8 @@ export function PropertyManagementSection() {
 
               <div className="flex flex-col gap-4 shrink-0">
                 <motion.button
+                  type="button"
+                  onClick={() => setConsultationOpen(true)}
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.97 }}
                   transition={{ type: "spring", stiffness: 400, damping: 22 }}
@@ -476,19 +481,21 @@ export function PropertyManagementSection() {
                   Book Free Consultation
                   <ArrowRight size={16} />
                 </motion.button>
-                <motion.button
+                <motion.a
+                  href={`tel:${BD_PHONE_TEL}`}
                   whileHover={{ scale: 1.02 }}
                   className="inline-flex items-center justify-center gap-2.5 px-9 py-4 border border-white/30 text-white font-semibold rounded-full hover:bg-white/10 transition-all duration-300 whitespace-nowrap"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   <Phone size={15} />
                   Call Our Team
-                </motion.button>
+                </motion.a>
               </div>
             </div>
           </motion.div>
         </div>
       </section>
+      <ConsultationDialog key={String(consultationOpen)} open={consultationOpen} onOpenChange={setConsultationOpen} initialService="Property management" />
 
     </div>
   );

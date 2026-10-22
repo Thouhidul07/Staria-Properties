@@ -1,14 +1,11 @@
 import { motion } from "motion/react";
 import { Globe, Eye, Users, Cpu, Leaf, Heart } from "lucide-react";
 import { PageHero } from "../components/shared/PageHero";
-import { OurTeamSection } from "../components/OurTeamSection";
 import {
   VisionMissionSection,
   CoreValuesSection,
   SustainabilitySection,
-  LeadershipSection,
   PartnersSection,
-  StatisticsSection,
 } from "../components/corporate-sections";
 
 const WHY_ITEMS = [
@@ -59,6 +56,7 @@ function WhyChooseUsSection() {
   );
 }
 
+// Legacy overview and statistics retained for reuse; omitted from the new About pages.
 function AboutDetailSection() {
   return (
     <section className="bg-white overflow-hidden">
@@ -122,14 +120,10 @@ export default function AboutPage() {
         subtitle="Founded on trust, crafted with precision — STARIA has shaped Bangladesh's premium real estate landscape since 2023."
         image="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1920&h=900&fit=crop&auto=format&q=92"
       />
-      <AboutDetailSection />
-      <OurTeamSection />
-      <StatisticsSection />
       <VisionMissionSection />
       <CoreValuesSection />
       <SustainabilitySection />
       <WhyChooseUsSection />
-      <LeadershipSection />
       <PartnersSection />
     </>
   );

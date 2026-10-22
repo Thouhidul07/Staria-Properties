@@ -7,6 +7,9 @@ const metadata: Record<string, { title: string; description: string }> = {
     description: "Discover premium properties, development projects, and real-estate services from Staria Properties."
   },
   "/about": { title: "About Staria Properties", description: "Learn about Staria Properties, our standards, and our real-estate expertise." },
+  "/about/who-we-are": { title: "Who We Are | Staria Properties", description: "Discover Staria's mission, values, sustainability approach and collaborators." },
+  "/about/board-of-directors": { title: "Board of Directors | Staria Properties", description: "Meet the board guiding Staria Properties and Development Solutions." },
+  "/about/our-team": { title: "Our Team | Staria Properties", description: "Meet the team supporting Staria's development and property services." },
   "/development": { title: "Development Solutions | Staria Properties", description: "Explore Staria development and infrastructure solutions." },
   "/properties": { title: "Properties for Sale and Rent | Staria", description: "Browse premium residential and commercial property listings." },
   "/interior": { title: "Interior Design | Staria Properties", description: "Discover bespoke interior design services and selected work." },

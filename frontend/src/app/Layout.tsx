@@ -18,8 +18,12 @@ import { BD_ADDRESS, BD_PHONE, BD_PHONE_TEL, US_ADDRESS, US_PHONE, US_PHONE_TEL 
 
 const NAV_CONFIG = [
   { label: "Home",        path: "/"            },
-  { label: "About",       path: "/about"       },
-  { label: "WHAT WE ARE", children: [
+  { label: "About", children: [
+    { label: "Who We Are", path: "/about/who-we-are" },
+    { label: "Board of Directors", path: "/about/board-of-directors" },
+    { label: "Our Team", path: "/about/our-team" },
+  ] },
+  { label: "WHAT WE DO", children: [
     { label: "Development", path: "/development" },
     { label: "Properties", path: "/properties" },
     { label: "Interior", path: "/interior" },
@@ -29,14 +33,18 @@ const NAV_CONFIG = [
   ...(PUBLIC_INSIGHTS_ENABLED ? [{ label: "Insights", path: "/news" }] : []),
 ] as const;
 
-function WhatWeAreDropdown({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
+function NavigationDropdown({ label, links, mobile = false, onNavigate }: {
+  label: string;
+  links: readonly { label: string; path: string }[];
+  mobile?: boolean;
+  onNavigate?: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { pathname } = useLocation();
-  const links = NAV_CONFIG[2].children;
   const active = links.some(({ path }) => pathname === path || pathname.startsWith(`${path}/`));
-  const panelId = mobile ? "what-we-are-mobile" : "what-we-are-desktop";
+  const panelId = `${label.toLowerCase().replace(/\s+/g, "-")}-${mobile ? "mobile" : "desktop"}`;
 
   useEffect(() => { setOpen(false); }, [pathname]);
   useEffect(() => {
@@ -62,7 +70,7 @@ function WhatWeAreDropdown({ mobile = false, onNavigate }: { mobile?: boolean; o
           ? `w-full py-3.5 border-b border-white/[0.06] ${active ? "text-[#D9A11A]" : "text-white/65 hover:text-white"}`
           : `py-1 ${active || open ? "text-white" : "text-white/60 hover:text-white"}`}`}
         style={{ fontFamily: "'DM Sans', sans-serif" }}>
-        WHAT WE ARE
+        {label}
         <ChevronDown size={14} className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
         {!mobile && <span className={`absolute bottom-0 left-0 h-px bg-[#D9A11A] transition-all duration-400 ease-out ${active || open ? "w-full" : "w-0 group-hover:w-full"}`} />}
       </button>
@@ -406,7 +414,7 @@ export default function Layout() {
           {/* Desktop nav */}
           <nav className="hidden xl:flex items-center gap-8">
             {NAV_CONFIG.map((item) => {
-              if ("children" in item) return <WhatWeAreDropdown key={item.label} />;
+              if ("children" in item) return <NavigationDropdown key={item.label} label={item.label} links={item.children} />;
               const { label, path } = item;
               return (
               <NavLink
@@ -467,7 +475,7 @@ export default function Layout() {
         >
           <div className="px-8 py-7 space-y-0">
             {NAV_CONFIG.map((item) => {
-              if ("children" in item) return <WhatWeAreDropdown key={item.label} mobile onNavigate={() => setMenuOpen(false)} />;
+              if ("children" in item) return <NavigationDropdown key={item.label} label={item.label} links={item.children} mobile onNavigate={() => setMenuOpen(false)} />;
               const { label, path } = item;
               return (
               <motion.div key={path}>

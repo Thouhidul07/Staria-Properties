@@ -11,7 +11,10 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { index: true, Component: HomePage },
-      { path: "about", lazy: async () => ({ Component: (await import("./pages/AboutPage")).default }) },
+      { path: "about", element: <Navigate to="/about/who-we-are" replace /> },
+      { path: "about/who-we-are", lazy: async () => ({ Component: (await import("./pages/AboutPage")).default }) },
+      { path: "about/board-of-directors", lazy: async () => ({ Component: (await import("./pages/BoardOfDirectorsPage")).default }) },
+      { path: "about/our-team", lazy: async () => ({ Component: (await import("./pages/OurTeamPage")).default }) },
       { path: "development", lazy: async () => ({ Component: (await import("./pages/DevelopmentPage")).default }) },
       { path: "development/services/:slug", lazy: async () => ({ Component: (await import("./pages/DevelopmentServicePage")).default }) },
       { path: "properties", lazy: async () => ({ Component: (await import("./pages/PropertiesPage")).default }) },

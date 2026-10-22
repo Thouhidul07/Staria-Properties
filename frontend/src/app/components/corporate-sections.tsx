@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 import { api } from "../services/api";
 import { useApiList } from "../services/content";
-import riadPortrait from "../../assets/team/sm-riad-hossain-sumon.jpg";
-import shatadruPortrait from "../../assets/team/ahmed-robaiat-rezwan-shatadru.jpg";
-import mujahidPortrait from "../../assets/team/maj-s-m-muzahid-monir.jpg";
+import riadPortrait from "../../assets/team/official/riad-director.jpg";
+import shatadruPortrait from "../../assets/team/official/shatadru-director.png";
+import mujahidPortrait from "../../assets/team/official/muzahid-director.jpg";
 
 // ─── Shared typography helper ─────────────────────────────────────────────────
 const gilda = "'Gilda Display', Georgia, serif";
@@ -447,16 +447,6 @@ type TeamMember = {
 
 const TEAM_MEMBERS: TeamMember[] = [
   {
-    id: 1,
-    name: "Tanjim Ahmed",
-    role: "Director",
-    company: "Staria Development Solutions Ltd. & Staria Properties",
-    phones: ["+1 (347) 632-7151", "+1 (888) 6139218"],
-    email: "tanjim.ahmed@stariaventures.com",
-    website: "www.stariadevelopment.com",
-    sourceUrl: "https://scan.page/p/5vNEhU",
-  },
-  {
     id: 2,
     name: "Samsunnahar Begum",
     role: "Chairperson",
@@ -477,6 +467,16 @@ const TEAM_MEMBERS: TeamMember[] = [
     linkedin: "https://www.linkedin.com/in/riyad-hossain-sumon-64435018/",
     website: "stariadevelopment.com",
     sourceUrl: "https://scan.page/p/nNUwZ1",
+  },
+  {
+    id: 1,
+    name: "Tanjim Ahmed",
+    role: "Director",
+    company: "Staria Development Solutions Ltd. & Staria Properties",
+    phones: ["+1 (347) 632-7151", "+1 (888) 6139218"],
+    email: "tanjim.ahmed@stariaventures.com",
+    website: "www.stariadevelopment.com",
+    sourceUrl: "https://scan.page/p/5vNEhU",
   },
   {
     id: 4,
@@ -636,7 +636,7 @@ export function LeadershipSection() {
           >
             <span className="block w-7 h-px bg-[#D9A11A]" />
             <span className="text-[#0B5E3C] text-[0.8125rem] tracking-[0.3em] uppercase font-semibold" style={{ fontFamily: dm }}>
-              Our Leadership
+              Board of Directors
             </span>
             <span className="block w-7 h-px bg-[#D9A11A]" />
           </motion.div>
@@ -673,8 +673,8 @@ export function LeadershipSection() {
 }
 
 const PARTNERS = [
-  "BRAC", "Siemens", "Lafarge Holcim", "Bangladesh Bank", "Dutch-Bangla", "RAK Ceramics",
-  "Berger Paints", "Schneider Electric", "Mitsubishi Electric", "Kone Elevators", "City Bank", "Standard Chartered",
+  "Mashfiq Construction", "Super Board", "Berger Paints Bangladesh Limited",
+  "BRB Cable Industries Ltd", "Hat Bakso",
 ] as const;
 
 function PartnerLogo({ name }: { name: string }) {

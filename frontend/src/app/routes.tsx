@@ -1,4 +1,5 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
+import { PUBLIC_INSIGHTS_ENABLED } from "./features";
 import Layout from "./Layout";
 import HomePage from "./pages/HomePage";
 import ErrorPage from "./pages/ErrorPage";
@@ -18,8 +19,13 @@ export const router = createBrowserRouter([
       { path: "interior", lazy: async () => ({ Component: (await import("./pages/InteriorPage")).default }) },
       { path: "projects", lazy: async () => ({ Component: (await import("./pages/ProjectsPage")).default }) },
       { path: "projects/:id", lazy: async () => ({ Component: (await import("./pages/ProjectsPage")).default }) },
-      { path: "news", lazy: async () => ({ Component: (await import("./pages/NewsPage")).default }) },
-      { path: "news/:id", lazy: async () => ({ Component: (await import("./pages/NewsPage")).default }) },
+      // FUTURE IMPLEMENTATION — INSIGHTS: disabled routes never mount or fetch news.
+      ...(PUBLIC_INSIGHTS_ENABLED ? [
+        { path: "news", lazy: async () => ({ Component: (await import("./pages/NewsPage")).default }) },
+        { path: "news/:id", lazy: async () => ({ Component: (await import("./pages/NewsPage")).default }) },
+      ] : [
+        { path: "news/*", element: <Navigate to="/" replace /> },
+      ]),
       { path: "contact", lazy: async () => ({ Component: (await import("./pages/ContactPage")).default }) },
       { path: "privacy", lazy: async () => ({ Component: (await import("./pages/LegalPage")).default }) },
       { path: "terms", lazy: async () => ({ Component: (await import("./pages/LegalPage")).default }) },

@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Outlet, Link, useLocation, NavLink } from "react-router";
 import { motion, AnimatePresence, useScroll } from "motion/react";
 import {
   Menu, X, ArrowRight, MapPin,
   Facebook, Instagram, Linkedin, Twitter,
-  Phone, Mail,
+  Phone, Mail, ChevronDown,
 } from "lucide-react";
 import { StariaLogo } from "./components/shared/StariaLogo";
 import { LoadingScreen } from "./components/shared/LoadingScreen";
@@ -13,18 +13,79 @@ import { WhatsAppButton } from "./components/shared/WhatsAppButton";
 import { RouteMetadata } from "./components/shared/RouteMetadata";
 import { ConsultationDialog } from "./components/shared/ConsultationDialog";
 import { api, type SiteInfo } from "./services/api";
+import { PUBLIC_INSIGHTS_ENABLED } from "./features";
 import { BD_ADDRESS, BD_PHONE, BD_PHONE_TEL, US_ADDRESS, US_PHONE, US_PHONE_TEL } from "./services/contactDetails";
 
 const NAV_CONFIG = [
   { label: "Home",        path: "/"            },
   { label: "About",       path: "/about"       },
-  { label: "Development", path: "/development" },
-  { label: "Properties",  path: "/properties"  },
-  { label: "Interior",    path: "/interior"    },
+  { label: "WHAT WE ARE", children: [
+    { label: "Development", path: "/development" },
+    { label: "Properties", path: "/properties" },
+    { label: "Interior", path: "/interior" },
+  ] },
   { label: "Projects",    path: "/projects"    },
-  { label: "Insights",    path: "/news"        },
-  { label: "Contact",     path: "/contact"     },
+  // FUTURE IMPLEMENTATION — INSIGHTS: retain the link for reactivation.
+  ...(PUBLIC_INSIGHTS_ENABLED ? [{ label: "Insights", path: "/news" }] : []),
 ] as const;
+
+function WhatWeAreDropdown({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const { pathname } = useLocation();
+  const links = NAV_CONFIG[2].children;
+  const active = links.some(({ path }) => pathname === path || pathname.startsWith(`${path}/`));
+  const panelId = mobile ? "what-we-are-mobile" : "what-we-are-desktop";
+
+  useEffect(() => { setOpen(false); }, [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const dismiss = (event: PointerEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", dismiss);
+    return () => document.removeEventListener("pointerdown", dismiss);
+  }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative"
+      onPointerEnter={(event) => { if (!mobile && event.pointerType === "mouse") setOpen(true); }}
+      onPointerLeave={(event) => { if (!mobile && event.pointerType === "mouse") setOpen(false); }}
+      onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setOpen(false); }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") { setOpen(false); buttonRef.current?.focus(); }
+      }}>
+      <button ref={buttonRef} type="button" aria-expanded={open} aria-controls={panelId}
+        onClick={() => setOpen((value) => !value)}
+        className={`relative flex items-center justify-between gap-2 text-[0.9375rem] tracking-[0.05em] uppercase font-medium transition-colors duration-300 group ${mobile
+          ? `w-full py-3.5 border-b border-white/[0.06] ${active ? "text-[#D9A11A]" : "text-white/65 hover:text-white"}`
+          : `py-1 ${active || open ? "text-white" : "text-white/60 hover:text-white"}`}`}
+        style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        WHAT WE ARE
+        <ChevronDown size={14} className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+        {!mobile && <span className={`absolute bottom-0 left-0 h-px bg-[#D9A11A] transition-all duration-400 ease-out ${active || open ? "w-full" : "w-0 group-hover:w-full"}`} />}
+      </button>
+      <AnimatePresence>
+        {open && <motion.div id={panelId}
+          initial={mobile ? { height: 0, opacity: 0 } : { opacity: 0, y: -8 }}
+          animate={mobile ? { height: "auto", opacity: 1 } : { opacity: 1, y: 0 }}
+          exit={mobile ? { height: 0, opacity: 0 } : { opacity: 0, y: -8 }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          className={mobile ? "overflow-hidden pl-4" : "absolute top-full left-0 pt-3 min-w-[210px]"}>
+          <div className={mobile ? "py-1" : "rounded-2xl border border-white/[0.07] bg-[#082D1C] p-2 shadow-xl shadow-black/40"}>
+            {links.map(({ label, path }) => <NavLink key={path} to={path}
+              onClick={() => { setOpen(false); onNavigate?.(); }}
+              className={({ isActive }) => `flex items-center justify-between gap-4 text-[0.9375rem] tracking-[0.05em] uppercase transition-colors duration-300 ${mobile ? "py-3.5 border-b border-white/[0.06]" : "px-4 py-3 rounded-xl hover:bg-white/[0.05]"} ${isActive ? "text-[#D9A11A]" : "text-white/65 hover:text-white"}`}
+              style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              {label}<ArrowRight size={12} />
+            </NavLink>)}
+          </div>
+        </motion.div>}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export function createRipple(e: React.MouseEvent<HTMLButtonElement>) {
   const btn = e.currentTarget;
@@ -344,7 +405,10 @@ export default function Layout() {
 
           {/* Desktop nav */}
           <nav className="hidden xl:flex items-center gap-8">
-            {NAV_CONFIG.map(({ label, path }) => (
+            {NAV_CONFIG.map((item) => {
+              if ("children" in item) return <WhatWeAreDropdown key={item.label} />;
+              const { label, path } = item;
+              return (
               <NavLink
                 key={path}
                 to={path}
@@ -367,20 +431,20 @@ export default function Layout() {
                   </>
                 )}
               </NavLink>
-            ))}
+              );
+            })}
           </nav>
 
           {/* CTA + hamburger */}
           <div className="flex items-center gap-4 shrink-0">
-            <button
-              type="button"
-              onClick={() => setConsultationOpen(true)}
+            <Link
+              to="/contact"
               className="hidden xl:flex items-center gap-2 px-5 py-2.5 bg-[#D9A11A] hover:bg-[#C08912] text-[#1B1B1B] text-[1rem] font-semibold tracking-[0.02em] rounded-full transition-all duration-300 hover:shadow-[0_8px_32px_rgba(217,161,26,0.28)]"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Get Consultation
+              Contact
               <ArrowRight size={13} />
-            </button>
+            </Link>
             <button
               className="xl:hidden text-white p-1"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -402,7 +466,10 @@ export default function Layout() {
           className="xl:hidden overflow-hidden bg-[#082D1C]/98 backdrop-blur-2xl border-t border-white/[0.07]"
         >
           <div className="px-8 py-7 space-y-0">
-            {NAV_CONFIG.map(({ label, path }, i) => (
+            {NAV_CONFIG.map((item) => {
+              if ("children" in item) return <WhatWeAreDropdown key={item.label} mobile onNavigate={() => setMenuOpen(false)} />;
+              const { label, path } = item;
+              return (
               <motion.div key={path}>
                 <NavLink
                   to={path}
@@ -423,16 +490,17 @@ export default function Layout() {
                   )}
                 </NavLink>
               </motion.div>
-            ))}
+              );
+            })}
             <div className="pt-5">
-              <button
-                type="button"
-                onClick={() => { setMenuOpen(false); setConsultationOpen(true); }}
+              <Link
+                to="/contact"
+                onClick={() => setMenuOpen(false)}
                 className="block w-full px-5 py-3.5 bg-[#D9A11A] hover:bg-[#C08912] text-[#1B1B1B] font-semibold rounded-full transition-colors text-center"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Get Consultation
-              </button>
+                Contact
+              </Link>
             </div>
           </div>
         </motion.div>

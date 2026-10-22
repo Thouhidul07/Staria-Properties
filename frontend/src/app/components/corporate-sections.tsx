@@ -21,14 +21,14 @@ const gilda = "'Gilda Display', Georgia, serif";
 const dm = "'DM Sans', sans-serif";
 
 // ─── Animated counter hook ────────────────────────────────────────────────────
-function useCountUp(target: number, duration = 2200, decimals = 0) {
+function useCountUp(target: number | null, duration = 2200, decimals = 0) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const started = useRef(false);
 
   useEffect(() => {
-    if (!inView || started.current) return;
+    if (target === null || !Number.isFinite(target) || !inView || started.current) return;
     started.current = true;
     const startTime = performance.now();
     const step = (now: number) => {
@@ -46,16 +46,16 @@ function useCountUp(target: number, duration = 2200, decimals = 0) {
 
 // ─── 1. Statistics Section ────────────────────────────────────────────────────
 const STATS = [
-  { value: 25, suffix: "+", label: "Years of Excellence", sub: "Established 2001" },
-  { value: 50, suffix: "+", label: "Landmark Developments", sub: "Across Bangladesh" },
-  { value: 12, suffix: "M+", label: "Sq Ft Delivered", sub: "Residential & Commercial" },
-  { value: 5000, suffix: "Cr+", label: "Total Portfolio Value", sub: "BDT Assets Managed", prefix: "৳" },
-  { value: 98.5, suffix: "%", label: "Client Satisfaction", sub: "Verified Reviews", decimals: 1 },
-  { value: 800, suffix: "+", label: "Properties Managed", sub: "NRB & Resident Portfolios" },
+  { value: null, suffix: "+", label: "Years of Excellence", sub: "Established 2023" },
+  { value: null, suffix: "+", label: "Landmark Developments", sub: "Across Bangladesh" },
+  { value: null, suffix: "M+", label: "Sq Ft Delivered", sub: "Residential & Commercial" },
+  { value: null, suffix: "Cr+", label: "Total Portfolio Value", sub: "BDT Assets Managed", prefix: "৳" },
+  { value: null, suffix: "%", label: "Client Satisfaction", sub: "Verified Reviews", decimals: 1 },
+  { value: null, suffix: "+", label: "Properties Managed", sub: "NRB & Resident Portfolios" },
 ] as const;
 
 function StatCounter({ value, suffix, label, sub, prefix = "", decimals = 0 }: {
-  value: number; suffix: string; label: string; sub: string; prefix?: string; decimals?: number;
+  value: number | null; suffix: string; label: string; sub: string; prefix?: string; decimals?: number;
 }) {
   const { ref, count } = useCountUp(value, 2000, decimals);
   return (
@@ -70,7 +70,7 @@ function StatCounter({ value, suffix, label, sub, prefix = "", decimals = 0 }: {
           className="leading-none"
           style={{ fontFamily: gilda, fontSize: "2.25rem", color: "#D9A11A" }}
         >
-          {prefix}{decimals > 0 ? count.toFixed(decimals) : Math.floor(count)}{suffix}
+          {value === null || !Number.isFinite(value) ? "—" : `${prefix}${decimals > 0 ? count.toFixed(decimals) : Math.floor(count)}${suffix}`}
         </span>
         <span
           className="text-white/55 text-[0.7rem] tracking-[0.3em] uppercase mt-1.5"
@@ -87,14 +87,16 @@ function StatCounter({ value, suffix, label, sub, prefix = "", decimals = 0 }: {
 export function StatisticsSection() {
   const { items } = useApiList(() => api.getCompanyStats(), []);
   const databaseStats = items.map((stat) => ({
-    value: Number(stat.value),
+    // Presentation override until company statistics are verified; keep CMS records intact.
+    value: null,
     suffix: stat.suffix ?? "",
     label: stat.label,
-    sub: stat.note ?? "",
+    sub: (stat.note ?? "").replace(/Established\s+\d{4}/gi, "Established 2023"),
     prefix: stat.prefix ?? "",
     decimals: Number(stat.value) % 1 === 0 ? 0 : 1
   }));
-  const displayedStats = databaseStats.length > 0 ? databaseStats : STATS;
+  // Keep all six original circles even when the CMS contains fewer records.
+  const displayedStats = STATS.map((stat) => databaseStats.find((item) => item.label === stat.label) ?? stat);
 
   return (
     <section className="bg-[#082D1C] py-36 relative overflow-hidden">
@@ -129,7 +131,7 @@ export function StatisticsSection() {
             <span className="block w-8 h-px bg-[#D9A11A]" />
           </div>
           <h2 className="font-normal leading-[1.1] text-white" style={{ fontFamily: gilda, fontSize: "clamp(32px, 3.3vw, 44px)" }}>
-            Two Decades of <span className="italic">Building Trust</span>
+            Committed to <span className="italic">Building Trust</span>
           </h2>
         </motion.div>
 
@@ -734,6 +736,7 @@ export function PartnersSection() {
 }
 
 // ─── 6. News & Insights ───────────────────────────────────────────────────────
+// FUTURE IMPLEMENTATION — INSIGHTS: retained for public reactivation; see docs/future-insights.md.
 const NEWS_ARTICLES = [
   {
     id: "n1",

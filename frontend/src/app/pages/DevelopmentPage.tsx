@@ -11,7 +11,7 @@ const PROCESS_STEPS = [
   { num: "02", title: "Design", desc: "Architectural and interior concepts developed into precise blueprints and photorealistic 3D renders." },
   { num: "03", title: "Construction", desc: "Premium materials and skilled craftsmen under rigorous on-site supervision across every structural phase." },
   { num: "04", title: "Inspection", desc: "Multi-layer quality audits covering structural integrity, MEP systems, and finishing standards before sign-off." },
-  { num: "05", title: "Delivery", desc: "Seamless handover with full documentation, client walk-through, and post-delivery support guaranteed." },
+  { num: "05", title: "Delivery", desc: "Coordinated project handover and communication aligned with the agreed scope of work." },
 ] as const;
 
 function DevelopmentProcessSection() {

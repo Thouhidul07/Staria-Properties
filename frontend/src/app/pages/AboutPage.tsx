@@ -67,7 +67,7 @@ function AboutDetailSection() {
           <img src="https://images.unsplash.com/photo-1706074740295-d7a79c079562?w=1200&h=900&fit=crop&auto=format&q=92" alt="Luxury modern office interior" className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out hover:scale-[1.04]" />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-white/10" />
           <motion.div initial={{ opacity: 0, scale: 0.85 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="absolute bottom-8 left-8 bg-[#0B5E3C] text-white rounded-2xl px-6 py-4 shadow-2xl">
-            <p className="text-[2rem] font-bold leading-none" style={{ fontFamily: "'Gilda Display', Georgia, serif" }}>1999</p>
+            <p className="text-[2rem] font-bold leading-none" style={{ fontFamily: "'Gilda Display', Georgia, serif" }}>2023</p>
             <p className="text-white/70 text-xs tracking-widest uppercase mt-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>Established</p>
           </motion.div>
         </motion.div>
@@ -91,7 +91,7 @@ function AboutDetailSection() {
 
           <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
             className="text-[#555555] text-[0.9rem] leading-[1.8] mb-10 max-w-[480px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            Founded in 1999 and built on a foundation of trust, craftsmanship and innovation, STARIA has grown to become the premier choice for discerning buyers, investors and developers across Bangladesh.
+            Founded in 2023 and built on a foundation of trust, craftsmanship and innovation, STARIA has grown to become the premier choice for discerning buyers, investors and developers across Bangladesh.
           </motion.p>
 
           <motion.div initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7, delay: 0.28, ease: [0.22, 1, 0.36, 1] }} className="origin-left w-full h-px bg-black/[0.08] mb-10" />
@@ -117,9 +117,9 @@ export default function AboutPage() {
     <>
       <PageHero
         eyebrow="About STARIA"
-        title="Two Decades of"
+        title="Committed to"
         titleItalic="Building Excellence"
-        subtitle="Founded on trust, crafted with precision — STARIA has shaped Bangladesh's premium real estate landscape since 1999."
+        subtitle="Founded on trust, crafted with precision — STARIA has shaped Bangladesh's premium real estate landscape since 2023."
         image="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1920&h=900&fit=crop&auto=format&q=92"
       />
       <AboutDetailSection />

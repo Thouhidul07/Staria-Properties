@@ -1,3 +1,4 @@
+// FUTURE IMPLEMENTATION — INSIGHTS: preserved; public access is gated in routes.tsx.
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { PageHero } from "../components/shared/PageHero";

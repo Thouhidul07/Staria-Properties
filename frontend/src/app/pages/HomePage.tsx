@@ -16,6 +16,28 @@ import { displayLocation, displayPrice, primaryImage, useApiList } from "../serv
 const gilda = "'Gilda Display', Georgia, serif";
 const dm = "'DM Sans', sans-serif";
 
+// Homepage only: set either flag to false to restore its original section.
+const SHOW_STATISTICS_COMING_SOON = false;
+const SHOW_TESTIMONIALS_COMING_SOON = true;
+
+function ComingSoonSection({ label, message, dark = false }: { label: string; message: string; dark?: boolean }) {
+  return (
+    <section className={`py-20 sm:py-28 ${dark ? "bg-[#082D1C]" : "bg-[#F7F7F5]"}`}>
+      <motion.div className="max-w-[720px] mx-auto px-6 sm:px-12 text-center"
+        initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}>
+        <div className="flex items-center justify-center gap-3 mb-5">
+          <span aria-hidden="true" className="w-8 h-px shrink-0 bg-[#D9A11A]" />
+          <p className={`text-[0.8125rem] tracking-[0.3em] uppercase font-semibold ${dark ? "text-[#D9A11A]" : "text-[#0B5E3C]"}`} style={{ fontFamily: dm }}>{label}</p>
+          <span aria-hidden="true" className="w-8 h-px shrink-0 bg-[#D9A11A]" />
+        </div>
+        <h2 className={`font-normal leading-[1.1] mb-6 ${dark ? "text-white" : "text-[#0B5E3C]"}`} style={{ fontFamily: gilda, fontSize: "clamp(34px, 3.5vw, 46px)" }}>Coming <span className="italic">Soon</span></h2>
+        <p className={`text-[0.95rem] leading-[1.8] ${dark ? "text-white/65" : "text-[#555555]"}`} style={{ fontFamily: dm }}>{message}</p>
+      </motion.div>
+    </section>
+  );
+}
+
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const SERVICES = [
   { Icon: Key, title: "Property Buying", desc: "Find and acquire your ideal property with expert guidance, precise market insights and seamless end-to-end acquisition support.", image: "https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=800&h=500&fit=crop&auto=format&q=92" },
@@ -123,15 +145,15 @@ function DivisionCard({ brand, title, subtitle, services, cta, image, dark, imag
   return (
     <motion.div initial={{ opacity: 0, y: 44 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}
       onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}
-      className={`relative overflow-hidden rounded-3xl flex min-h-[520px] xl:min-h-[560px] ${imageLeft ? "flex-row" : "flex-row-reverse"} ${dark ? "bg-[#082D1C] border border-white/[0.07]" : "bg-white border border-black/[0.06]"}`}
+      className={`relative min-w-0 overflow-hidden rounded-3xl flex flex-col h-full ${dark ? "bg-[#082D1C] border border-white/[0.07]" : "bg-white border border-black/[0.06]"}`}
       style={{ boxShadow: hovered ? (dark ? "0 28px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(245,166,35,0.18)" : "0 28px 64px rgba(0,0,0,0.13), 0 0 0 1px rgba(11, 94, 60,0.14)") : "0 6px 24px rgba(0,0,0,0.09)", transform: hovered ? "translateY(-4px)" : "translateY(0)", transition: "transform 0.55s cubic-bezier(0.22,1,0.36,1), box-shadow 0.55s cubic-bezier(0.22,1,0.36,1)" }}>
-      <div className={`relative overflow-hidden shrink-0 ${imageLeft ? "w-[45%]" : "w-[42%]"}`}>
+      <div className="relative overflow-hidden shrink-0 w-full h-[200px] sm:h-[220px] xl:h-[240px]">
         <motion.div className="absolute inset-0 bg-center bg-cover" style={{ backgroundImage: `url(${image})` }} animate={{ scale: hovered ? 1.08 : 1.0 }} transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }} />
         <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, transparent 40%, rgba(0,0,0,0.35) 100%)" }} />
         <div className="absolute inset-0" style={{ background: dark ? (imageLeft ? "linear-gradient(to right, rgba(7,13,9,0) 20%, rgba(7,13,9,0.5) 68%, rgba(7,13,9,1) 100%)" : "linear-gradient(to left, rgba(7,13,9,0) 20%, rgba(7,13,9,0.5) 68%, rgba(7,13,9,1) 100%)") : (imageLeft ? "linear-gradient(to right, rgba(255,255,255,0) 20%, rgba(255,255,255,0.5) 68%, rgba(255,255,255,1) 100%)" : "linear-gradient(to left, rgba(255,255,255,0) 20%, rgba(255,255,255,0.5) 68%, rgba(255,255,255,1) 100%)") }} />
         <div className={`absolute top-7 ${imageLeft ? "left-7" : "right-7"} w-11 h-11 rounded-[14px] flex items-center justify-center text-[0.67rem] font-bold tracking-[0.22em] backdrop-blur-sm ${dark ? "bg-[#D9A11A]/15 text-[#D9A11A] border border-[#D9A11A]/28" : "bg-white/85 text-[#0B5E3C] border border-[#0B5E3C]/20"}`} style={{ fontFamily: "'Montserrat', sans-serif" }}>{divNum}</div>
       </div>
-      <div className="relative z-10 flex flex-col justify-center px-10 xl:px-14 py-12 flex-1">
+      <div className="relative z-10 min-w-0 flex flex-col px-6 sm:px-8 xl:px-10 py-8 flex-1">
         <p className={`text-[0.8125rem] tracking-[0.3em] uppercase font-semibold mb-3 ${dark ? "text-[#D9A11A]" : "text-[#7A5600]"}`} style={{ fontFamily: dm }}>{brand}</p>
         <h3 className={`font-normal leading-[1.08] mb-2.5 ${dark ? "text-white" : "text-[#1B1B1B]"}`} style={{ fontFamily: gilda, fontSize: "clamp(22px, 2.2vw, 32px)" }}>{title}</h3>
         <p className={`text-[0.84rem] leading-snug mb-7 ${dark ? "text-white/40" : "text-[#555555]"}`} style={{ fontFamily: dm }}>{subtitle}</p>
@@ -144,7 +166,7 @@ function DivisionCard({ brand, title, subtitle, services, cta, image, dark, imag
             </motion.li>
           ))}
         </ul>
-        <motion.button className={`inline-flex items-center gap-3 text-[1rem] font-semibold tracking-[0.02em] w-fit group/cta ${dark ? "text-white" : "text-[#1B1B1B]"}`} style={{ fontFamily: dm }} whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+        <motion.button className={`inline-flex items-center gap-3 text-[1rem] font-semibold tracking-[0.02em] w-fit mt-auto group/cta ${dark ? "text-white" : "text-[#1B1B1B]"}`} style={{ fontFamily: dm }} whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
           <span className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${dark ? "bg-[#D9A11A] text-[#1B1B1B] group-hover/cta:bg-white group-hover/cta:scale-110" : "bg-[#0B5E3C] text-white group-hover/cta:bg-[#7A5600] group-hover/cta:scale-110"}`}><ArrowRight size={15} /></span>
           {cta}
         </motion.button>
@@ -309,16 +331,17 @@ function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
       <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(0,0,0,0.35) 100%)" }} />
 
-      <motion.div style={{ opacity: heroOpacity, y: heroY }} className="relative z-10 flex-1 flex flex-col justify-center w-full max-w-[1440px] mx-auto px-12 xl:px-20 pt-28 pb-10">
+      <motion.div style={{ opacity: heroOpacity, y: heroY }} className="relative z-10 flex-1 flex flex-col justify-center w-full max-w-[1440px] mx-auto px-6 sm:px-12 xl:px-20 pt-28 pb-10">
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }} className="flex items-center gap-3 mb-7">
           <span className="block w-8 h-px bg-[#D9A11A]" />
           <span className="text-[#D9A11A] text-[0.8125rem] tracking-[0.32em] uppercase font-semibold" style={{ fontFamily: dm }}>{slide?.eyebrow ?? "Premium Real Estate · Staria Properties"}</span>
         </motion.div>
 
         <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.0, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
-          className="text-[40px] sm:text-[52px] xl:text-[64px] font-normal leading-[1.1] text-white mb-8 max-w-[820px]"
-          style={{ fontFamily: gilda }}>
-          {slide?.title ?? <>Building Smarter<br />Tomorrow,{" "}<span className="italic text-white/90">Sustaining</span><br /><span>Forever<span className="text-[#D9A11A]">.</span></span></>}
+          className="text-[32px] sm:text-[48px] xl:text-[64px] font-normal leading-[1.1] text-white mb-8 max-w-[900px]"
+          style={{ fontFamily: gilda, textWrap: "balance" }}>
+          {/* Fixed homepage motto; all other hero content remains API-driven. */}
+          BUILDING SMARTER TOMORROW,<wbr /><span className="italic text-white/90">SUSTAINIING FOREVER</span>
         </motion.h1>
 
         <motion.p initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.56, ease: [0.22, 1, 0.36, 1] }}
@@ -342,15 +365,22 @@ function HeroSection() {
       </motion.div>
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: 1 }} className="relative z-10 shrink-0">
-        <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-12 xl:px-20">
           <div className="w-full h-px bg-gradient-to-r from-white/10 via-white/[0.07] to-transparent mb-0" />
         </div>
-        <div className="max-w-[1440px] mx-auto px-12 xl:px-20 py-5 flex items-center justify-between">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-12 xl:px-20 py-5 flex items-center justify-between">
           <div className="hidden md:flex items-center gap-8 text-white/40 text-xs tracking-widest uppercase" style={{ fontFamily: dm }}>
-            {[["500+", "Projects"], ["25 Yrs", "Experience"], ["12,000+", "Clients"]].map(([val, lbl]) => (
-              <div key={lbl} className="flex items-center gap-2">
-                <span className="text-white/70 font-semibold text-sm" style={{ fontFamily: gilda }}>{val}</span>
-                <span>{lbl}</span>
+            {[
+              { value: "3", label: "Years Experience" },
+              { value: "2", label: "Projects", note: "Multiple ongoing projects" },
+              { value: "15", label: "Clients" },
+            ].map(({ value, label, note }) => (
+              <div key={label}>
+                <div className="flex items-center gap-2">
+                  <span className="text-white/70 font-semibold text-sm" style={{ fontFamily: gilda }}>{value}</span>
+                  <span>{label}</span>
+                </div>
+                {note && <p className="text-[0.625rem] normal-case tracking-normal mt-1">{note}</p>}
               </div>
             ))}
           </div>
@@ -377,7 +407,7 @@ function CompanyOverview() {
           <img src="https://images.unsplash.com/photo-1706074740295-d7a79c079562?w=1200&h=900&fit=crop&auto=format&q=92" alt="Luxury modern office interior" className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out hover:scale-[1.04]" />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-white/10" />
           <motion.div initial={{ opacity: 0, scale: 0.85 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="absolute bottom-8 left-8 bg-[#0B5E3C] text-white rounded-2xl px-6 py-4 shadow-2xl">
-            <p className="text-[2rem] font-bold leading-none" style={{ fontFamily: gilda }}>1999</p>
+            <p className="text-[2rem] font-bold leading-none" style={{ fontFamily: gilda }}>2023</p>
             <p className="text-white/70 text-xs tracking-widest uppercase mt-1" style={{ fontFamily: dm }}>Established</p>
           </motion.div>
         </motion.div>
@@ -398,11 +428,11 @@ function CompanyOverview() {
           </motion.p>
           <motion.div initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7, delay: 0.28, ease: [0.22, 1, 0.36, 1] }} className="origin-left w-full h-px bg-black/[0.08] mb-10" />
           <div className="grid grid-cols-3 gap-5">
-            {[{ number: "50+", label: "Projects", delay: 0.32 }, { number: "500+", label: "Happy Clients", delay: 0.44 }, { number: "10+", label: "Years Experience", delay: 0.56 }].map(({ number, label, delay }) => (
+            {[{ number: 2, label: "Projects", delay: 0.32 }, { number: 15, label: "Happy Clients", delay: 0.44 }, { number: 3, label: "Years Experience", delay: 0.56 }].map(({ number, label, delay }) => (
               <motion.div key={label} initial={{ opacity: 0, y: 36 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
                 className="group relative bg-[#F7F7F5] hover:bg-[#0B5E3C] rounded-2xl px-7 py-8 transition-all duration-500 cursor-default overflow-hidden">
                 <span className="block w-8 h-[3px] bg-[#D9A11A] rounded-full mb-4 group-hover:w-full transition-all duration-500" />
-                <p className="text-[2.6rem] font-bold text-[#0B5E3C] group-hover:text-white leading-none mb-2 transition-colors duration-500" style={{ fontFamily: gilda }}>{number}</p>
+                <p className="text-[2.6rem] font-bold text-[#0B5E3C] group-hover:text-white leading-none mb-2 transition-colors duration-500" style={{ fontFamily: gilda }}>{number ?? "—"}</p>
                 <p className="text-[#555555] group-hover:text-white/70 text-sm font-medium leading-snug transition-colors duration-500" style={{ fontFamily: dm }}>{label}</p>
               </motion.div>
             ))}
@@ -417,7 +447,7 @@ function CompanyOverview() {
 function BusinessDivisionsSection() {
   return (
     <section className="py-28 bg-[#F7F7F5]">
-      <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-12 xl:px-20">
         <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}>
           <div className="flex items-center justify-center gap-3 mb-5">
             <span className="block w-8 h-px bg-[#D9A11A]" />
@@ -431,7 +461,7 @@ function BusinessDivisionsSection() {
             STARIA operates through two specialized divisions — each purpose-built to deliver uncompromising quality in its domain.
           </p>
         </motion.div>
-        <div className="flex flex-col gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 xl:gap-8 items-stretch">
           <DivisionCard brand="Staria" title="Development Solutions" subtitle="Smart Development & Infrastructure Solutions" services={DIVISION_SERVICES_DEV} cta="Learn More" image="https://images.unsplash.com/photo-1628012209120-d9db7abf7eab?w=1000&h=700&fit=crop&auto=format&q=92" dark={true} imageLeft={true} delay={0} divNum="01" />
           <DivisionCard brand="Staria" title="Properties" subtitle="Professional Real Estate Services" services={DIVISION_SERVICES_PROP} cta="Explore Services" image="https://images.unsplash.com/photo-1638885930125-85350348d266?w=1000&h=700&fit=crop&auto=format&q=92" dark={false} imageLeft={false} delay={0.12} divNum="02" />
         </div>
@@ -623,8 +653,12 @@ export default function HomePage() {
       <FeaturedProjectsSection />
       <InteriorPreview />
       <ServicesSection />
-      <StatisticsSection />
-      <TestimonialsSection />
+      {SHOW_STATISTICS_COMING_SOON
+        ? <ComingSoonSection label="STARIA IN NUMBERS" message="We're preparing this section. Please check back soon." dark />
+        : <StatisticsSection />}
+      {SHOW_TESTIMONIALS_COMING_SOON
+        ? <ComingSoonSection label="CLIENT STORIES" message="Our client stories will be featured here soon." />
+        : <TestimonialsSection />}
       <CtaBannerSection />
     </>
   );

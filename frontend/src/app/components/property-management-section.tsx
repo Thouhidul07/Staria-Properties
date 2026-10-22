@@ -3,102 +3,83 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { ConsultationDialog } from "./shared/ConsultationDialog";
 import { BD_PHONE_TEL } from "../services/contactDetails";
 import {
-  Users, CreditCard, Wrench, FileText, Eye, Globe, BarChart2,
-  ArrowRight, CheckCheck, Shield, Star, Phone,
+  Users, CreditCard, Wrench, FileText, Eye, Globe,
+  ArrowRight, CheckCheck, Shield, Star, Phone, Leaf,
 } from "lucide-react";
 
-// ── Alternating detailed service rows (4 primary services) ────────────────────
+// ── Alternating detailed service rows (client advantages) ────────────────────
 const PRIMARY_SERVICES = [
   {
     num: "01",
-    category: "Tenant Management",
-    title: "Tenants Handled, Relationships Built",
-    subtitle: "End-to-End Tenant Services",
-    desc: "We manage every touchpoint of the tenant relationship — from marketing vacant properties and conducting rigorous tenant screening through to renewals and structured move-out processes. Your investment is in professional hands.",
+    category: "International Perspective",
+    title: "Global Practices, Local Understanding",
+    subtitle: "Backed by Reliance Tech Inc. (USA)",
+    desc: "As a subsidiary of Reliance Tech Inc. (USA), STARIA draws on international business practices while remaining closely connected to Bangladesh's property market. Clients benefit from professional guidance grounded in their local context.",
     features: [
-      "Targeted property marketing and listings management",
-      "Comprehensive tenant background and credit screening",
-      "Lease negotiation, drafting and execution",
-      "Structured move-in, mid-tenancy and move-out protocols",
-    ],
-    icon: Users,
-    image: "https://images.unsplash.com/photo-1741156386380-0236c72eb6f9?w=900&h=650&fit=crop&auto=format&q=92",
-    alt: "Property key handover to new tenant",
-    reversed: false,
-  },
-  {
-    num: "02",
-    category: "Property Maintenance",
-    title: "Maintained to the Highest Standard",
-    subtitle: "Proactive Asset Preservation",
-    desc: "Our in-house maintenance team and vetted contractor network respond to issues within 24 hours. We carry out scheduled preventive maintenance programmes to protect asset value and ensure tenants experience a truly premium standard of living.",
-    features: [
-      "24-hour emergency maintenance response",
-      "Planned preventive maintenance schedules",
-      "Vetted contractor network — plumbing, electrical, HVAC",
-      "Detailed maintenance history and cost reporting",
-    ],
-    icon: Wrench,
-    image: "https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=900&h=650&fit=crop&auto=format&q=92",
-    alt: "Professional property maintenance inspection",
-    reversed: true,
-  },
-  {
-    num: "03",
-    category: "NRB Property Management",
-    title: "Your Bangladesh Property, Expertly Managed",
-    subtitle: "Specialist Non-Resident Services",
-    desc: "For Bangladeshis living abroad, managing property from overseas is complex. Our dedicated NRB team handles everything — legal compliance, rent collection, maintenance coordination and regular reporting — so you can invest with complete confidence.",
-    features: [
-      "Dedicated NRB relationship manager",
-      "Regular video calls and digital property reports",
-      "Foreign remittance facilitation and documentation",
-      "Legal compliance and power of attorney management",
+      "International business perspective",
+      "Professional principles and accountability",
+      "Local market understanding",
+      "Guidance aligned with client goals"
     ],
     icon: Globe,
     image: "https://images.unsplash.com/photo-1526948531399-320e7e40f0ca?w=900&h=650&fit=crop&auto=format&q=92",
-    alt: "Professional NRB property management consultation",
-    reversed: false,
+    alt: "Illustrative stock photograph of a professional planning meeting",
+    reversed: false
   },
   {
-    num: "04",
-    category: "Rent Collection",
-    title: "Rent On Time, Every Time",
-    subtitle: "Systematic Revenue Management",
-    desc: "We take full responsibility for rent collection — issuing demands, managing payments, chasing arrears and disbursing net income to owners. Our technology-enabled system provides real-time visibility into your rental income.",
+    num: "02",
+    category: "Technology-Driven Operations",
+    title: "Clear Information, Informed Decisions",
+    subtitle: "Digital Tools & Transparent Processes",
+    desc: "STARIA uses modern digital tools and smart systems to improve transparency, efficiency and reporting. This approach helps clients understand their projects and make decisions with clearer information.",
     features: [
-      "Online rent collection and automated reminders",
-      "Arrears management and legal escalation protocols",
-      "Monthly net income disbursement with full statements",
-      "Rent review analysis and increase negotiation",
+      "Technology-enabled coordination",
+      "Transparent communication",
+      "Digital tools supporting reporting",
+      "Information to support client decisions"
     ],
-    icon: CreditCard,
+    icon: Eye,
     image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=900&h=650&fit=crop&auto=format&q=92",
-    alt: "Financial document signing for rent collection",
-    reversed: true,
-  },
+    alt: "Illustrative stock photograph of professionals reviewing project documents",
+    reversed: true
+  }
 ] as const;
 
-// ── Compact service cards (3 supplementary services) ──────────────────────────
+// ── Compact service cards (3 client benefits) ──────────────────────────
 const COMPACT_SERVICES = [
   {
     icon: FileText,
-    title: "Legal Documentation",
-    desc: "We prepare, review and execute all tenancy agreements, addenda, notices and legal correspondence in full compliance with Bangladesh tenancy law. Every document is drafted by our in-house legal team.",
-    features: ["Tenancy agreement drafting", "Section 21 and possession notices", "Lease variation and addenda", "Legal dispute support"],
+    title: "Local Market Knowledge",
+    desc: "Professional guidance informed by an understanding of Bangladesh's real estate market helps clients assess their requirements and development options.",
+    features: [
+      "Local market context",
+      "Professional guidance",
+      "Informed project discussions",
+      "Understanding client priorities"
+    ]
   },
   {
-    icon: Eye,
-    title: "Property Inspection",
-    desc: "Systematic inspection programmes — move-in, mid-tenancy and move-out — document the condition of your property with timestamped photography, written reports and condition comparison tools.",
-    features: ["Move-in inventory and condition report", "Quarterly mid-tenancy inspections", "Comprehensive move-out check", "Photographic evidence archive"],
+    icon: Users,
+    title: "Client-Focused Solutions",
+    desc: "We place clients at the centre of each engagement and tailor solutions to their goals, rather than applying a single approach to every project.",
+    features: [
+      "Individual requirements",
+      "Tailored solutions",
+      "Open communication",
+      "Client-centred decisions"
+    ]
   },
   {
-    icon: BarChart2,
-    title: "Monthly Reporting",
-    desc: "Every owner receives a clear, comprehensive monthly statement covering income received, expenditure incurred, maintenance activity and key property metrics — accessible via our secure owner portal.",
-    features: ["Monthly income and expenditure statement", "Maintenance log and cost breakdown", "Rental market benchmarking", "Annual portfolio performance report"],
-  },
+    icon: Leaf,
+    title: "Sustainable Long-Term Value",
+    desc: "Our approach considers the lasting environmental, social and economic value of development, supporting responsible decisions throughout the property lifecycle.",
+    features: [
+      "Responsible development",
+      "Resource awareness",
+      "Long-term asset value",
+      "Community and environmental considerations"
+    ]
+  }
 ] as const;
 
 // ── Reusable alternating row ──────────────────────────────────────────────────
@@ -175,13 +156,6 @@ function PrimaryServiceRow({
           </li>
         ))}
       </ul>
-      <button
-        className="inline-flex items-center gap-2.5 text-[#0B5E3C] text-[0.8rem] tracking-[0.08em] uppercase font-semibold border-b border-[#0B5E3C]/30 pb-0.5 hover:border-[#0B5E3C] hover:gap-4 transition-all duration-300 group self-start"
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
-      >
-        Learn More
-        <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
-      </button>
     </div>
   );
 
@@ -210,6 +184,9 @@ function PrimaryServiceRow({
 }
 
 // ── Main export ───────────────────────────────────────────────────────────────
+// Set to true to restore the original portfolio consultation CTA.
+const SHOW_PORTFOLIO_CTA = false;
+
 export function PropertyManagementSection() {
   const [consultationOpen, setConsultationOpen] = useState(false);
   return (
@@ -233,37 +210,27 @@ export function PropertyManagementSection() {
                   className="text-[#0B5E3C] text-[0.8125rem] tracking-[0.32em] uppercase font-semibold"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
-                  Property Management
+                  The STARIA Advantage
                 </span>
               </div>
               <h2
                 className="font-normal leading-[1.07] text-[#1B1B1B] mb-6"
                 style={{ fontFamily: "'Gilda Display', Georgia, serif", fontSize: "clamp(34px, 3.5vw, 46px)" }}
               >
-                Every Property,
+                A Client-Focused Approach,
                 <br />
-                <span className="italic text-[#0B5E3C]">Perfectly Managed</span>
+                <span className="italic text-[#0B5E3C]">Built Around Your Goals</span>
               </h2>
               <p
                 className="text-[#555555] leading-[1.9] max-w-[460px]"
                 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.97rem" }}
               >
-                STARIA's property management division handles over 800 properties
-                across Bangladesh. From tenant sourcing to monthly reporting, we
-                protect and optimise the performance of your real estate portfolio.
+                International business practices, local knowledge and technology-driven
+                operations support tailored solutions and long-term asset value.
+                Images in this section are illustrative stock photographs.
               </p>
 
-              {/* CTA */}
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 380, damping: 22 }}
-                className="inline-flex items-center gap-3 mt-10 px-9 py-4 bg-[#0B5E3C] text-white font-semibold rounded-full hover:bg-[#09502F] transition-colors duration-300 shadow-xl shadow-[#0B5E3C]/20"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                Get a Free Consultation
-                <ArrowRight size={16} />
-              </motion.button>
+
             </motion.div>
 
             {/* Right: stats + trust signals */}
@@ -275,10 +242,10 @@ export function PropertyManagementSection() {
               className="grid grid-cols-2 gap-5"
             >
               {[
-                { val: "800+", label: "Managed Properties", icon: Shield, color: "#0B5E3C" },
-                { val: "98.5%", label: "Rent Collection Rate", icon: CreditCard, color: "#D9A11A" },
-                { val: "4.8 / 5", label: "Owner Satisfaction", icon: Star, color: "#0B5E3C" },
-                { val: "< 24h", label: "Maintenance Response", icon: Wrench, color: "#D9A11A" },
+                { val: null, label: "Global Perspective", icon: Shield, color: "#0B5E3C" },
+                { val: null, label: "Transparent Operations", icon: CreditCard, color: "#D9A11A" },
+                { val: null, label: "Client Focus", icon: Star, color: "#0B5E3C" },
+                { val: null, label: "Sustainable Value", icon: Wrench, color: "#D9A11A" },
               ].map((s) => {
                 const Icon = s.icon;
                 return (
@@ -298,7 +265,7 @@ export function PropertyManagementSection() {
                       className="leading-none mb-1.5"
                       style={{ fontFamily: "'Gilda Display', Georgia, serif", fontSize: "1.9rem", color: s.color }}
                     >
-                      {s.val}
+                      {s.val ?? "—"}
                     </p>
                     <p
                       className="text-[#666666] uppercase tracking-[0.2em]"
@@ -314,7 +281,7 @@ export function PropertyManagementSection() {
         </div>
       </section>
 
-      {/* ── 4 Primary alternating service rows ── */}
+      {/* ── Alternating client advantage rows ── */}
       {PRIMARY_SERVICES.map((svc, i) => (
         <section
           key={svc.num}
@@ -344,7 +311,7 @@ export function PropertyManagementSection() {
                 className="text-[#D9A11A] text-[0.8125rem] tracking-[0.32em] uppercase font-semibold"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Additional Services
+                Client Advantages
               </span>
               <span className="block w-7 h-px bg-[#D9A11A]" />
             </div>
@@ -352,9 +319,9 @@ export function PropertyManagementSection() {
               className="font-normal leading-[1.1] text-white"
               style={{ fontFamily: "'Gilda Display', Georgia, serif", fontSize: "clamp(28px, 2.8vw, 38px)" }}
             >
-              Complete Coverage,
+              Professional Guidance,
               <br />
-              <span className="italic">No Gaps</span>
+              <span className="italic">Lasting Value</span>
             </h2>
           </motion.div>
 
@@ -417,7 +384,7 @@ export function PropertyManagementSection() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="bg-white py-36">
+      {SHOW_PORTFOLIO_CTA && <section className="bg-white py-36">
         <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -462,7 +429,7 @@ export function PropertyManagementSection() {
                   className="text-white/55 leading-[1.85] max-w-[480px]"
                   style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.97rem" }}
                 >
-                  Join over 800 property owners who trust STARIA to protect and
+                  Join property owners who trust STARIA to protect and
                   grow their real estate investments. Speak with our management
                   team today.
                 </p>
@@ -494,7 +461,7 @@ export function PropertyManagementSection() {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section>}
       <ConsultationDialog key={String(consultationOpen)} open={consultationOpen} onOpenChange={setConsultationOpen} initialService="Property management" />
 
     </div>

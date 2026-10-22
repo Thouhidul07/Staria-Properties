@@ -211,16 +211,16 @@ function InteriorHeroSection() {
           className="flex flex-wrap gap-10 xl:gap-14 mt-12 pt-10 border-t border-white/[0.14]"
         >
           {[
-            { val: "340+", label: "Spaces Designed" },
-            { val: "18", label: "Years of Excellence" },
-            { val: "98%", label: "Client Satisfaction" },
+            { val: null, label: "Spaces Designed" },
+            { val: null, label: "Years of Excellence" },
+            { val: null, label: "Client Satisfaction" },
           ].map((s) => (
             <div key={s.label}>
               <p
                 className="text-white leading-none mb-1.5"
                 style={{ fontFamily: "'Gilda Display', Georgia, serif", fontSize: "clamp(24px, 2.5vw, 34px)" }}
               >
-                {s.val}
+                {s.val ?? "—"}
               </p>
               <p
                 className="text-white/45 uppercase tracking-[0.22em]"
@@ -630,10 +630,10 @@ function BeforeAfterSection() {
             {/* Stats grid */}
             <div className="grid grid-cols-2 gap-5">
               {[
-                { val: "340+", label: "Projects Transformed" },
-                { val: "85,000+", label: "Sq Ft Redesigned" },
-                { val: "12", label: "Design Awards" },
-                { val: "4.9 / 5", label: "Client Rating" },
+                { val: null, label: "Projects Transformed" },
+                { val: null, label: "Sq Ft Redesigned" },
+                { val: null, label: "Design Awards" },
+                { val: null, label: "Client Rating" },
               ].map((s) => (
                 <div
                   key={s.label}
@@ -643,7 +643,7 @@ function BeforeAfterSection() {
                     className="text-[#0B5E3C] leading-none mb-1.5"
                     style={{ fontFamily: "'Gilda Display', Georgia, serif", fontSize: "1.75rem" }}
                   >
-                    {s.val}
+                    {s.val ?? "—"}
                   </p>
                   <p
                     className="text-[#666666] uppercase tracking-[0.2em]"
@@ -730,6 +730,8 @@ function PortfolioGallerySection() {
             {PORTFOLIO_CATS.map((cat) => (
               <button
                 key={cat}
+                type="button"
+                aria-pressed={activeCat === cat}
                 onClick={() => setActiveCat(cat)}
                 className="px-5 py-2 rounded-full uppercase font-semibold transition-all duration-300"
                 style={{
@@ -755,7 +757,7 @@ function PortfolioGallerySection() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
           >
-            <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 1100: 3 }}>
+            <ResponsiveMasonry key={activeCat} columnsCountBreakPoints={{ 350: 1, 750: 2, 1100: 3 }}>
               <Masonry gutter="14px">
                 {filtered.map((item, i) => (
                   <motion.div
@@ -1081,7 +1083,7 @@ export function InteriorDesignPage() {
       <BeforeAfterSection />
       <PortfolioGallerySection />
       <DesignProcessSection />
-      <InteriorCTASection />
+      {/* InteriorCTASection retained for future use; consultation banner is not mounted. */}
     </div>
   );
 }

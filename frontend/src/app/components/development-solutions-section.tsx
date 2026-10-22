@@ -14,10 +14,10 @@ const SERVICES = DEVELOPMENT_SERVICES;
 // ── Development Timeline ────────────────────────────────────────────────────────
 const TIMELINE_STEPS = [
   { num: "01", icon: Search, title: "Site Acquisition", desc: "Rigorous due diligence, legal title verification and feasibility assessment before any commitment is made." },
-  { num: "02", icon: LayoutDashboard, title: "Planning & Permits", desc: "Full regulatory navigation — RAJUK, BNBC compliance, environmental clearances and all statutory approvals." },
-  { num: "03", icon: Paintbrush, title: "Design & Engineering", desc: "Structural, MEP and architectural design coordinated through BIM with full 3D coordination review." },
-  { num: "04", icon: Building2, title: "Construction", desc: "In-house and contracted build teams operating under ISO 9001-aligned quality management protocols." },
-  { num: "05", icon: Key, title: "Handover & Aftersales", desc: "Staged practical completion, snagging, title transfer and a structured 24-month defects liability programme." },
+  { num: "02", icon: LayoutDashboard, title: "Planning & Permits", desc: "Project planning and professional guidance informed by local market requirements." },
+  { num: "03", icon: Paintbrush, title: "Design & Engineering", desc: "Development coordination that considers client needs and technology-enabled solutions." },
+  { num: "04", icon: Building2, title: "Construction", desc: "Construction and development initiatives with a focus on responsible practices and lasting value." },
+  { num: "05", icon: Key, title: "Handover & Aftersales", desc: "Project delivery and client communication guided by the agreed development scope." },
 ] as const;
 
 // ── Project Showcase ──────────────────────────────────────────────────────────
@@ -216,7 +216,7 @@ function ProjectCard({ project, index }: { project: typeof PROJECTS[number]; ind
           className={`absolute top-4 right-4 text-[0.8125rem] tracking-[0.3em] uppercase px-3 py-1.5 rounded-full font-semibold ${STATUS_STYLE[project.status]}`}
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
-          {project.status}
+          Illustrative concept
         </span>
       </div>
 
@@ -308,6 +308,7 @@ export function DevelopmentSolutionsSection() {
               End-to-end development from site acquisition through final handover —
               five disciplines, one uncompromising standard of excellence.
             </p>
+            <p className="text-white/40 text-xs mt-4" style={{ fontFamily: "'DM Sans', sans-serif" }}>Illustrative stock imagery; client-approved project photographs will be added.</p>
           </motion.div>
 
           {/* Stats strip */}
@@ -319,17 +320,17 @@ export function DevelopmentSolutionsSection() {
             className="flex flex-wrap justify-center gap-10 xl:gap-16 mt-16 pt-12 border-t border-white/[0.1]"
           >
             {[
-              { val: "50+", label: "Developments Delivered" },
-              { val: "12M+", label: "Sq Ft Developed" },
-              { val: "25+", label: "Years of Excellence" },
-              { val: "৳5,000Cr+", label: "Development Value" },
+              { val: null, label: "Developments Delivered" },
+              { val: null, label: "Sq Ft Developed" },
+              { val: null, label: "Years of Excellence" },
+              { val: null, label: "Development Value" },
             ].map((s) => (
               <div key={s.label} className="text-center">
                 <p
                   className="text-white leading-none mb-1.5"
                   style={{ fontFamily: "'Gilda Display', Georgia, serif", fontSize: "clamp(20px, 2.2vw, 30px)" }}
                 >
-                  {s.val}
+                  {s.val ?? "—"}
                 </p>
                 <p
                   className="text-white/40 uppercase tracking-[0.22em]"
@@ -470,16 +471,16 @@ export function DevelopmentSolutionsSection() {
                   className="text-[#0B5E3C] text-[0.8125rem] tracking-[0.32em] uppercase font-semibold"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
-                  Project Showcase
+                  Illustrative Concepts
                 </span>
               </div>
               <h2
                 className="font-normal leading-[1.1] text-[#1B1B1B]"
                 style={{ fontFamily: "'Gilda Display', Georgia, serif", fontSize: "clamp(32px, 3.3vw, 44px)" }}
               >
-                Signature
+                Development
                 <br />
-                <span className="italic">Developments</span>
+                <span className="italic">Concepts</span>
               </h2>
             </motion.div>
 
@@ -497,6 +498,7 @@ export function DevelopmentSolutionsSection() {
             </motion.button>
           </div>
 
+          <p className="text-[#555555] text-sm mb-6" style={{ fontFamily: "'DM Sans', sans-serif" }}>These stock images and example project details illustrate development concepts, not completed STARIA projects.</p>
           {/* Cards */}
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
             {PROJECTS.map((project, i) => (

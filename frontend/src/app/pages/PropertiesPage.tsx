@@ -35,7 +35,7 @@ const PROPERTY_CATEGORIES = [
   { title: "Commercial Buildings", desc: "Purpose-built commercial spaces designed for modern business environments.", image: "https://images.unsplash.com/photo-1621831337128-35676ca30868?w=800&h=600&fit=crop&auto=format&q=92" },
   { title: "Land", desc: "Prime development plots and residential land in strategic locations.", image: "https://images.unsplash.com/photo-1773299567657-a4bf83503ce5?w=800&h=600&fit=crop&auto=format&q=92" },
   { title: "Office Spaces", desc: "Contemporary office environments built for productivity, collaboration, and growth.", image: "https://images.unsplash.com/photo-1562664377-709f2c337eb2?w=800&h=600&fit=crop&auto=format&q=92" },
-  { title: "Villas", desc: "Exclusive private villas offering unmatched privacy, space, and architectural beauty.", image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&h=600&fit=crop&auto=format&q=92" },
+  { title: "Villas", desc: "Private villas with space for comfortable living and individual property requirements.", image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&h=600&fit=crop&auto=format&q=92" },
   { title: "Investment Properties", desc: "High-yield real estate investments delivering strong returns and long-term capital appreciation.", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop&auto=format&q=92" },
 ] as const;
 
@@ -117,8 +117,9 @@ function SearchDropdown({ label, placeholder, value, options, isOpen, onToggle, 
   );
 }
 
-function PropertySearchBar() {
-  const [purpose, setPurpose] = useState<"buy" | "rent">("buy");
+type PropertySearchFilters = { type: string; location: string; budget: string };
+
+function PropertySearchBar({ onSearch }: { onSearch: (filters: PropertySearchFilters) => void }) {
   const [selType, setSelType] = useState(""); const [selLocation, setSelLocation] = useState(""); const [selBudget, setSelBudget] = useState("");
   const [openDrop, setOpenDrop] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -151,14 +152,12 @@ function PropertySearchBar() {
         <motion.div ref={containerRef} initial={{ opacity: 0, y: 36 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.9, delay: 0.18, ease: [0.22, 1, 0.36, 1] }} className="max-w-[960px] mx-auto">
           <div className="bg-white rounded-2xl" style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.38), 0 0 0 1px rgba(255,255,255,0.06)" }}>
             <div className="flex items-center gap-1 px-8 pt-5 border-b border-black/[0.06]">
-              {(["buy", "rent"] as const).map((p) => (
-                <button key={p} onClick={() => setPurpose(p)}
-                  className={`relative pb-3.5 px-5 text-[0.74rem] font-bold tracking-[0.24em] uppercase transition-colors duration-300 ${purpose === p ? "text-[#0B5E3C]" : "text-[#888888] hover:text-[#555555]"}`}
+                <span
+                  className="relative pb-3.5 px-5 text-[0.74rem] font-bold tracking-[0.24em] uppercase text-[#0B5E3C]"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                  {p === "buy" ? "Buy" : "Rent"}
-                  {purpose === p && <motion.span layoutId="purpose-tab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#0B5E3C] rounded-full" transition={{ type: "spring", stiffness: 500, damping: 30 }} />}
-                </button>
-              ))}
+                  Buy
+                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#0B5E3C] rounded-full" />
+                </span>
             </div>
             <div className="p-4 xl:p-5 flex flex-col xl:flex-row gap-2 xl:gap-1">
               <div className="flex flex-col sm:flex-row xl:flex-1 divide-y sm:divide-y-0 sm:divide-x divide-black/[0.06]">
@@ -167,7 +166,7 @@ function PropertySearchBar() {
                 <SearchDropdown label="Budget" placeholder="Select budget" value={selBudget} options={SEARCH_OPTIONS.budgets} isOpen={openDrop === "budget"} onToggle={() => setOpenDrop(openDrop === "budget" ? null : "budget")} onSelect={(v) => { setSelBudget(v); setOpenDrop(null); }} />
               </div>
               <div className="xl:shrink-0 xl:pl-2">
-                <button className="w-full xl:w-auto h-full px-7 py-3.5 xl:py-0 bg-[#0B5E3C] hover:bg-[#09502F] text-white text-[1rem] font-semibold tracking-[0.02em] rounded-xl xl:rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 hover:gap-3.5 hover:shadow-lg hover:shadow-[#0B5E3C]/25" style={{ fontFamily: "'DM Sans', sans-serif", minHeight: "56px" }}>
+                <button type="button" onClick={() => onSearch({ type: selType, location: selLocation, budget: selBudget })} className="w-full xl:w-auto h-full px-7 py-3.5 xl:py-0 bg-[#0B5E3C] hover:bg-[#09502F] text-white text-[1rem] font-semibold tracking-[0.02em] rounded-xl xl:rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 hover:gap-3.5 hover:shadow-lg hover:shadow-[#0B5E3C]/25" style={{ fontFamily: "'DM Sans', sans-serif", minHeight: "56px" }}>
                   <Search size={16} /> Search
                 </button>
               </div>
@@ -181,8 +180,23 @@ function PropertySearchBar() {
 
 export default function PropertiesPage() {
   const { id } = useParams();
-  const { items, loading, error } = useApiList(() => api.getProperties({ limit: 100 }), []);
-  const databaseProperties: FeaturedProperty[] = items.map((property) => ({
+  const [searchFilters, setSearchFilters] = useState<PropertySearchFilters>({ type: "", location: "", budget: "" });
+  const { items, loading, error } = useApiList(() => api.getProperties({ limit: 100, listingType: "SALE" }), []);
+  const saleProperties = items.filter((property) => property.listingType === "SALE");
+  const filteredProperties = saleProperties.filter((property) => {
+    const normalize = (value: string) => value.toLowerCase().replace(/chittagong/g, "chattogram");
+    const categories = property.categories.map(({ category }) => category.name).join(" ");
+    const typeTerms: Record<string, string> = { Apartment: "apartment", Villa: "villa", "Commercial Building": "commercial", "Office Space": "office", Land: "land", "Investment Property": "investment" };
+    const typeMatches = !searchFilters.type || normalize(`${categories} ${property.title}`).includes(typeTerms[searchFilters.type] ?? normalize(searchFilters.type));
+    const address = normalize(displayLocation(property.address));
+    const locationMatches = !searchFilters.location || normalize(searchFilters.location).split(", ").every((part) => address.includes(part));
+    const ranges = [[0, 5000000], [5000000, 10000000], [10000000, 30000000], [30000000, 70000000], [70000000, 150000000], [150000000, Infinity]];
+    const budgetIndex = SEARCH_OPTIONS.budgets.findIndex((budget) => budget === searchFilters.budget);
+    const price = property.price == null ? NaN : Number(property.price);
+    const budgetMatches = budgetIndex < 0 || (property.currency === "BDT" && Number.isFinite(price) && price >= ranges[budgetIndex][0] && (budgetIndex === ranges.length - 1 ? price > ranges[budgetIndex][0] : budgetIndex === ranges.length - 2 ? price <= ranges[budgetIndex][1] : price < ranges[budgetIndex][1]));
+    return typeMatches && locationMatches && budgetMatches;
+  });
+  const databaseProperties: FeaturedProperty[] = filteredProperties.map((property) => ({
     id: property.slug,
     name: property.title,
     location: displayLocation(property.address),
@@ -207,7 +221,10 @@ export default function PropertiesPage() {
         subtitle="Browse our curated portfolio of residential, commercial and investment properties across Bangladesh's most sought-after locations."
         image="https://images.unsplash.com/photo-1564078516393-cf04bd966897?w=1920&h=900&fit=crop&auto=format&q=92"
       />
-      <PropertySearchBar />
+      <PropertySearchBar onSearch={(filters) => {
+        setSearchFilters(filters);
+        document.getElementById("property-results")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }} />
       {selectedProperty && (
         <section className="bg-white py-16 border-b border-black/[0.06]">
           <div className="max-w-[1200px] mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-10 items-center">
@@ -252,7 +269,7 @@ export default function PropertiesPage() {
       </section>
 
       {/* All Properties */}
-      <section className="py-28 bg-white">
+      <section id="property-results" className="py-28 bg-white scroll-mt-20">
         <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
           <motion.div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-6 mb-14" initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}>
             <div>

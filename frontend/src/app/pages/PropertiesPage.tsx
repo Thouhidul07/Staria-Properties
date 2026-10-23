@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowRight, ChevronDown, MapPin, BedDouble, Bath, Maximize2, Building2, Search } from "lucide-react";
+import { ArrowRight, ChevronDown, MapPin, BedDouble, Bath, Maximize2, Building2, Search, Phone } from "lucide-react";
 import { Link, useParams } from "react-router";
 import { PageHero } from "../components/shared/PageHero";
 import { api } from "../services/api";
 import { displayLocation, displayPrice, primaryImage, useApiList } from "../services/content";
+import { ADVERTISED_PROPERTY } from "../services/advertisedProperty";
+import bashundharaFlatAd from "../../assets/properties/bashundhara-block-f-flat.png";
 
 type FeaturedProperty = {
   id: string; name: string; location: string; price: string;
@@ -87,6 +89,55 @@ function PropertyCard({ id, name, location, price, type, status, beds, baths, ar
         </Link>
       </div>
     </motion.div>
+  );
+}
+
+function AdvertisedPropertySection() {
+  const property = ADVERTISED_PROPERTY;
+
+  return (
+    <section aria-labelledby="advertised-property-title" className="bg-white py-20 md:py-28" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <div className="mx-auto max-w-[1440px] px-6 sm:px-10 xl:px-20">
+        <article className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <Link to={`/properties/${property.slug}`} className="block overflow-hidden rounded-2xl border border-[#0B5E3C]/10 bg-[#F7F7F5] shadow-[0_12px_40px_rgba(11,94,60,0.07)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0B5E3C]" aria-label={`View details for ${property.title}`}>
+            <img src={bashundharaFlatAd} alt="STARIA ready flat for sale in Block F, Bashundhara R/A" loading="lazy" width={2160} height={2160} className="h-auto w-full object-contain" />
+          </Link>
+          <div>
+            <div className="mb-5 flex items-center gap-3">
+              <span aria-hidden="true" className="h-px w-7 bg-[#D9A11A]" />
+              <span className="text-[0.8125rem] font-semibold uppercase tracking-[0.25em] text-[#0B5E3C]">Featured Property</span>
+            </div>
+            <span className="mb-5 inline-block rounded-full bg-[#0B5E3C]/[0.07] px-4 py-1.5 text-sm font-semibold text-[#0B5E3C]">Ready flat · For sale</span>
+            <h2 id="advertised-property-title" className="mb-4 font-normal leading-[1.12] text-[#1B1B1B]" style={{ fontFamily: "'Gilda Display', Georgia, serif", fontSize: "clamp(34px, 3.5vw, 46px)" }}>{property.title}</h2>
+            <p className="mb-6 flex items-start gap-2 text-sm leading-6 text-[#555555]"><MapPin aria-hidden="true" size={17} className="mt-0.5 shrink-0 text-[#0B5E3C]" />{property.location}</p>
+            <p className="mb-7 max-w-xl text-[0.95rem] leading-[1.8] text-[#555555]">{property.description}</p>
+            <dl className="mb-6 grid grid-cols-2 gap-x-6 gap-y-5 border-y border-black/[0.08] py-6 sm:grid-cols-3">
+              {[
+                { label: "Floor area", value: property.area, Icon: Maximize2 },
+                { label: "Bedrooms", value: property.bedrooms, Icon: BedDouble },
+                { label: "Bathrooms", value: property.bathrooms, Icon: Bath },
+              ].map(({ label, value, Icon }) => (
+                <div key={label}>
+                  <dt className="mb-2 flex items-center gap-2 text-xs text-[#666666]"><Icon aria-hidden="true" size={16} className="text-[#0B5E3C]" />{label}</dt>
+                  <dd className="text-lg font-semibold text-[#1B1B1B]">{value}</dd>
+                </div>
+              ))}
+            </dl>
+            <ul className="mb-8 flex flex-wrap gap-2 text-sm text-[#0B5E3C]">
+              {[`${property.balconies} balconies`, "Titas gas connection", "1 car parking space"].map((feature) => <li key={feature} className="rounded-full bg-[#F7F7F5] px-3 py-2">{feature}</li>)}
+            </ul>
+            <p className="mb-4 text-sm text-[#555555]">Call our team for the price and availability.</p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Link to={`/properties/${property.slug}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0B5E3C] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[#09502F] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0B5E3C]">View Details <ArrowRight aria-hidden="true" size={17} /></Link>
+              <a href={property.phones[0].href} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#D9A11A] bg-[#D9A11A] px-6 py-3 text-base font-semibold text-[#1B1B1B] transition-colors hover:bg-[#C08912] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0B5E3C]"><Phone aria-hidden="true" size={17} />Call for Price</a>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#555555]">
+              {property.phones.map((phone) => <a key={phone.href} href={phone.href} className="underline decoration-[#0B5E3C]/25 underline-offset-4 transition-colors hover:text-[#0B5E3C]">{phone.label}</a>)}
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
   );
 }
 
@@ -234,6 +285,8 @@ export default function PropertiesPage() {
         </section>
       )}
 
+      <AdvertisedPropertySection />
+
       {/* Property Categories */}
       <section className="py-28 bg-[#F7F7F5]">
         <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
@@ -268,7 +321,7 @@ export default function PropertiesPage() {
         </div>
       </section>
 
-      {/* All Properties */}
+      {/* Featured Properties — temporarily hidden; uncomment this section to restore.
       <section id="property-results" className="py-28 bg-white scroll-mt-20">
         <div className="max-w-[1440px] mx-auto px-12 xl:px-20">
           <motion.div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-6 mb-14" initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}>
@@ -289,6 +342,7 @@ export default function PropertiesPage() {
           </div>
         </div>
       </section>
+      */}
     </>
   );
 }

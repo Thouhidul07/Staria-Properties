@@ -438,6 +438,7 @@ type TeamMember = {
   role: string;
   company: string;
   image?: string;
+  profilePath?: string;
   phones: string[];
   email?: string;
   linkedin?: string;
@@ -450,7 +451,7 @@ const TEAM_MEMBERS: TeamMember[] = [
     id: 2,
     name: "Samsunnahar Begum",
     role: "Chairperson",
-    company: "Staria Development Solutions Ltd. & Staria Properties",
+    company: " ",
     phones: ["+1 (631) 640-9277", "+1 (888) 6139218"],
     email: "samsunnahar.begum@stariaventures.com",
     website: "www.stariadevelopment.com",
@@ -460,7 +461,7 @@ const TEAM_MEMBERS: TeamMember[] = [
     id: 3,
     name: "S M Riad Hossain Sumon",
     role: "Managing Director",
-    company: "Staria Development Solutions Ltd. & Staria Properties",
+    company: " ",
     image: riadPortrait,
     phones: ["01709993661", "01709993666", "+1 (888) 6139218"],
     email: "riyad.hossain@stariaventures.com",
@@ -472,7 +473,7 @@ const TEAM_MEMBERS: TeamMember[] = [
     id: 1,
     name: "Tanjim Ahmed",
     role: "Director",
-    company: "Staria Development Solutions Ltd. & Staria Properties",
+    company: " ",
     phones: ["+1 (347) 632-7151", "+1 (888) 6139218"],
     email: "tanjim.ahmed@stariaventures.com",
     website: "www.stariadevelopment.com",
@@ -482,7 +483,7 @@ const TEAM_MEMBERS: TeamMember[] = [
     id: 4,
     name: "Ahmed Robaiat Rezwan Shatadru",
     role: "Director",
-    company: "Staria Development Solutions Ltd. & Staria Properties",
+    company: " ",
     image: shatadruPortrait,
     phones: ["01709993663", "01709993666", "+1 (888) 6139218"],
     email: "shatadru.ahmed@stariaventures.com",
@@ -494,8 +495,9 @@ const TEAM_MEMBERS: TeamMember[] = [
     id: 5,
     name: "Maj S M Muzahid Monir, SUP, psc, PEng, Phd (Retd)",
     role: "Executive Director",
-    company: "Staria Development Solutions Ltd. & Staria Properties",
+    company: " ",
     image: mujahidPortrait,
+    profilePath: "/about/board-of-directors/muzahid-monir",
     phones: ["01709993662", "01709993666", "+1 (888) 6139218"],
     email: "muzahidmonir@stariadevelopment.com",
     linkedin: "https://www.linkedin.com/in/s-m-muzahid-monir-bb045229/",
@@ -584,7 +586,7 @@ function TeamMemberCard({ member, index }: { member: TeamMember; index: number }
           <h3 className="text-[#1B1B1B] leading-[1.22] mb-2 transition-colors duration-300 group-hover:text-[#0B5E3C]" style={{ fontFamily: gilda, fontSize: "clamp(1.16rem, 1.25vw, 1.35rem)", fontWeight: 400 }}>
             {member.name}
           </h3>
-          <p className="text-[#0B5E3C] text-[0.82rem] font-semibold leading-snug mb-4" style={{ fontFamily: dm }}>
+          <p className="text-[#0B5E3C] text-[0.95rem] font-semibold leading-snug mb-4" style={{ fontFamily: dm }}>
             {member.role}
           </p>
           <p className="text-[#555555] text-[0.8rem] leading-[1.75] mb-7" style={{ fontFamily: dm }}>
@@ -616,6 +618,11 @@ function TeamMemberCard({ member, index }: { member: TeamMember; index: number }
               <ArrowUpRight size={16} strokeWidth={1.8} />
             </ContactIconLink>
           </div>
+          {member.profilePath && (
+            <Link to={member.profilePath} aria-label={`View more about ${member.name}`} className="mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#0B5E3C]/30 px-5 py-3 text-base font-semibold text-[#0B5E3C] transition-colors hover:bg-[#0B5E3C] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0B5E3C]" style={{ fontFamily: dm }}>
+              View More <ArrowRight aria-hidden="true" size={16} />
+            </Link>
+          )}
         </div>
       </div>
     </motion.article>

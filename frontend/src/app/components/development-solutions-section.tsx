@@ -1,11 +1,13 @@
 import { Link } from "react-router";
+import { DEVELOPMENT_PROJECTS } from "../services/developmentProjects";
+import { DevelopmentProjectCard } from "./DevelopmentProjectCard";
 import { DEVELOPMENT_SERVICES } from "../services/developmentServices";
 import React, { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import {
   Home, Building2, Cpu, Leaf, Users,
-  ArrowRight, ArrowUpRight, CheckCheck,
-  MapPin, LayoutDashboard, Paintbrush, Key, Search,
+  ArrowRight, CheckCheck,
+  LayoutDashboard, Paintbrush, Key, Search,
 } from "lucide-react";
 
 // ── Services data ──────────────────────────────────────────────────────────────
@@ -21,46 +23,6 @@ const TIMELINE_STEPS = [
 ] as const;
 
 // ── Project Showcase ──────────────────────────────────────────────────────────
-const PROJECTS = [
-  {
-    id: "p1",
-    title: "STARIA Heights Tower",
-    type: "Residential",
-    location: "Gulshan, Dhaka",
-    area: "320,000",
-    units: "148 Apartments",
-    status: "Completed" as const,
-    image: "https://images.unsplash.com/photo-1695781222463-51bc3d448952?w=700&h=500&fit=crop&auto=format&q=92",
-  },
-  {
-    id: "p2",
-    title: "STARIA Commerce Park",
-    type: "Commercial",
-    location: "Motijheel, Dhaka",
-    area: "580,000",
-    units: "Grade-A Office",
-    status: "Under Development" as const,
-    image: "https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?w=700&h=500&fit=crop&auto=format&q=92",
-  },
-  {
-    id: "p3",
-    title: "STARIA Green Residency",
-    type: "Sustainable",
-    location: "Bashundhara, Dhaka",
-    area: "210,000",
-    units: "96 Eco Homes",
-    status: "Planning Phase" as const,
-    image: "https://images.unsplash.com/photo-1764885517746-3ae815ad728e?w=700&h=500&fit=crop&auto=format&q=92",
-  },
-] as const;
-
-const STATUS_STYLE = {
-  "Completed": "bg-[#0B5E3C] text-white",
-  "Under Development": "bg-[#D9A11A] text-[#1B1B1B]",
-  "Planning Phase": "bg-white/[0.12] text-white border border-white/25",
-} as const;
-
-// ── Reusable service row ──────────────────────────────────────────────────────
 function ServiceRow({
   num, category, title, subtitle, desc, features, icon: Icon, image, alt, reversed,
 }: typeof SERVICES[number]) {
@@ -173,103 +135,6 @@ function ServiceRow({
 }
 
 // ── Project card ──────────────────────────────────────────────────────────────
-function ProjectCard({ project, index }: { project: typeof PROJECTS[number]; index: number }) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.7, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-      className="group flex flex-col rounded-2xl overflow-hidden bg-white border border-black/[0.06] cursor-pointer"
-      style={{
-        boxShadow: hovered
-          ? "0 24px 56px rgba(0,0,0,0.13), 0 0 0 2px #D9A11A"
-          : "0 4px 18px rgba(0,0,0,0.06)",
-        transform: hovered ? "translateY(-6px)" : "translateY(0)",
-        transition: "box-shadow 0.5s cubic-bezier(0.22,1,0.36,1), transform 0.5s cubic-bezier(0.22,1,0.36,1)",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {/* Image */}
-      <div className="relative overflow-hidden h-[240px] bg-[#D0D0D0]">
-        <img
-          src={project.image}
-          alt={project.title}
-          className="w-full h-full object-cover"
-          style={{
-            transform: hovered ? "scale(1.07)" : "scale(1)",
-            transition: "transform 0.75s cubic-bezier(0.22,1,0.36,1)",
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-        {/* Gold sweep bar */}
-        <motion.span
-          className="absolute bottom-0 left-0 h-[2.5px] bg-[#D9A11A]"
-          animate={{ width: hovered ? "100%" : "0%" }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        />
-        {/* Status badge */}
-        <span
-          className={`absolute top-4 right-4 text-[0.8125rem] tracking-[0.3em] uppercase px-3 py-1.5 rounded-full font-semibold ${STATUS_STYLE[project.status]}`}
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          Illustrative concept
-        </span>
-      </div>
-
-      {/* Content */}
-      <div className="p-6 flex flex-col flex-1">
-        <p
-          className="text-[#0B5E3C] text-[0.65rem] tracking-[0.4em] uppercase font-semibold mb-2"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          {project.type}
-        </p>
-        <h4
-          className="text-[#1B1B1B] mb-4 leading-tight"
-          style={{ fontFamily: "'Gilda Display', Georgia, serif", fontSize: "1.25rem", fontWeight: 400 }}
-        >
-          {project.title}
-        </h4>
-        <div className="flex items-center gap-1.5 text-[#555555] text-[0.8rem] mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-          <MapPin size={12} className="text-[#0B5E3C] shrink-0" />
-          {project.location}
-        </div>
-        <div className="grid grid-cols-2 gap-3 mt-4 mb-6">
-          <div className="bg-[#F7F7F5] rounded-lg p-3">
-            <p className="text-[#0B5E3C] text-[1.1rem] leading-none mb-0.5" style={{ fontFamily: "'Gilda Display', Georgia, serif" }}>
-              {project.area}
-            </p>
-            <p className="text-[#666666] text-[0.7rem] uppercase tracking-wider" style={{ fontFamily: "'DM Sans', sans-serif" }}>sq ft</p>
-          </div>
-          <div className="bg-[#F7F7F5] rounded-lg p-3">
-            <p className="text-[#0B5E3C] text-[1.05rem] leading-none mb-0.5 truncate" style={{ fontFamily: "'Gilda Display', Georgia, serif" }}>
-              {project.units}
-            </p>
-            <p className="text-[#666666] text-[0.7rem] uppercase tracking-wider" style={{ fontFamily: "'DM Sans', sans-serif" }}>type</p>
-          </div>
-        </div>
-        <motion.button
-          className="mt-auto inline-flex items-center justify-center gap-2.5 w-full py-3 rounded-2xl border border-[#0B5E3C] text-[0.875rem] tracking-[0.1em] uppercase font-semibold transition-colors duration-300"
-          animate={{
-            backgroundColor: hovered ? "#0B5E3C" : "transparent",
-            color: hovered ? "#ffffff" : "#0B5E3C",
-          }}
-          transition={{ duration: 0.3 }}
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
-        >
-          View Project
-          <ArrowUpRight size={13} />
-        </motion.button>
-      </div>
-    </motion.div>
-  );
-}
-
-// ── Main export ───────────────────────────────────────────────────────────────
 export function DevelopmentSolutionsSection() {
   return (
     <div id="development-solutions">
@@ -471,7 +336,7 @@ export function DevelopmentSolutionsSection() {
                   className="text-[#0B5E3C] text-[0.8125rem] tracking-[0.32em] uppercase font-semibold"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
-                  Illustrative Concepts
+                  Our Projects
                 </span>
               </div>
               <h2
@@ -480,29 +345,24 @@ export function DevelopmentSolutionsSection() {
               >
                 Development
                 <br />
-                <span className="italic">Concepts</span>
+                <span className="italic">Projects</span>
               </h2>
             </motion.div>
 
-            <motion.button
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              whileHover={{ scale: 1.02 }}
+            <Link to="/projects"
               className="inline-flex items-center gap-3 px-7 py-3 border border-[#0B5E3C]/30 text-[#0B5E3C] rounded-full text-[0.875rem] tracking-[0.18em] uppercase font-semibold hover:bg-[#0B5E3C] hover:text-white hover:border-[#0B5E3C] transition-all duration-300 self-start md:self-auto"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               All Projects
               <ArrowRight size={13} />
-            </motion.button>
+            </Link>
           </div>
 
-          <p className="text-[#555555] text-sm mb-6" style={{ fontFamily: "'DM Sans', sans-serif" }}>These stock images and example project details illustrate development concepts, not completed STARIA projects.</p>
+
           {/* Cards */}
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {PROJECTS.map((project, i) => (
-              <ProjectCard key={project.id} project={project} index={i} />
+            {DEVELOPMENT_PROJECTS.map((project, i) => (
+              <DevelopmentProjectCard key={project.slug} project={project} index={i} />
             ))}
           </div>
         </div>

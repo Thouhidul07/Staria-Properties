@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import {
   ArrowRight, ArrowUpRight, MapPin,
-  Key, Tag, Building2, Paintbrush, LayoutDashboard, TrendingUp,
+  Home, Key, Tag, Building2, Paintbrush, LayoutDashboard, TrendingUp,
   Globe, Leaf, Users, Cpu,
   BedDouble, Bath, Maximize2,
   Star, ChevronLeft, ChevronRight,
@@ -82,6 +82,18 @@ const DIVISION_SERVICES_PROP = [
   { icon: Globe, label: "Investment Advisory" },
   { icon: Paintbrush, label: "Interior Design" },
 ];
+const DIVISION_SERVICES_INTERIOR = [
+  { icon: Home, label: "Residential Interiors" },
+  { icon: Building2, label: "Corporate & Office Spaces" },
+  { icon: Paintbrush, label: "Restaurants & Hospitality" },
+  { icon: LayoutDashboard, label: "Space Planning & Design" },
+];
+const DIVISION_SERVICES_CONSULTANCY = [
+  { icon: Users, label: "Project Consultancy" },
+  { icon: Building2, label: "Project Requirements & Guidance" },
+  { icon: Globe, label: "Service Advice" },
+  { icon: Key, label: "Enquiries & Consultations" },
+];
 
 const TESTIMONIALS = [
   { quote: "Working with STARIA was an exceptional experience from first consultation to final handover. Their precision and commitment to quality simply cannot be matched anywhere in Bangladesh.", name: "Farrukh Rahman", role: "Managing Director", company: "Rahman Group Holdings", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&auto=format&q=92" },
@@ -136,10 +148,10 @@ function PropertyCard({ id, name, location, price, type, status, beds, baths, ar
 }
 
 // ─── Division Card ─────────────────────────────────────────────────────────────
-function DivisionCard({ brand, title, subtitle, services, cta, image, dark, imageLeft, delay, divNum }: {
+function DivisionCard({ brand, title, subtitle, services, cta, to, image, dark, imageLeft, delay, divNum }: {
   brand: string; title: string; subtitle: string;
   services: { icon: React.ComponentType<{ size?: number; className?: string }>; label: string }[];
-  cta: string; image: string; dark: boolean; imageLeft: boolean; delay: number; divNum: string;
+  cta: string; to: string; image: string; dark: boolean; imageLeft: boolean; delay: number; divNum: string;
 }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -166,10 +178,10 @@ function DivisionCard({ brand, title, subtitle, services, cta, image, dark, imag
             </motion.li>
           ))}
         </ul>
-        <motion.button className={`inline-flex items-center gap-3 text-[1rem] font-semibold tracking-[0.02em] w-fit mt-auto group/cta ${dark ? "text-white" : "text-[#1B1B1B]"}`} style={{ fontFamily: dm }} whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+        <Link to={to} className={`inline-flex items-center gap-3 text-[1rem] font-semibold tracking-[0.02em] w-fit mt-auto group/cta transition-transform duration-300 hover:translate-x-1 ${dark ? "text-white" : "text-[#1B1B1B]"}`} style={{ fontFamily: dm }}>
           <span className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${dark ? "bg-[#D9A11A] text-[#1B1B1B] group-hover/cta:bg-white group-hover/cta:scale-110" : "bg-[#0B5E3C] text-white group-hover/cta:bg-[#7A5600] group-hover/cta:scale-110"}`}><ArrowRight size={15} /></span>
           {cta}
-        </motion.button>
+        </Link>
       </div>
     </motion.div>
   );
@@ -455,15 +467,17 @@ function BusinessDivisionsSection() {
             <span className="block w-8 h-px bg-[#D9A11A]" />
           </div>
           <h2 className="font-normal leading-[1.1] text-[#1B1B1B] mb-6" style={{ fontFamily: gilda, fontSize: "clamp(34px, 3.5vw, 46px)" }}>
-            Two Divisions. <span className="italic">One Standard of Excellence.</span>
+            Four Divisions. <span className="italic">One Standard of Excellence.</span>
           </h2>
           <p className="text-[0.95rem] leading-[1.8] text-[#555555] max-w-[520px] mx-auto" style={{ fontFamily: dm }}>
-            STARIA operates through two specialized divisions — each purpose-built to deliver uncompromising quality in its domain.
+            STARIA brings together development, properties, interior design and consultancy — four specialized divisions working to support your project and property needs.
           </p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 xl:gap-8 items-stretch">
-          <DivisionCard brand="Staria" title="Development Solutions" subtitle="Smart Development & Infrastructure Solutions" services={DIVISION_SERVICES_DEV} cta="Learn More" image="https://images.unsplash.com/photo-1628012209120-d9db7abf7eab?w=1000&h=700&fit=crop&auto=format&q=92" dark={true} imageLeft={true} delay={0} divNum="01" />
-          <DivisionCard brand="Staria" title="Properties" subtitle="Professional Real Estate Services" services={DIVISION_SERVICES_PROP} cta="Explore Services" image="https://images.unsplash.com/photo-1638885930125-85350348d266?w=1000&h=700&fit=crop&auto=format&q=92" dark={false} imageLeft={false} delay={0.12} divNum="02" />
+          <DivisionCard brand="Staria" title="Development Solutions" subtitle="Smart Development & Infrastructure Solutions" services={DIVISION_SERVICES_DEV} cta="Learn More" to="/development" image="https://images.unsplash.com/photo-1628012209120-d9db7abf7eab?w=1000&h=700&fit=crop&auto=format&q=92" dark={true} imageLeft={true} delay={0} divNum="01" />
+          <DivisionCard brand="Staria" title="Properties" subtitle="Professional Real Estate Services" services={DIVISION_SERVICES_PROP} cta="Explore Services" to="/properties" image="https://images.unsplash.com/photo-1638885930125-85350348d266?w=1000&h=700&fit=crop&auto=format&q=92" dark={false} imageLeft={false} delay={0.12} divNum="02" />
+          <DivisionCard brand="Staria" title="Interior" subtitle="Thoughtful Interiors for Living & Working" services={DIVISION_SERVICES_INTERIOR} cta="Explore Interiors" to="/interior" image="/images/projects/after-047.webp" dark={false} imageLeft={true} delay={0.24} divNum="03" />
+          <DivisionCard brand="Staria" title="Consultancy" subtitle="Guidance for Projects & Services" services={DIVISION_SERVICES_CONSULTANCY} cta="Discuss Your Plans" to="/consultancy" image="/images/consultancy/planning.webp" dark={true} imageLeft={false} delay={0.36} divNum="04" />
         </div>
       </div>
     </section>
@@ -649,8 +663,12 @@ export default function HomePage() {
       <HeroSection />
       <CompanyOverview />
       <BusinessDivisionsSection />
+      {/* Featured Properties — restore when listing information is available.
       <FeaturedPropertiesSection />
+      */}
+      {/* Our Portfolio — restore when project information is available.
       <FeaturedProjectsSection />
+      */}
       <InteriorPreview />
       <ServicesSection />
       {SHOW_STATISTICS_COMING_SOON

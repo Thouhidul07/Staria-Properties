@@ -70,7 +70,7 @@ function TeamMemberCard({ member, index }: { member: TeamMember; index: number }
       </div>
 
       <div className="flex flex-1 flex-col p-6">
-        <p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[#0B5E3C]" style={{ fontFamily: "'DM Sans', sans-serif" }}>{member.designation}</p>
+        <p className="mb-2 text-[0.95rem] font-semibold uppercase tracking-[0.2em] text-[#0B5E3C]" style={{ fontFamily: "'DM Sans', sans-serif" }}>{member.designation}</p>
         <h3 className="min-h-[3.6rem] text-[1.45rem] leading-[1.2] text-[#1B1B1B]" style={{ fontFamily: "'Gilda Display', Georgia, serif" }}>{member.name}</h3>
 
         <a href={member.contactCardUrl} target="_blank" rel="noopener noreferrer" className="mt-auto inline-flex items-center justify-center gap-2 rounded-full border border-[#0B5E3C]/25 px-4 py-2.5 text-[0.8125rem] font-semibold text-[#0B5E3C] transition-colors hover:bg-[#0B5E3C] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D9A11A]" style={{ fontFamily: "'DM Sans', sans-serif" }}>

@@ -1,0 +1,758 @@
+{
+  "cafe": [
+    {
+      "src": "/images/projects/cafe-001.webp",
+      "thumbnail": "/images/projects/cafe-001-thumb.webp",
+      "width": 1280,
+      "height": 577
+    },
+    {
+      "src": "/images/projects/cafe-002.webp",
+      "thumbnail": "/images/projects/cafe-002-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/cafe-003.webp",
+      "thumbnail": "/images/projects/cafe-003-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/cafe-004.webp",
+      "thumbnail": "/images/projects/cafe-004-thumb.webp",
+      "width": 1280,
+      "height": 577
+    },
+    {
+      "src": "/images/projects/cafe-005.webp",
+      "thumbnail": "/images/projects/cafe-005-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/cafe-006.webp",
+      "thumbnail": "/images/projects/cafe-006-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/cafe-007.webp",
+      "thumbnail": "/images/projects/cafe-007-thumb.webp",
+      "width": 1280,
+      "height": 577
+    },
+    {
+      "src": "/images/projects/cafe-008.webp",
+      "thumbnail": "/images/projects/cafe-008-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/cafe-009.webp",
+      "thumbnail": "/images/projects/cafe-009-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/cafe-010.webp",
+      "thumbnail": "/images/projects/cafe-010-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/cafe-011.webp",
+      "thumbnail": "/images/projects/cafe-011-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/cafe-012.webp",
+      "thumbnail": "/images/projects/cafe-012-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/cafe-013.webp",
+      "thumbnail": "/images/projects/cafe-013-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/cafe-014.webp",
+      "thumbnail": "/images/projects/cafe-014-thumb.webp",
+      "width": 1280,
+      "height": 577
+    },
+    {
+      "src": "/images/projects/cafe-015.webp",
+      "thumbnail": "/images/projects/cafe-015-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/cafe-016.webp",
+      "thumbnail": "/images/projects/cafe-016-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/cafe-017.webp",
+      "thumbnail": "/images/projects/cafe-017-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/cafe-018.webp",
+      "thumbnail": "/images/projects/cafe-018-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/cafe-019.webp",
+      "thumbnail": "/images/projects/cafe-019-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/cafe-020.webp",
+      "thumbnail": "/images/projects/cafe-020-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/cafe-021.webp",
+      "thumbnail": "/images/projects/cafe-021-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/cafe-022.webp",
+      "thumbnail": "/images/projects/cafe-022-thumb.webp",
+      "width": 1280,
+      "height": 577
+    }
+  ],
+  "before": [
+    {
+      "src": "/images/projects/before-001.webp",
+      "thumbnail": "/images/projects/before-001-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-002.webp",
+      "thumbnail": "/images/projects/before-002-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-003.webp",
+      "thumbnail": "/images/projects/before-003-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-004.webp",
+      "thumbnail": "/images/projects/before-004-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-005.webp",
+      "thumbnail": "/images/projects/before-005-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-006.webp",
+      "thumbnail": "/images/projects/before-006-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-007.webp",
+      "thumbnail": "/images/projects/before-007-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-008.webp",
+      "thumbnail": "/images/projects/before-008-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-009.webp",
+      "thumbnail": "/images/projects/before-009-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-010.webp",
+      "thumbnail": "/images/projects/before-010-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-011.webp",
+      "thumbnail": "/images/projects/before-011-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-012.webp",
+      "thumbnail": "/images/projects/before-012-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-013.webp",
+      "thumbnail": "/images/projects/before-013-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/before-014.webp",
+      "thumbnail": "/images/projects/before-014-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-015.webp",
+      "thumbnail": "/images/projects/before-015-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-016.webp",
+      "thumbnail": "/images/projects/before-016-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-017.webp",
+      "thumbnail": "/images/projects/before-017-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-018.webp",
+      "thumbnail": "/images/projects/before-018-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-019.webp",
+      "thumbnail": "/images/projects/before-019-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-020.webp",
+      "thumbnail": "/images/projects/before-020-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-021.webp",
+      "thumbnail": "/images/projects/before-021-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/before-022.webp",
+      "thumbnail": "/images/projects/before-022-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-023.webp",
+      "thumbnail": "/images/projects/before-023-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-024.webp",
+      "thumbnail": "/images/projects/before-024-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-025.webp",
+      "thumbnail": "/images/projects/before-025-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/before-026.webp",
+      "thumbnail": "/images/projects/before-026-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-027.webp",
+      "thumbnail": "/images/projects/before-027-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-028.webp",
+      "thumbnail": "/images/projects/before-028-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-029.webp",
+      "thumbnail": "/images/projects/before-029-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-030.webp",
+      "thumbnail": "/images/projects/before-030-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-031.webp",
+      "thumbnail": "/images/projects/before-031-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-032.webp",
+      "thumbnail": "/images/projects/before-032-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-033.webp",
+      "thumbnail": "/images/projects/before-033-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-034.webp",
+      "thumbnail": "/images/projects/before-034-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-035.webp",
+      "thumbnail": "/images/projects/before-035-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/before-036.webp",
+      "thumbnail": "/images/projects/before-036-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    }
+  ],
+  "after": [
+    {
+      "src": "/images/projects/after-001.webp",
+      "thumbnail": "/images/projects/after-001-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-002.webp",
+      "thumbnail": "/images/projects/after-002-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-003.webp",
+      "thumbnail": "/images/projects/after-003-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-004.webp",
+      "thumbnail": "/images/projects/after-004-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-005.webp",
+      "thumbnail": "/images/projects/after-005-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-006.webp",
+      "thumbnail": "/images/projects/after-006-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-007.webp",
+      "thumbnail": "/images/projects/after-007-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-008.webp",
+      "thumbnail": "/images/projects/after-008-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-009.webp",
+      "thumbnail": "/images/projects/after-009-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-010.webp",
+      "thumbnail": "/images/projects/after-010-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-011.webp",
+      "thumbnail": "/images/projects/after-011-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-012.webp",
+      "thumbnail": "/images/projects/after-012-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-013.webp",
+      "thumbnail": "/images/projects/after-013-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-014.webp",
+      "thumbnail": "/images/projects/after-014-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-015.webp",
+      "thumbnail": "/images/projects/after-015-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-016.webp",
+      "thumbnail": "/images/projects/after-016-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-017.webp",
+      "thumbnail": "/images/projects/after-017-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/after-018.webp",
+      "thumbnail": "/images/projects/after-018-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/after-019.webp",
+      "thumbnail": "/images/projects/after-019-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/after-020.webp",
+      "thumbnail": "/images/projects/after-020-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/after-021.webp",
+      "thumbnail": "/images/projects/after-021-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/after-022.webp",
+      "thumbnail": "/images/projects/after-022-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-023.webp",
+      "thumbnail": "/images/projects/after-023-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-024.webp",
+      "thumbnail": "/images/projects/after-024-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-025.webp",
+      "thumbnail": "/images/projects/after-025-thumb.webp",
+      "width": 1200,
+      "height": 1600
+    },
+    {
+      "src": "/images/projects/after-026.webp",
+      "thumbnail": "/images/projects/after-026-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-027.webp",
+      "thumbnail": "/images/projects/after-027-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-028.webp",
+      "thumbnail": "/images/projects/after-028-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-029.webp",
+      "thumbnail": "/images/projects/after-029-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-030.webp",
+      "thumbnail": "/images/projects/after-030-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-031.webp",
+      "thumbnail": "/images/projects/after-031-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-032.webp",
+      "thumbnail": "/images/projects/after-032-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-033.webp",
+      "thumbnail": "/images/projects/after-033-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-034.webp",
+      "thumbnail": "/images/projects/after-034-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-035.webp",
+      "thumbnail": "/images/projects/after-035-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-036.webp",
+      "thumbnail": "/images/projects/after-036-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-037.webp",
+      "thumbnail": "/images/projects/after-037-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-038.webp",
+      "thumbnail": "/images/projects/after-038-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-039.webp",
+      "thumbnail": "/images/projects/after-039-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-040.webp",
+      "thumbnail": "/images/projects/after-040-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-041.webp",
+      "thumbnail": "/images/projects/after-041-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-042.webp",
+      "thumbnail": "/images/projects/after-042-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-043.webp",
+      "thumbnail": "/images/projects/after-043-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-044.webp",
+      "thumbnail": "/images/projects/after-044-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-045.webp",
+      "thumbnail": "/images/projects/after-045-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-046.webp",
+      "thumbnail": "/images/projects/after-046-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-047.webp",
+      "thumbnail": "/images/projects/after-047-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-048.webp",
+      "thumbnail": "/images/projects/after-048-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-049.webp",
+      "thumbnail": "/images/projects/after-049-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-050.webp",
+      "thumbnail": "/images/projects/after-050-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-051.webp",
+      "thumbnail": "/images/projects/after-051-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-052.webp",
+      "thumbnail": "/images/projects/after-052-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-053.webp",
+      "thumbnail": "/images/projects/after-053-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-054.webp",
+      "thumbnail": "/images/projects/after-054-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-055.webp",
+      "thumbnail": "/images/projects/after-055-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-056.webp",
+      "thumbnail": "/images/projects/after-056-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-057.webp",
+      "thumbnail": "/images/projects/after-057-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-058.webp",
+      "thumbnail": "/images/projects/after-058-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-059.webp",
+      "thumbnail": "/images/projects/after-059-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-060.webp",
+      "thumbnail": "/images/projects/after-060-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-061.webp",
+      "thumbnail": "/images/projects/after-061-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-062.webp",
+      "thumbnail": "/images/projects/after-062-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-063.webp",
+      "thumbnail": "/images/projects/after-063-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-064.webp",
+      "thumbnail": "/images/projects/after-064-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-065.webp",
+      "thumbnail": "/images/projects/after-065-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-066.webp",
+      "thumbnail": "/images/projects/after-066-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    },
+    {
+      "src": "/images/projects/after-067.webp",
+      "thumbnail": "/images/projects/after-067-thumb.webp",
+      "width": 1600,
+      "height": 1200
+    }
+  ]
+}

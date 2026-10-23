@@ -1,0 +1,40 @@
+.consultancy-page {
+  color: #1b2d23;
+  background-color: #f7f7f2;
+}
+
+.consultancy-page .consultancy-hero {
+  background-color: #f7f7f2;
+}
+
+.consultancy-page .consultancy-support {
+  background-color: #ffffff;
+  border-top: 1px solid #e1e6df;
+}
+
+.consultancy-page :where(h1, h2, h3) {
+  color: #1b2d23;
+}
+
+.consultancy-page :where(a, button) {
+  color: #0b5e3c;
+}
+
+.consultancy-page p {
+  color: #35483c;
+  opacity: 1;
+}
+
+.consultancy-page .consultancy-accent {
+  color: #0b5e3c;
+}
+
+.consultancy-page .consultancy-primary {
+  border: 1px solid #efbf4a;
+  background-color: #0b5e3c;
+  color: #ffffff;
+}
+
+.consultancy-page .consultancy-primary:hover {
+  background-color: #117348;
+}

@@ -4,8 +4,27 @@ import { ArrowLeft, Bath, BedDouble, MapPin, Maximize2 } from "lucide-react";
 import { ApiError, api, type PropertyRecord } from "../services/api";
 import { ConsultationDialog } from "../components/shared/ConsultationDialog";
 import { displayLocation, displayPrice, primaryImage } from "../services/content";
+import { ADVERTISED_PROPERTY } from "../services/advertisedProperty";
 
 export default function PropertyDetailsPage() {
+  const { id } = useParams();
+
+  if (id === ADVERTISED_PROPERTY.slug) {
+    return (
+      <main className="min-h-screen bg-[#FAFAF6] pt-36 pb-24">
+        <div className="mx-auto max-w-[1200px] px-6 md:px-12">
+          <Link to="/properties" className="mb-8 inline-flex items-center gap-2 font-semibold text-[#0B5E3C]"><ArrowLeft aria-hidden="true" size={16} />Back to properties</Link>
+          <h1 className="sr-only">{ADVERTISED_PROPERTY.title} — property details</h1>
+          {/* Reserved for this property's details when further information is available. */}
+        </div>
+      </main>
+    );
+  }
+
+  return <LivePropertyDetailsPage key={id} />;
+}
+
+function LivePropertyDetailsPage() {
   const { id } = useParams();
   const [viewingOpen, setViewingOpen] = useState(false);
   const [property, setProperty] = useState<PropertyRecord | null>(null);

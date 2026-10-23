@@ -14,14 +14,16 @@ export const router = createBrowserRouter([
       { path: "about", element: <Navigate to="/about/who-we-are" replace /> },
       { path: "about/who-we-are", lazy: async () => ({ Component: (await import("./pages/AboutPage")).default }) },
       { path: "about/board-of-directors", lazy: async () => ({ Component: (await import("./pages/BoardOfDirectorsPage")).default }) },
+      { path: "about/board-of-directors/muzahid-monir", lazy: async () => ({ Component: (await import("./pages/MuzahidMonirProfilePage")).default }) },
       { path: "about/our-team", lazy: async () => ({ Component: (await import("./pages/OurTeamPage")).default }) },
       { path: "development", lazy: async () => ({ Component: (await import("./pages/DevelopmentPage")).default }) },
       { path: "development/services/:slug", lazy: async () => ({ Component: (await import("./pages/DevelopmentServicePage")).default }) },
       { path: "properties", lazy: async () => ({ Component: (await import("./pages/PropertiesPage")).default }) },
       { path: "properties/:id", lazy: async () => ({ Component: (await import("./pages/PropertyDetailsPage")).default }) },
       { path: "interior", lazy: async () => ({ Component: (await import("./pages/InteriorPage")).default }) },
+      { path: "consultancy", lazy: async () => ({ Component: (await import("./pages/ConsultancyPage")).default }) },
       { path: "projects", lazy: async () => ({ Component: (await import("./pages/ProjectsPage")).default }) },
-      { path: "projects/:id", lazy: async () => ({ Component: (await import("./pages/ProjectsPage")).default }) },
+      { path: "projects/:id", lazy: async () => ({ Component: (await import("./pages/DevelopmentProjectDetailsPage")).default }) },
       // FUTURE IMPLEMENTATION — INSIGHTS: disabled routes never mount or fetch news.
       ...(PUBLIC_INSIGHTS_ENABLED ? [
         { path: "news", lazy: async () => ({ Component: (await import("./pages/NewsPage")).default }) },
